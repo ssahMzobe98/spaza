@@ -1,0 +1,12 @@
+{
+  "name": "ispaza",
+  "description": "This is my PHP project.",
+  "require": {
+    "php": "^7.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    }
+  }
+}
