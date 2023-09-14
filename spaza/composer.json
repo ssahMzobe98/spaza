@@ -1,5 +1,5 @@
 {
-  "name": "ispaza",
+  "name": "spaza",
   "description": "This is my PHP project.",
   "require": {
     "php": "^7.4"
