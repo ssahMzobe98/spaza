@@ -1,24 +1,24 @@
-name: Deploy to GitHub Pages
-
+name: XAMP Setup
 on:
   push:
     branches:
-      - gh-pages
       - main
-
+      - gh-pages
+      
 jobs:
-  deploy:
+  setup:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: shivammathur/setup-php@v2
-        with:
-            php-version: '7.4'
-            tools: pecl
-            extensions: swoole
-      - run: composer install
-      - name: Deploy to GitHub Pages
-        uses: "maxheld83/ghpages@v0.1.1"
-        with:
-          target-branch: gh-pages
-          publish-dir: .
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+      - name: Install Nginx
+        uses: jwalton/setup-nginx@v1
+      - name: Install MySQL
+        uses: junegunn/setup-mysql@v1
+      - name: Install Composer
+        uses: composer/setup-composer@v1
+      - name: Run custom commands
+        run: |
+          composer install
+          sudo service nginx start
+          sudo service mysql start
