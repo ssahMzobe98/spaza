@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: shivammathur/setup-php@v2
-          with:
+        with:
             php-version: '7.4'
             tools: pecl
             extensions: swoole
