@@ -1,0 +1,24 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - gh-pages
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: shivammathur/setup-php@v2
+        with:
+            php-version: '7.4'
+            tools: pecl
+            extensions: swoole
+      - run: composer install
+      - name: Deploy to GitHub Pages
+        uses: "maxheld83/ghpages@v0.1.1"
+        with:
+          target-branch: gh-pages
+          publish-dir: .
