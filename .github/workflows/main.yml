@@ -18,7 +18,7 @@ jobs:
             extensions: swoole
       - run: composer install
       - name: Deploy to GitHub Pages
-        uses: peaceiris/gh-pages@v3
+        uses: "maxheld83/ghpages@v0.1.1"
         with:
           target-branch: gh-pages
           publish-dir: .
