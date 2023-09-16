@@ -1,0 +1,24 @@
+name: XAMP Setup
+on:
+  push:
+    branches:
+      - main
+      - gh-pages
+      
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+      - name: Install Nginx
+        uses: jwalton/setup-nginx@v1
+      - name: Install MySQL
+        uses: junegunn/setup-mysql@v1
+      - name: Install Composer
+        uses: composer/setup-composer@v1
+      - name: Run custom commands
+        run: |
+          composer install
+          sudo service nginx start
+          sudo service mysql start
