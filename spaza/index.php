@@ -108,9 +108,15 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
           </a>
         </li>
         <li>
-          <a onclick='loadAfterQuery(".makhanyile","./model/matricUpgrade.php")'>
+          <a onclick='loadAfterQuery(".makhanyile","../model/matricUpgrade.php")'>
             <i class='bx bx-pie-chart-alt-2' ></i>
             <span class="links_name">Manage Products</span>
+          </a>
+        </li>
+        <li>
+          <a onclick='loadAfterQuery(".makhanyile","../model/createOrder.php")'>
+            <i class='bx bx-pie-chart-alt-2' ></i>
+            <span class="links_name">Create Order</span>
           </a>
         </li>
         
@@ -132,7 +138,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
       </div>
       <div class="search-box" >
        SPAZA <span class="username"> ~ <?php echo $cur_user_row['name']." ".$cur_user_row['surname']." : ".$cur_user_row['id'];?> | 
-        <input id="toggle-one" onclick="changeToggle('<?php echo $cur_user_row['background'];?>')" <?php if($cur_user_row['background']==1){echo'checked';}else{echo 'data-onstyle="default"';}?> data-size="mini" data-width="15" data-height="20" type="checkbox">
+        <input id="toggle-one" onchange="changeToggle('<?php echo $cur_user_row['background'];?>')" <?php if($cur_user_row['background']==1){echo'checked';}else{echo 'data-onstyle="default"';}?> data-size="mini" data-width="15" data-height="20" type="checkbox">
         <script>
           $(function() {
             $('#toggle-one').bootstrapToggle({
@@ -152,7 +158,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
       </div>
     </nav>
 
-    <div class="home-content">  
+    <div class="home-content" <?php if($cur_user_row['background']==1){echo'style="background: #f1f1f1;"';} ?> >
       <div class="masomane">
         <div class="makhanyile box">
           
@@ -357,7 +363,7 @@ sidebarBtn.onclick = function() {
 }
 function changeToggle(domea){
   const dome = (domea==1)?0:1;
-  console.log("____ = "+domea);
+
   $.ajax({
       url:'../controller/mmshightech/processor.php',
       type:'post',
@@ -369,7 +375,7 @@ function changeToggle(domea){
           }
           else{
               $(".processing").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html("Signing onto to your account..");
-              window.location=("./spaza");
+              window.location=("./");
           }
       }
   });

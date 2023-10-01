@@ -77,5 +77,16 @@ class ProcessorNewDao{
         }
         return ['response'=>"F",'data'=>$error];
     }
+
+    public function processBackgroundDisplay(int $dome=null,int $user_id=null):array
+    {
+        $dome = $this->mmshightech->OMO($dome);
+        $sql = "update users set background =? where id =?";
+        $response = $this->mmshightech->postDataSafely($sql,'ss',[$dome,$user_id]);;
+        if(is_numeric($response)){
+            return ['response'=>'S','data'=>'Success'];
+        }
+        return ['response'=>'F','data'=>$response];
+    }
 }
 ?>

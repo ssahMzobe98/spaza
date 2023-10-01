@@ -9,8 +9,13 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     $processorNewDao = new processorNewDao();
     $cur_user_row = $processorNewDao->userInfo($_SESSION['user_agent']);
     if(isset($_POST['dome'])){
-        print_r($cur_user_row);
-        $e=$cur_user_row;
+        $dome = $processorNewDao->processBackgroundDisplay($_POST['dome'],$cur_user_row['id']);
+        if($dome['response']=='S'){
+            $e=1;
+        }
+        else{
+            $e = $dome['data'];
+        }
     }
     elseif (isset($_FILES) && isset($_POST['filesUpload'])){
         $toProcess = [];
