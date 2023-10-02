@@ -38,7 +38,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
       <meta http-equiv="X-UA-Compatible" content="ie=edge">
       <script src="https://www.payfast.co.za/onsite/engine.js"></script>
-      
+
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -62,7 +62,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     echo'<link rel="stylesheet" href="../css/light.css">';
   }
   ?>
-  
+
    </head>
 
    <style>
@@ -131,8 +131,8 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             <span class="links_name">Order History</span>
           </a>
         </li>
-        
-        
+
+
         <li class="log_out">
           <a onclick="logout()">
             <i class='bx bx-log-out'></i>
@@ -149,7 +149,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
           <span style="padding:0 8px;" class="dashboard"><i class="fa fa-arrow-right" style="font-size:15px;cursor: pointer;" aria-hidden="true"></i></span>
       </div>
       <div class="search-box" >
-       SPAZA <span class="username"> ~ <?php echo $cur_user_row['name']." ".$cur_user_row['surname']." : ".$cur_user_row['id'];?> | 
+       SPAZA <span class="username"> ~ <?php echo $cur_user_row['name']." ".$cur_user_row['surname']." : ".$cur_user_row['id'];?> |
         <input id="toggle-one" onchange="changeToggle('<?php echo $cur_user_row['background'];?>')" <?php if($cur_user_row['background']==1){echo'checked';}else{echo 'data-onstyle="default"';}?> data-size="mini" data-width="15" data-height="20" type="checkbox">
         <script>
           $(function() {
@@ -173,7 +173,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     <div class="home-content" <?php if($cur_user_row['background']==1){echo'style="background: #f1f1f1;"';} ?> >
       <div class="masomane">
         <div class="makhanyile box">
-          
+
         </div>
         <!-- <div class="maKhathi box">
           <div class="maKhathiSpazaSearch">
@@ -216,7 +216,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         <div class="inputVals">
           <input type="password" required class="userPassword" placeholder="User Password">
         </div>
-        
+
         <br>
         <div class="inputVals">
           <center>
@@ -224,7 +224,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
           </center>
         </div>
         <div class="errorLogMasoManeAddSchool" hidden></div>
-        
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
@@ -236,7 +236,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
 <div class="modal" id="smallModal">
   <div class="modal-dialog">
     <div class="modal-content">
-      
+
       <div class="smallModal"></div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
@@ -248,7 +248,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
 <div class="modal" id="largeModal">
   <div class="modal-dialog">
     <div class="modal-content largeModal">
-      
+
       <div class="showlargeModal"></div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
@@ -295,14 +295,14 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             <option value="Gr8">Grade 8</option>
           </select>
         </div>
-        
+
         <br>
         <div class="inputVals">
 
           <input type="submit" class="MasoManeAddNetchatsaSubject" onclick="MasoManeAddNetchatsaSubject()" value="Add new netchatsa subject" >
         </div>
         <div class="errorLogMasoManeAddNetchatsaSubjectError" hidden></div>
-        
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
@@ -428,7 +428,7 @@ function loadAfterQuery(rclass,dir){
 </script>
 </body>
 </html>
-<?php 
+<?php
   }
   else{
     session_destroy();
