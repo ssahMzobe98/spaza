@@ -9,6 +9,8 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     $userDirect=$cur_user_row['user_type'];
     date_default_timezone_set('Africa/Johannesburg');
     if($cur_user_row['user_type']==$userDirect){
+        $specials = [];
+        $allProducts = [];
         ?>
         <style>
             .dolar-set-block-display{
@@ -76,22 +78,22 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                     </div>
                     <div class="listCategory">
                         <div class="boxInCategory">
-                            <span class="badge badge-primary text-center text-white" onclick="loadAfterQuery('.flexible-loader','../model/productDynamicLoader.php?map=Specials')">Specials</span>
+                            <span class="badge badge-primary text-center text-white" onclick="loadAfterQuery('.flexible-loader','../model/productDynamicLoader.php?map=1')">Specials</span>
                         </div>
                     </div>
                     <div class="listCategory">
                         <div class="boxInCategory">
-                            <span class="badge badge-warning text-center text-white" onclick="loadAfterQuery('.flexible-loader','../model/productDynamicLoader.php?map=Meat_Meat_Chicken')">Meat, Poultry, Chicken</span>
+                            <span class="badge badge-warning text-center text-white" onclick="loadAfterQuery('.flexible-loader','../model/productDynamicLoader.php?map=1')">Meat, Poultry, Chicken</span>
                         </div>
                     </div>
                     <div class="listCategory">
                         <div class="boxInCategory">
-                            <span class="badge badge-success text-center text-white " onclick="loadAfterQuery('.flexible-loader','../model/productDynamicLoader.php?map=Fruits_Vegetables')">Fruits & Vegetables</span>
+                            <span class="badge badge-success text-center text-white " onclick="loadAfterQuery('.flexible-loader','../model/productDynamicLoader.php?map=1')">Fruits & Vegetables</span>
                         </div>
                     </div>
                     <div class="listCategory">
                         <div class="boxInCategory">
-                            <span class="badge badge-primary text-center text-white" onclick="loadAfterQuery('.flexible-loader','../model/productDynamicLoader.php?map=id')">Drinks</span>
+                            <span class="badge badge-primary text-center text-white" onclick="loadAfterQuery('.flexible-loader','../model/productDynamicLoader.php?map=1')">Drinks</span>
                         </div>
                     </div>
                     <div class="listCategory">

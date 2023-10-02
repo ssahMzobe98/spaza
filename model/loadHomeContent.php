@@ -306,7 +306,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                 </div>
                 <div style="width: 10%;justify-content: right;">
                     <h6 style="font-size: smaller;cursor:pointer;"
-                        onclick="loadAfterQuery('.flexible-loader','../model/productDynamicLoader.php?map=Specials')">
+                        onclick="loadAfterQuery('.flexible-loader','../model/productDynamicLoader.php?map=1')">
                         View More
                     </h6>
                 </div>

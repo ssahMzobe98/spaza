@@ -119,6 +119,18 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             <span class="links_name">Create Order</span>
           </a>
         </li>
+        <li>
+          <a onclick='loadAfterQuery(".makhanyile","../model/activeOrder.php")'>
+            <i class='bx bx-pie-chart-alt-2' ></i>
+            <span class="links_name">Active Orders</span>
+          </a>
+        </li>
+        <li>
+          <a onclick='loadAfterQuery(".makhanyile","../model/orderHistory.php")'>
+            <i class='bx bx-pie-chart-alt-2' ></i>
+            <span class="links_name">Order History</span>
+          </a>
+        </li>
         
         
         <li class="log_out">
