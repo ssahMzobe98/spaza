@@ -67,7 +67,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         <div class="dolar-set-block-display">
             <div class="topicTail">
                 <div class="maKhathiSpazaSearch" >
-                    <input type="search" class="productSearchCart" placeholder="Search Product...">
+                    <input type="search" class="productSearchCart" onchange="productSearchCart()" placeholder="Search Product...">
                 </div>
                 <div class="cart-icon" style="display: flex;color: red;"><i style="font-size: large;cursor:pointer;" class="fa fa-cart-plus"></i><sup><span style="font-size: smaller;" class="cartDisplay">0</span></sup></div>
                 <div class="categoryList">

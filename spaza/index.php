@@ -352,6 +352,9 @@ $(document).on("change",".filesUpload",function(){
     }
   });
 });
+function productSearchCart(){
+  console.log("searching on hold");
+}
 function getOrderInfo(orderNo){
   domeSquareModal('ordersFormData',orderNo);
 }
