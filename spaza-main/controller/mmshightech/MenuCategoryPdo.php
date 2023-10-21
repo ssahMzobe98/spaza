@@ -1,4 +1,7 @@
 <?php
+
+use controller\mmshightech;
+
 class MenuCategoryPdo
 {
     public function __construct()

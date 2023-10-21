@@ -1,10 +1,13 @@
 <?php
 
-class mmshightech{
-	public $connection;
+namespace controller;
+
+class mmshightech
+{
+    public $connection;
     public function __construct()
     {
-            $this->dbConn();
+        $this->dbConn();
     }
     public function dbConn(){
         $user='root';
@@ -75,7 +78,7 @@ class mmshightech{
         mysqli_close($this->connection);
     }
 
-	protected function cleanData(string $mess){
+    protected function cleanData(string $mess){
         $mess = str_replace('<', "?", $mess);
         $mess = str_replace('>', "?", $mess);
         $mess = str_replace("\\r\\n", "<br>", $mess);
@@ -198,7 +201,7 @@ class mmshightech{
         }
     }
     public function userInfo(string $agent=null):array{
-    	return $this->getAllDataSafely("select*from users where usermail=?","s",[$agent])[0]??[]; 
+        return $this->getAllDataSafely("select*from users where usermail=?","s",[$agent])[0]??[];
     }
     public function updateDomeBackground(int $dome=0,int $id=0):array{
         $sql = "update users set background=? where id=?";
@@ -256,4 +259,3 @@ class mmshightech{
         return $uzwane;
     }
 }
-?>

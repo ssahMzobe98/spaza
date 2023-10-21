@@ -1,4 +1,7 @@
 <?php
+
+use controller\mmshightech;
+
 if(session_status() !== PHP_SESSION_ACTIVE){
   session_start();
 }

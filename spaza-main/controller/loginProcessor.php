@@ -1,4 +1,7 @@
 <?php
+
+use controller\mmshightech;
+
 $e="UKNOWN REQUEST!!";
 include_once("./mmshightech.php");
 $mmshightech=new mmshightech();

@@ -1,4 +1,7 @@
 <?php
+
+use controller\mmshightech;
+
 class ProcessorNewDao{
     private $mmshightech;
     public $csvProcessor;
