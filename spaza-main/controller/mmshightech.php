@@ -1,4 +1,5 @@
 <?php
+
 class mmshightech{
 	public $connection;
     public function __construct()
