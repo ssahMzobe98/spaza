@@ -117,9 +117,10 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
           </a>
         </li>
         <li>
-          <a onclick='loadAfterQuery(".makhanyile","../model/createOrder.php")'>
-            <i class='bx bx-pie-chart-alt-2' ></i>
-            <span class="links_name">Create Order</span>
+          <a onclick='loadAfterQuery(".makhanyile","../model/createOrder.php");getCartUpdate();'>
+              <i class='bx bx-pie-chart-alt-2' ></i>
+              <span class="links_name">Create Order </span>
+              <span style="display: flex;color: #00eeff;"><i style="width:10%;font-size: medium;cursor:pointer;color: #00eeff" class="fa fa-cart-plus"></i><sup style="margin-left: -20px;margin-top: 15%;" class="cartDisplay">0</sup></span>
           </a>
         </li>
         <li>
@@ -326,6 +327,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
 // }
 $(document).ready(function(){
   loadAfterQuery(".makhanyile","../model/ordersForm.php");
+  getCartUpdate();
 })
 $(document).on("change",".filesUpload",function(){
   const filesUpload = document.getElementById('filesUpload').files;
@@ -394,6 +396,70 @@ function changeToggle(domea){
           }
       }
   });
+}
+function removeProductToCart(productIdToActionOnCart,actionType){
+    $.ajax({
+        url:'../controller/mmshightech/processor.php',
+        type:'post',
+        data:{productIdToActionOnCart:productIdToActionOnCart,actionType:actionType},
+        success:function(e){
+            console.log(e);
+            if(e.length<5){
+                $(".itemQuantity"+productIdToActionOnCart).html(e);
+                getCartUpdate();
+            }
+            else{
+                $(".processing").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html("Signing onto to your account..");
+
+            }
+        }
+    });
+}
+
+function getCartUpdate(){
+    let getCartUpdates = 'getCartUpdates';
+    $.ajax({
+        url:'../controller/mmshightech/processor.php',
+        type:'post',
+        data:{getCartUpdates:getCartUpdates},
+        success:function(e){
+            $(".cartDisplay").html(e);
+        }
+    });
+}
+function emptyCart(){
+    let emptyCart = 'emptyCart';
+    $.ajax({
+        url:'../controller/mmshightech/processor.php',
+        type:'post',
+        data:{emptyCart:emptyCart},
+        success:function(e){
+            if(e.length===1){
+                loadAfterQuery('.flexible-loader','../model/cart.php');
+            }
+            else{
+                $(".errorDisplay").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(e);
+            }
+        }
+    });
+}
+function removeThisProduct(cartIdToRemove){
+    $.ajax({
+        url:'../controller/mmshightech/processor.php',
+        type:'post',
+        data:{cartIdToRemove:cartIdToRemove},
+        success:function(e){
+            if(e.length===1){
+                loadAfterQuery('.flexible-loader','../model/cart.php');
+            }
+            else{
+                $(".errorDisplay").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(e);
+            }
+        }
+    });
+}
+function addProductToCart(productIdToActionOnCart,actionType){
+    removeProductToCart(productIdToActionOnCart,actionType);
 }
 function domeSmallModal(filename,request){
   $.ajax({

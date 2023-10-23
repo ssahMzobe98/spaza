@@ -14,8 +14,14 @@
   "prefer-stable": true,
   "autoload": {
     "psr-4": {
-      "App\\": "app",
-      "Controller\\": "controller"
+      "App\\": "app/",
+      "Controller\\": "controller/"
+    }
+  },
+  "autoload": {
+    "psr-0": {
+      "App\\": "app/",
+      "Controller\\": "controller/"
     }
   }
 }

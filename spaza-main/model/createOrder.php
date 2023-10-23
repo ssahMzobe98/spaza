@@ -72,7 +72,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                 <div class="maKhathiSpazaSearch" >
                     <input type="search" class="productSearchCart" placeholder="Search Product...">
                 </div>
-                <div class="cart-icon" style="display: flex;color: red;"><i style="font-size: large;cursor:pointer;" class="fa fa-cart-plus"></i><sup><span style="font-size: smaller;" class="cartDisplay">0</span></sup></div>
+                <div onclick="loadAfterQuery('.flexible-loader','../model/cart.php')" class="cart-icon" style="display: flex;color: red;"><i  style="font-size: large;cursor:pointer;" class="fa fa-cart-plus"></i><sup><span style="font-size: smaller;" class="cartDisplay">0</span></sup></div>
                 <div class="categoryList">
                     <div class="listCategory">
                         <div class="boxInCategory">

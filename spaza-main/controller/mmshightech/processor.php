@@ -1,12 +1,16 @@
 <?php
+require_once("../mmshightech/processorNewPdo.php");
+require_once("../mmshightech.php");
+use controller\mmshightech;
+use controller\mmshightech\processorNewPdo;
+
 if(session_status() !== PHP_SESSION_ACTIVE){
   session_start();
 }
 //use controller\mmshightech\processorDao;
 if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     $e="UKNOWN REQUEST!!";
-    require_once("../mmshightech/processorNewDao.php");
-    $processorNewDao = new processorNewDao();
+    $processorNewDao = new processorNewPdo(new mmshightech());
     $cur_user_row = $processorNewDao->userInfo($_SESSION['user_agent']);
     if(isset($_POST['dome'])){
         $dome = $processorNewDao->processBackgroundDisplay($_POST['dome'],$cur_user_row['id']);
@@ -70,6 +74,39 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             else{
                 $e = "Failed to process empty request.";
             }
+        }
+    }
+    elseif (isset($_POST['productIdToActionOnCart'],$_POST['actionType'])){
+        $actionType = $processorNewDao->mmshightech->OMO($_POST['actionType']);
+        $productIdToActionOnCart = $processorNewDao->mmshightech->OMO($_POST['productIdToActionOnCart']);
+        $response = $processorNewDao->cartProcessor($productIdToActionOnCart,$actionType,$cur_user_row['id']);
+        if($response['response']=="S"){
+            $e=$response['data'];
+        }
+        else{
+            $e=$response['data'];
+        }
+    }
+    elseif (isset($_POST['getCartUpdates'])){
+        $e = $processorNewDao->getCartUpdates($cur_user_row['id']);
+    }
+    elseif (isset($_POST['emptyCart'])){
+        $response = $processorNewDao->emptyCart($cur_user_row['id']);
+        if($response['response']=="S"){
+            $e=1;
+        }
+        else{
+            $e=$response['data'];
+        }
+    }
+    elseif (isset($_POST['cartIdToRemove'])){
+        $cartIdToRemove = $processorNewDao->mmshightech->OMO($_POST['cartIdToRemove']);
+        $response = $processorNewDao->removeProductFromCart($cartIdToRemove,$cur_user_row['id']);
+        if($response['response']=="S"){
+            $e=1;
+        }
+        else{
+            $e=$response['data'];
         }
     }
     echo json_encode($e);
