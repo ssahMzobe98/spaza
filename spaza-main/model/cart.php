@@ -117,24 +117,25 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                                 <table>
                                     <tr>
                                         <th><h6>Sub Total</h6></th>
-                                        <th><h6>R<?php echo number_format($subTotal,2);?></h6></th>
+                                        <th style="justify-items: flex-end;justify-content: flex-end;text-align: right;"><h6>R<?php echo number_format($subTotal,2);?></h6></th>
                                     </tr>
                                     <tr>
                                         <th><h6>VAT</h6></th>
-                                        <th><h6>R<?php echo number_format($Vat,2);?></h6></th>
+                                        <th style="justify-items: flex-end;justify-content: flex-end;text-align: right;"><h6>R<?php echo number_format($Vat,2);?></h6></th>
                                     </tr>
                                     <tr>
                                         <th><h6>Delivery Fee</h6></th>
-                                        <th><h6>R<?php echo number_format($deliveryFee,2);?></h6></th>
+                                        <th style="justify-items: flex-end;justify-content: flex-end;text-align: right;"><h6>R<?php echo number_format($deliveryFee,2);?></h6></th>
                                     </tr>
                                     <tr>
                                         <th><h6>TOTAL</h6></th>
-                                        <th><h6>R<?php echo number_format($total,2);?></h6></th>
+                                        <th style="justify-items: flex-end;justify-content: flex-end;text-align: right;"><h6>R<?php echo number_format($total,2);?></h6></th>
                                     </tr>
                                     <tr></tr>
                                     <tr>
-                                        <th><div class='button'>
-                                                <a onclick="loadAfterQuery('.dynamicalLoad1','./model/loadMasomaneSchools.php?start=10&limit=10');">CHECKOUT</a>
+                                        <th></th>
+                                        <th><div class='button' onclick="loadAfterQuery('.makhanyile','../model/checkout.php');">
+                                                <a>CHECKOUT - R<?php echo number_format($total,2);?></a>
                                             </div>
                                         </th>
 

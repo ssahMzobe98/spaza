@@ -180,11 +180,21 @@ class processorNewPdo
 
     public function removeProductFromCart(?int $cartIdToRemove, ?int $id):array
     {
-        $sql = "delete from cart where id={$cartIdToRemove} and user_id=$id";
+        $sql = "delete from cart where id={$cartIdToRemove} and user_id={$id}";
         $response = $this->mmshightech->connection->query($sql);
         if($response){
             return['response'=>'S','data'=>0];
         }
         return['response'=>'F','data'=>$response->error];
+    }
+
+    public function spazaUpdater(?int $spazaShopsDisplay,?int $id):array
+    {
+        $sql="update users set current_spaza=? where id=?";
+        $response = $this->mmshightech->postDataSafely($sql,'ss',[$spazaShopsDisplay,$id]);
+        if(is_numeric($response)){
+            return['response'=>'S','data'=>$response];
+        }
+        return['response'=>'F','data'=>$response];
     }
 }

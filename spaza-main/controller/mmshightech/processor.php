@@ -109,6 +109,16 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             $e=$response['data'];
         }
     }
+    elseif (isset($_POST['spazaShopsDisplay'])){
+        $spazaShopsDisplay = $processorNewDao->mmshightech->OMO($_POST['spazaShopsDisplay']);
+        $response = $processorNewDao->spazaUpdater($spazaShopsDisplay,$cur_user_row['id']);
+        if($response['response']=="S"){
+            $e=1;
+        }
+        else{
+            $e=$response['data'];
+        }
+    }
     echo json_encode($e);
 }
 else{

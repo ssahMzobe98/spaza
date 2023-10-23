@@ -329,6 +329,25 @@ $(document).ready(function(){
   loadAfterQuery(".makhanyile","../model/ordersForm.php");
   getCartUpdate();
 })
+$(document).on("change",".spazaShopsDisplay",function(){
+    const spazaShopsDisplay = $('.spazaShopsDisplay').val();
+    $.ajax({
+        url:'../controller/mmshightech/processor.php',
+        type:'post',
+        data:{spazaShopsDisplay:spazaShopsDisplay},
+        success:function(e){
+            console.log(e);
+            if(e.length===1){
+                loadAfterQuery('.spazaAddressDetails','../model/spazaDisplay.php?spazaId='+spazaShopsDisplay);
+            }
+            else{
+                $(".errorDisplaysetter").attr("style","padding:5px 5px;color:red;text-align:center;border:1px solid red;").html(e);
+            }
+        }
+    });
+
+
+});
 $(document).on("change",".filesUpload",function(){
   const filesUpload = document.getElementById('filesUpload').files;
   // console.log("sending "+filesUpload);
