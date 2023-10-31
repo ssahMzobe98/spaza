@@ -1,23 +1,28 @@
 <?php
 
 use controller\mmshightech;
+use controller\mmshightech\spazaPdo;
 
 if(session_status() !== PHP_SESSION_ACTIVE){
     session_start();
 }
 if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     require_once("../controller/mmshightech.php");
+    require_once("../controller/mmshightech/spazaPdo.php");
     $mmshightech=new mmshightech();
+    $spazaDao=new spazaPdo($mmshightech);
     $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
     $userDirect=$cur_user_row['user_type'];
     if($cur_user_row['user_type']==$userDirect){
         date_default_timezone_set('Africa/Johannesburg');
+        $spaza_details = $spazaDao->getSpazaInfoAll();
         ?>
         <div class="orderDataSet">
             <div class="orderDataSetHeader">
                 <div class="maKhathiOrdersSearch" style="padding:10px 10px;">
                     <input type="search" id="FindSpazaSearch" class="maKhathiOrdersSearchInput" placeholder="Find Spaza...">
                 </div>
+                <div class="processing" hidden></div>
                 <!--                <center><h3>Manage Users</h3></center>-->
                 <!--                <div style="padding:10px 10px;">-->
                 <!--                    <span class="badge badge-success text-white text-center" style="padding:10px 10px;">Active</span>-->
@@ -38,43 +43,32 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                     <th>Pending Orders</th>
                     <th>Delivered Orders</th>
                     <th>Status</th>
-                    <th>Owner ID</th>
                     <th>Owner</th>
-                    <th>Manage User</th>
+
 
                 </tr>
                 </thead>
                 <tbody>
-                <tr >
-                    <td onclick="getSpazaInfo('124578963')" style="color:limegreen;">#451232</td>
-                    <td onclick="getSpazaInfo('124578963')" style="color:limegreen;">Spaza Name</td>
-                    <td style="color:limegreen;"><span class="badge badge-primary text-white text-center">456</span></td>
-                    <td style="color:limegreen;"><span class="badge badge-warning text-white text-center">233</span></td>
-                    <td style="color:limegreen;"><span class="badge badge-success text-white text-center">236</span></td>
-                    <td style="color:limegreen;">A</td>
-                    <td style="color:limegreen;">25478</td>
-                    <td style="color:limegreen;">Spaza Owner Name</td>
-                    <td>
-                        <a onclick="viewThisSchooInfo('12','1')" class="badge badge-danger text-white text-center"> <i style="font-size: 20px;color: #dddddd;" class="fa fa-trash-o" aria-hidden="true"></i></a>
+                <?php
+                foreach ($spaza_details as $spazaDetails){
+                    ?>
+                    <tr  class="removeSpaza'<?php echo $spazaDetails['spaza_id'];?>'">
+                        <td onclick="getSpazaInfo('<?php echo $spazaDetails['spaza_id'];?>')" style="color:#000000;cursor: pointer;"><?php echo $spazaDetails['spaza_id'];?></td>
+                        <td onclick="getSpazaInfo('<?php echo $spazaDetails['spaza_id'];?>')" style="color:#000000;cursor: pointer;"><?php echo $spazaDetails['spaza_name'];?></td>
+                        <td style="color:#000000;"><span class="badge badge-primary text-white text-center"><?php echo $spazaDetails['active_orders'];?></span></td>
+                        <td style="color:#000000;"><span class="badge badge-warning text-white text-center"><?php echo $spazaDetails['pending_orders'];?></span></td>
+                        <td style="color:#000000;"><span class="badge badge-success text-white text-center"><?php echo $spazaDetails['delivered_orders'];?></span></td>
+                        <td style="color:#000000;"><?php echo $spazaDetails['spaza_status'];?></td>
+                        <td style="color:#000000;"><?php echo $spazaDetails['owner_name'];?></td>
+                        <td>
+                            <a onclick="removeSpazaPermanetly('<?php echo $spazaDetails['spaza_id'];?>')" class="badge badge-danger text-white text-center"> <i style="font-size: 20px;color: #dddddd;" class="fa fa-trash-o" aria-hidden="true"></i></a>
 
-                    </td>
-                </tr>
-                <tr>
-                    <td onclick="getSpazaInfo('124578963')" style="color:limegreen;">#451232</td>
-                    <td onclick="getSpazaInfo('124578963')" style="color:limegreen;">Spaza Name</td>
-                    <td style="color:limegreen;"><span class="badge badge-primary text-white text-center">456</span></td>
-                    <td style="color:limegreen;"><span class="badge badge-warning text-white text-center">233</span></td>
-                    <td style="color:limegreen;"><span class="badge badge-success text-white text-center">236</span></td>
-                    <td style="color:limegreen;">A</td>
-                    <td style="color:limegreen;">25478</td>
-                    <td style="color:limegreen;">Spaza Owner Name</td>
-                    <td>
-                        <a onclick="viewThisSchooInfo('12','1')" class="badge badge-danger text-dark text-center"> <i style="font-size: 20px;color: #dddddd;" class="fa fa-trash-o" aria-hidden="true"></i></a>
+                        </td>
+                    </tr>
 
-                    </td>
-                </tr>
-
-
+                    <?php
+                }
+                ?>
                 </tbody>
                 <tfoot>
                 <tr>
@@ -83,7 +77,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                         </div>
                     </th>
                     <th></th>
-                    <th></th>
+
                     <th></th>
                     <th style="font-size:9px;">Displaying 3 to 30 of 500</th>
                     <th></th>

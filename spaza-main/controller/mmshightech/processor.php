@@ -119,6 +119,101 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             $e=$response['data'];
         }
     }
+    elseif(isset($_POST['userEmailAddress'],
+        $_POST['userPhoneNo'],
+        $_POST['userDOB'],
+        $_POST['gender'],
+        $_POST['country'],
+        $_POST['id_passport'],
+        $_POST['lname'],
+        $_POST['fname'],
+        $_POST['spaza'])){
+        $cleanData = $processorNewDao->mmshightech->cleanAll([$_POST['userEmailAddress'],
+            $_POST['userPhoneNo'],
+            $_POST['userDOB'],
+            $_POST['gender'],
+            $_POST['country'],
+            $_POST['id_passport'],
+            $_POST['lname'],
+            $_POST['fname'],
+            $_POST['spaza']
+        ]);
+        $userPhoneNo=$cleanData['1'];
+        $userDOB = $cleanData['2'];
+        $gender = $cleanData['3'];
+        $country = $cleanData['4'];
+        $id_passport = $cleanData['5'];
+        $lname = $cleanData['6'];
+        $fname = $cleanData['7'];
+        $spaza = $cleanData['8'];
+        $userEmailAddress=$cleanData['0'];
+        $response = $processorNewDao->addNewSpazaDetails($userPhoneNo,$userDOB,$gender,$country,$id_passport,$lname,$fname,$spaza,$userEmailAddress,$cur_user_row['id']);
+        $e=$response['data'];
+    }
+    elseif(isset($_POST['spaza_id_toBeRemoved'])){
+        $spaza_id_toBeRemoved = $processorNewDao->mmshightech->OMO($_POST['spaza_id_toBeRemoved']);
+        $response = $processorNewDao->spazaIdToBeRemoved($spaza_id_toBeRemoved);
+        if($response['response']=='S'){
+            $e=1;
+        }
+        else{
+            $e=$response['data'];
+        }
+
+    }
+    elseif (isset($_POST['countryOfOriginAddress'],$_POST['map_dir'],$_POST['spaza_id_to_add_address'])){
+        $countryOfOriginAddress = $processorNewDao->mmshightech->OMO($_POST['countryOfOriginAddress']);
+        $map_dir = $processorNewDao->mmshightech->OMO($_POST['map_dir']);
+        $spaza_id_to_add_address = $processorNewDao->mmshightech->OMO($_POST['spaza_id_to_add_address']);
+        $response = $processorNewDao->addAddress($countryOfOriginAddress,$map_dir,$spaza_id_to_add_address);
+        if($response['response']=='S'){
+            $e=1;
+        }
+        else{
+            $e=$response['data'];
+        }
+    }
+    elseif(isset($_POST['visa_number'],$_POST['permit_number'],$_FILES,$_POST['spazaVisaDetailsId'])){
+//        $copyOfVisa =$_FILES['copyOfVisa']??'';
+//        $copyOfPermit =$_FILES['copyOfVisa']??'';
+        $spazaVisaDetailsId = $processorNewDao->mmshightech->OMO($_POST['spazaVisaDetailsId']);
+        $visa_number=$processorNewDao->mmshightech->OMO($_POST['visa_number']);
+        $permit_number=$processorNewDao->mmshightech->OMO($_POST['permit_number']);
+        $tmp=[$visa_number,$permit_number];
+        $newNames =[];
+        $errorLog=[];
+        $break = false;
+        $i=0;
+        $dir = "../../documents/";
+        foreach ($_FILES as $file){
+            $ext = explode(".",$file['name']);
+            if(!in_array($ext[1],['PDF','pdf'])){
+                $errorLog[]=$ext[1]." Not Supported. Please upload .pdf";
+                $break = true;
+                break;
+            }
+            $newFileName =$tmp[$i]."_".rand(0,99999).'.'.$ext[1];
+            $i++;
+            if(!move_uploaded_file($file['tmp_name'],$dir.basename($newFileName))){
+                $errorLog[]="Failed to upload file {$file['name']}. Please try again.";
+                $break = true;
+                break;
+            }
+            $newNames[]=$newFileName;
+        }
+        if($break){
+            $e=$errorLog[0];
+        }
+        else{
+            $response = $processorNewDao->saveProcessedDocuments($spazaVisaDetailsId,$newNames,$tmp);
+            if($response['response']=='S'){
+                $e=1;
+            }
+            else{
+                $e=$response['data'];
+            }
+        }
+    }
     echo json_encode($e);
 }
 else{

@@ -47,7 +47,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+      <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" crossorigin="anonymous">
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
       <!-- <script src="https://kit.fontawesome.com/a076d05399.js"></script> -->
@@ -416,6 +416,97 @@ function changeToggle(domea){
       }
   });
 }
+function addNewSpazaDetails(){
+    const userEmailAddress = $("#userEmailAddress").val();
+    const userPhoneNo = $("#userPhoneNo").val();
+    const userDOB = $("#userDOB").val();
+    const gender = $("#gender").val();
+    const country = $("#country").val();
+    const id_passport = $("#id_passport").val();
+    const lname = $("#lname").val();
+    const fname = $("#fname").val();
+    const spaza = $("#spaza").val();
+    $(".errorLogaddNewSpazaDetails").removeAttr("hidden");
+    if(userEmailAddress===""){
+        $(".userEmailAddress").attr("style","border:1px solid red;");
+        $(".errorLogaddNewSpazaDetails").attr("style","border:2px solid red;color:red;border-radius:10px;").html("Email Address required!!");
+    }
+    else if(userPhoneNo ===""){
+        $(".userPhoneNo").attr("style","border:1px solid red;");
+        $(".errorLogaddNewSpazaDetails").attr("style","border:2px solid red;color:red;border-radius:10px;").html("Phone Number required!!");
+    }
+    else if(userDOB ===""){
+        $(".userDOB").attr("style","border:1px solid red;");
+        $(".errorLogaddNewSpazaDetails").attr("style","border:2px solid red;color:red;border-radius:10px;").html("Date of birth required!!");
+    }
+    else if(gender ===""){
+        $(".gender").attr("style","border:1px solid red;");
+        $(".errorLogaddNewSpazaDetails").attr("style","border:2px solid red;color:red;border-radius:10px;").html("Gender required!!");
+    }
+    else if(country ===""){
+        $(".country").attr("style","border:1px solid red;");
+        $(".errorLogaddNewSpazaDetails").attr("style","border:2px solid red;color:red;border-radius:10px;").html("Country required!!");
+    }
+    else if(id_passport ===""){
+        $(".id_passport").attr("style","border:1px solid red;");
+        $(".errorLogaddNewSpazaDetails").attr("style","border:2px solid red;color:red;border-radius:10px;").html("ID/Passport required!!");
+    }
+    else if(lname ===""){
+        $(".lname").attr("style","border:1px solid red;");
+        $(".errorLogaddNewSpazaDetails").attr("style","border:2px solid red;color:red;border-radius:10px;").html("Last Name required!!");
+    }
+    else if(fname ===""){
+        $(".fname").attr("style","border:1px solid red;");
+        $(".errorLogaddNewSpazaDetails").attr("style","border:2px solid red;color:red;border-radius:10px;").html("First Name required!!");
+    }
+    else if(spaza ===""){
+        $(".spaza").attr("style","border:1px solid red;");
+        $(".errorLogaddNewSpazaDetails").attr("style","border:2px solid red;color:red;border-radius:10px;").html("Spaza required!!");
+    }
+    else{
+        $.ajax({
+            url:'../controller/mmshightech/processor.php',
+            type:'post',
+            data:{
+                userEmailAddress:userEmailAddress,
+                userPhoneNo:userPhoneNo,
+                userDOB:userDOB,
+                gender:gender,
+                country:country,
+                id_passport:id_passport,
+                lname:lname,
+                fname:fname,
+                spaza:spaza
+            },
+            success:function(e){
+                console.log(e);
+                if(e.length>10){
+                    $(".errorLogaddNewSpazaDetails").attr("style","padding:5px 5px;color:red;text-align:center;border:1px solid red;").html("Failed to add spaza due to: "+e);
+                }
+                else{
+                    $(".errorLogaddNewSpazaDetails").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html("Spaza Added Successfully");
+                    getSpazaInfo(e);
+                }
+            }
+        });
+    }
+}
+function removeSpazaPermanetly(spaza_id_toBeRemoved){
+    $.ajax({
+        url:'../controller/mmshightech/processor.php',
+        type:'post',
+        data:{spaza_id_toBeRemoved:spaza_id_toBeRemoved},
+        success:function(e){
+            console.log(e);
+            if(e.length===1){
+                $(".removeSpaza"+spaza_id_toBeRemoved).attr("hidden","true");
+            }
+            else{
+                $(".processing").attr("style","padding:5px 5px;color:red;text-align:center;border:1px solid red;").html(e).removeAttr("hidden");
+            }
+        }
+    });
+}
 function removeProductToCart(productIdToActionOnCart,actionType){
     $.ajax({
         url:'../controller/mmshightech/processor.php',
@@ -445,6 +536,85 @@ function getCartUpdate(){
             $(".cartDisplay").html(e);
         }
     });
+}
+function setAddress(map_dir,spaza_id_to_add_address){
+    const countryOfOriginAddress = $(".pac-input").val();
+    $(".setAddress").html("processing...");
+    if(countryOfOriginAddress===""){
+        $(".countryOfOriginAddress").attr("style","border:1px solid red;");
+        $(".setAddress").attr("style","color:red;").html("Address Field required!");
+    }
+    else{
+        $.ajax({
+            url:"../controller/mmshightech/processor.php",
+            type:"POST",
+            data:{countryOfOriginAddress:countryOfOriginAddress,map_dir:map_dir,spaza_id_to_add_address:spaza_id_to_add_address},
+            cache:false,
+            success:function(e){
+                if(e.length===1){
+                    $(".setAddress").html("Address set success.");
+                }
+                else{
+                    $(".setAddress").html(e);
+                }
+            }
+        });
+    }
+}
+function saveVisaDetails(spazaVisaDetailsId){
+    const visa_number = $(".visa_number").val();
+    const permit_number = $(".permit_number").val();
+    // const copyOfVisa = $('#copyOfVisa').prop("files")[0];
+    // const copyOfPermit = $('#copyOfPermit').prop("files")[0];
+    const copyOfVisa = document.getElementById('copyOfVisa').files[0];
+    console.log(copyOfVisa);
+    const copyOfPermit = document.getElementById('copyOfPermit').files[0];
+    console.log(copyOfPermit);
+    $(".errorNotifier").removeAttr('hidden').attr("style","color:green;").html('Processing...');
+    if(visa_number===''){
+        $(".visa_number").attr('style','border:1px solid red;');
+        $(".errorNotifier").removeAttr('hidden').attr("style","color:red;").html('Visa Number|Passport Number|ID no is required!!.');
+    }
+    else if(permit_number === ''){
+        $(".permit_number").attr('style','border:1px solid red;');
+        $(".errorNotifier").removeAttr('hidden').attr("style","color:red;").html('Permit Number is required!!.')
+    }
+    else if(copyOfVisa===undefined){
+        $(".copyOfVisa").attr('style','border:1px solid red;');
+        $(".errorNotifier").removeAttr('hidden').attr("style","color:red;").html('Copy of VISA or Passport Required!!.');
+    }
+    else if(copyOfPermit===undefined){
+        $(".copyOfPermit").attr('style','border:1px solid red;');
+        $(".errorNotifier").removeAttr('hidden').attr("style","color:red;").html('Copy of permit is required!!')
+    }
+    else{
+        let form_data=new FormData();
+        form_data.append("visa_number",visa_number);
+        form_data.append("permit_number",permit_number);
+        form_data.append("copyOfVisa",copyOfVisa);
+        form_data.append("copyOfPermit",copyOfPermit);
+        form_data.append('spazaVisaDetailsId',spazaVisaDetailsId);
+        $.ajax({
+            url:'../controller/mmshightech/processor.php',
+            processData: false,
+            contentType: false,
+            type:"POST",
+            data:form_data,
+            cache:false,
+            enctype: 'multipart/form-data',
+            success:function(e){
+                if(e.length===1){
+                    $(".errorNotifier").removeAttr("hidden").attr("style","color:green;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html('Docs added successfully');
+                }
+                else{
+                    $(".errorNotifier").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(e);
+                }
+            }
+        });
+    }
+}
+function saveLegalDocuments(spazaLegalDocumentId){
+
 }
 function emptyCart(){
     let emptyCart = 'emptyCart';
@@ -509,6 +679,9 @@ function domeSquareModal(filename,request){
       }
     });
   $("#largeModal").modal("show");
+}
+function ShowMissingDataForm(map,spazaID){
+    loadAfterQuery('.launchData','../model/dataFormDisplaySpazaMap.php?map='+map+'&spazaID='+spazaID);
 }
 function loadAfterQuery(rclass,dir){
   $(rclass).html("<center><img src='../img/loader.gif' style='width:30%;padding:10px 10px;justify-content:center;align-content:center;text-align:center;'></center>").load(dir);

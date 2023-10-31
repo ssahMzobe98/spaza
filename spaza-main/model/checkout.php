@@ -1,6 +1,7 @@
 <?php
 
 use controller\mmshightech;
+use controller\mmshightech\spazaPdo;
 use controller\mmshightech\usersPdo;
 if(session_status() !== PHP_SESSION_ACTIVE){
     session_start();
@@ -8,13 +9,16 @@ if(session_status() !== PHP_SESSION_ACTIVE){
 if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     require_once("../controller/mmshightech.php");
     require_once("../controller/mmshightech/usersPdo.php");
+    require_once("../controller/mmshightech/spazaPdo.php");
+
     $mmshightech=new mmshightech();
+    $spazaPdo = new spazaPdo($mmshightech);
     $products = new usersPdo($mmshightech);
     $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
     $userDirect=$cur_user_row['user_type'];
     date_default_timezone_set('Africa/Johannesburg');
     if($cur_user_row['user_type']==$userDirect){
-
+        $getOtherSpazas=$spazaPdo->getOrderSpazas($exclude=0);
         ?>
         <style>
             .shippingDetails{
@@ -52,7 +56,15 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                         <div style="" class="divSpaz">
                             <select class="spazaShopsDisplay">
                                 <option value="">-- Select Spaza --</option>
-                                <option value="1">Local Spaza</option>
+                                <?php
+                                if(!empty($getOtherSpazas)){
+                                    foreach ($getOtherSpazas as $spaza){
+                                        ?>
+                                        <option value="<?php echo $spaza['spaza_id'];?>"><?php echo $spaza['spaza_name'];?></option>
+                                        <?php
+                                    }
+                                }
+                                ?>
                             </select>
                             <div class="errorDisplaysetter" hidden></div>
                         </div>

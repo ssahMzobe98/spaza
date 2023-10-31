@@ -35,12 +35,14 @@ class mmshightech
 
 
     }
-    public function postDataSafely($query, $paramType, $paramArray):int{
+    public function postDataSafely($query, $paramType, $paramArray):array|int{
         $stmt = $this->connection->prepare($query);
         $this->bindQueryParams($stmt, $paramType, $paramArray);
         $stmt->execute();
-        $insertId = $stmt->insert_id;
-        return $insertId;
+        if($stmt->errno==0){
+            return $stmt->insert_id;
+        }
+        return ['error'=>$stmt->error,'Error_list'=>$stmt->error_list];
     }
     public function execute($query, $paramType="", $paramArray=array()){
         $stmt = $this->connection->prepare($query);

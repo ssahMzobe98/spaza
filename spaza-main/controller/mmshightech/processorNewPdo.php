@@ -197,4 +197,94 @@ class processorNewPdo
         }
         return['response'=>'F','data'=>$response];
     }
+
+    public function addNewSpazaDetails(?string $userPhoneNo,
+                                       ?string $userDOB,
+                                       ?string $gender,
+                                       ?string $country,
+                                       ?string $id_passport,
+                                       ?string $lname,
+                                       ?string $fname,
+                                       ?string $spaza,
+                                       ?string $userEmailAddress,
+                                       ?string $id):array
+    {
+        $params=[$spaza, $fname,
+            $lname, $userPhoneNo,
+            $userEmailAddress, $id_passport,
+            null, null,
+            $gender, $country,
+            null, null, null,
+            null, null, null,
+            null, null,
+            0, null, $id,null];
+        $sql = "insert into spaza_details(spaza_name,
+                                            rep_name,
+                                            rep_surname,
+                                            phone_number,
+                                            email_address,
+                                            id_passport_number,
+                                            permit_number,
+                                            visa_number,
+                                            gender,
+                                            country_of_origin,
+                                            origin_address,
+                                            spaza_address,
+                                            passport_id_copy,
+                                            proof_of_origin_address,
+                                            proof_of_residental_adress,
+                                            copy_of_permit,
+                                            proof_of_spaza_address,
+                                            rep_facial_img,
+                                            is_veryfied,
+                                            time_added,
+                                            time_verified,
+                                            added_by,
+                                            verified_by	
+                                        )values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?,?,?)";
+        $response = $this->mmshightech->postDataSafely($sql,'ssssssssssssssssssssss',$params);
+        if(is_numeric($response)){
+            return['response'=>'S','data'=>$response];
+        }
+        return['response'=>'F','data'=>$response];
+    }
+
+    public function spazaIdToBeRemoved(?int $spaza_id_toBeRemoved):array
+    {
+        $sql="update spaza_details set status='D' where id=?";
+        $response = $this->mmshightech->postDataSafely($sql,'s',[$spaza_id_toBeRemoved]);
+        if(is_numeric($response)){
+            return['response'=>'S','data'=>$response];
+        }
+        return['response'=>'F','data'=>$response];
+
+    }
+
+    public function addAddress(?string $countryOfOriginAddress, ?string $map_dir, ?int $spaza_id_to_add_address):array
+    {
+        $column = 'origin_address';
+        if($map_dir=='d'){
+            $column = 'spaza_address';
+        }
+        $sql="update spaza_details set {$column} = ? where id=?";
+        $response = $this->mmshightech->postDataSafely($sql,'ss',[$countryOfOriginAddress,$spaza_id_to_add_address]);
+        if(is_numeric($response)){
+            return['response'=>'S','data'=>$response];
+        }
+        return['response'=>'F','data'=>$response];
+    }
+
+    public function saveProcessedDocuments(?int $spazaVisaDetailsId,?array $newNames,?array $tmp):array
+    {
+        $visa_number=$tmp[0];
+        $permit_number=$tmp[1];
+        $visa_passport_number_doc= $newNames[0];
+        $permit_number_doc= $newNames[1];
+        $sql="update spaza_details set permit_number=?,visa_number=?,copy_of_permit=?,passport_id_copy=? where id =?";
+        $response = $this->mmshightech->postDataSafely($sql,'sssss',[$permit_number,$visa_number,$permit_number_doc,$visa_passport_number_doc,$spazaVisaDetailsId]);
+        if(is_numeric($response)){
+            return['response'=>'S','data'=>$response];
+        }
+        return['response'=>'F','data'=>$response];
+    }
 }
