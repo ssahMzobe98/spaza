@@ -287,4 +287,18 @@ class processorNewPdo
         }
         return['response'=>'F','data'=>$response];
     }
+
+    public function saveProcessedLegalDocuments(?int $spazaLegalDocumentId,?array $newNames):array
+    {
+        $photo=$newNames[0];
+        $spazaAddress=$newNames[1];
+        $residentalAddress=$newNames[2];
+        $countryOfOriginAddress=$newNames[3];
+        $sql="update spaza_details set proof_of_origin_address=?,proof_of_residental_adress=?,proof_of_spaza_address=?,rep_facial_img=? where id =?";
+        $response = $this->mmshightech->postDataSafely($sql,'sssss',[$countryOfOriginAddress,$residentalAddress,$spazaAddress,$photo,$spazaLegalDocumentId]);
+        if(is_numeric($response)){
+            return['response'=>'S','data'=>$response];
+        }
+        return['response'=>'F','data'=>$response];
+    }
 }

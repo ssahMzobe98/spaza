@@ -567,9 +567,9 @@ function saveVisaDetails(spazaVisaDetailsId){
     // const copyOfVisa = $('#copyOfVisa').prop("files")[0];
     // const copyOfPermit = $('#copyOfPermit').prop("files")[0];
     const copyOfVisa = document.getElementById('copyOfVisa').files[0];
-    console.log(copyOfVisa);
+    // console.log(copyOfVisa);
     const copyOfPermit = document.getElementById('copyOfPermit').files[0];
-    console.log(copyOfPermit);
+    // console.log(copyOfPermit);
     $(".errorNotifier").removeAttr('hidden').attr("style","color:green;").html('Processing...');
     if(visa_number===''){
         $(".visa_number").attr('style','border:1px solid red;');
@@ -614,6 +614,51 @@ function saveVisaDetails(spazaVisaDetailsId){
     }
 }
 function saveLegalDocuments(spazaLegalDocumentId){
+    const photo = document.getElementById('photo').files[0];
+    const spazaAddress = document.getElementById('spazaAddress').files[0];
+    const residentalAddress = document.getElementById('residentalAddress').files[0];
+    const countryOfOriginAddress = document.getElementById('countryOfOriginAddress').files[0];
+    if(photo===undefined){
+        $(".photo").attr('style','border:1px solid red;');
+        $(".errorNotifier").removeAttr('hidden').attr("style","color:red;").html('Facial Photo is required!!.');
+    }
+    else if(spazaAddress === undefined){
+        $(".spazaAddress").attr('style','border:1px solid red;');
+        $(".errorNotifier").removeAttr('hidden').attr("style","color:red;").html('proof of spaza address is required!!.')
+    }
+    else if(residentalAddress===undefined){
+        $(".residentalAddress").attr('style','border:1px solid red;');
+        $(".errorNotifier").removeAttr('hidden').attr("style","color:red;").html('Proof of residential address Required!!.');
+    }
+    else if(countryOfOriginAddress===undefined){
+        $(".countryOfOriginAddress").attr('style','border:1px solid red;');
+        $(".errorNotifier").removeAttr('hidden').attr("style","color:red;").html('Country of origin residential address required!!')
+    }
+    else{
+        let form_data=new FormData();
+        form_data.append("photo",photo);
+        form_data.append("spazaAddress",spazaAddress);
+        form_data.append("residentalAddress",residentalAddress);
+        form_data.append("countryOfOriginAddress",countryOfOriginAddress);
+        form_data.append('spazaLegalDocumentId',spazaLegalDocumentId);
+        $.ajax({
+            url:'../controller/mmshightech/processor.php',
+            processData: false,
+            contentType: false,
+            type:"POST",
+            data:form_data,
+            cache:false,
+            enctype: 'multipart/form-data',
+            success:function(e){
+                if(e.length===1){
+                    $(".errorNotifier").removeAttr("hidden").attr("style","color:green;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html('Docs added successfully');
+                }
+                else{
+                    $(".errorNotifier").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(e);
+                }
+            }
+        });
+    }
 
 }
 function emptyCart(){

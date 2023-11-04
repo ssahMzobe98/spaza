@@ -214,6 +214,46 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             }
         }
     }
+    elseif (isset($_POST['spazaLegalDocumentId'],$_FILES)){
+        $spazaLegalDocumentId = $processorNewDao->mmshightech->OMO($_POST['spazaLegalDocumentId']);
+        $port = ['photo',
+            'spazaAddress',
+            'residentalAddress',
+            'countryOfOriginAddress'];
+        $i=0;
+        $break=false;
+        $errorLog=[];
+        $newNames=[];
+        foreach ($_FILES as $file){
+            $ext = explode(".",$file['name']);
+            if(!in_array($ext[1],['PDF','pdf'])){
+                $errorLog[]=$ext[1]." Not Supported. Please upload .pdf";
+                $break = true;
+                break;
+            }
+            $newFileName = $port[$i].'_'.$_POST['spazaLegalDocumentId'].'_'.rand(0,99999).".".$ext[1];
+            $i++;
+            $dir = "../../documents/";
+            if(!move_uploaded_file($file['tmp_name'],$dir.basename($newFileName))){
+                $errorLog[]="Failed to upload file {$file['name']}. Please try again.";
+                $break = true;
+                break;
+            }
+            $newNames[]=$newFileName;
+        }
+        if($break){
+            $e=$errorLog[0];
+        }
+        else{
+            $response = $processorNewDao->saveProcessedLegalDocuments($spazaLegalDocumentId,$newNames);
+            if($response['response']=='S'){
+                $e=1;
+            }
+            else{
+                $e=$response['data'];
+            }
+        }
+    }
     echo json_encode($e);
 }
 else{

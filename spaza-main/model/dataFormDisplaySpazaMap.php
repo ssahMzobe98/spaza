@@ -19,6 +19,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             $map = $_GET['map'];
             $spazaID = $mmshightech->OMO($_GET['spazaID']);
             $get_A_Details=$spazaPdo->get_A_Details($spazaID);
+
             //print_r($get_A_Details);
             ?>
             <style>
@@ -52,7 +53,12 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             }
             else{
                 if($map=='b'){
+                    $block=false;
+                    if(!empty($get_A_Details['visa_number'])&&!empty($get_A_Details['permit_number'])&&!empty($get_A_Details['passport_id_copy'])&&!empty($get_A_Details['copy_of_permit'])){
+                        $block=true;
+                    }
                     echo"<h4 style='text-align: center;'>VISA DETAILS</h4>";
+                    $saveVisaDetails='onclick="saveVisaDetails('.$spazaID.')"';
                     ?>
                         <div class="listAlign">
                             <div class="okahleinput">
@@ -74,20 +80,17 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                     </div>
 
                     <div class="okahleinput">
-                        <span class="btn save" onclick="saveVisaDetails('<?php echo $spazaID;?>');">Save</span>
+                        <span class="btn save" <?php if(!$block){ echo $saveVisaDetails;}?> >Save</span>
                     </div>
                     <div class="errorNotifier" hidden></div>
                     <?php
-
                 }
                 elseif($map=='c'){
                     echo"<h4 style='text-align: center;'>VERIFY ADDRESS</h4>";
                     ?>
-
                     <div style="height: 40vh;">
                         <div class="newPhase" style="width:100%;height: 100%;"></div>
                     </div>
-
                     <script>
                         loadAfterQuery('.newPhase','../model/addressForm.php?map=c&spazaID=<?php echo $spazaID;?>');
                     </script>
@@ -100,8 +103,6 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                         <div style="height: 40vh;">
                             <div class="newPhase" style="width:100%;height: 100%;"></div>
                         </div>
-
-
                     <script>
                         loadAfterQuery('.newPhase','../model/addressForm.php?map=d&spazaID=<?php echo $spazaID;?>');
                     </script>
@@ -135,7 +136,6 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                         <span class="btn save" onclick="saveLegalDocuments('<?php echo $spazaID;?>');">Save</span>
                     </div>
                     <div class="errorNotifier" hidden></div>
-
                     <?php
                 }
                 else{
