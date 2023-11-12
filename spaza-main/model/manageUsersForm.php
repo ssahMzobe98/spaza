@@ -46,14 +46,14 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                 </thead>
                 <tbody>
                 <tr >
-                    <td onclick="getUserInfo('124578963')" style="color:limegreen;">#451232</td>
-                    <td onclick="getUserInfo('124578963')" style="color:limegreen;">Thobani</td>
-                    <td style="color:limegreen;">Mkhize</td>
-                    <td style="color:limegreen;">mkhize.thobani@gmail.com</td>
-                    <td style="color:limegreen;">0365214587</td>
-                    <td style="color:limegreen;">A</td>
-                    <td style="color:limegreen;">1.0.1</td>
-                    <td style="color:limegreen;">ADMIN</td>
+                    <td onclick="getUserInfo('124578963')" style="color:#000000;">#451232</td>
+                    <td onclick="getUserInfo('124578963')" style="color:#000000;">Thobani</td>
+                    <td style="color:#000000;">Mkhize</td>
+                    <td style="color:#000000;">mkhize.thobani@gmail.com</td>
+                    <td style="color:#000000;">0365214587</td>
+                    <td style="color:#000000;">A</td>
+                    <td style="color:#000000;">1.0.1</td>
+                    <td style="color:#000000;">ADMIN</td>
                     <td>
                         <a onclick="addNewSpaza('124578963')" class="badge badge-primary text-white text-center" style="font-size: medium;">SPAZA <i style="font-size: 15px;color: #dddddd;" class="fa fa-plus" aria-hidden="true"></i></a>
 
@@ -62,14 +62,14 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                     </td>
                 </tr>
                 <tr>
-                    <td onclick="getUserInfo('124578963')" style="color:limegreen;">#451232</td>
-                    <td onclick="getUserInfo('124578963')" style="color:limegreen;">Thobani</td>
-                    <td style="color:limegreen;">Mkhize</td>
-                    <td style="color:limegreen;">mkhize.thobani@gmail.com</td>
-                    <td style="color:limegreen;">0365214587</td>
-                    <td style="color:limegreen;">A</td>
-                    <td style="color:limegreen;">1.0.1</td>
-                    <td style="color:limegreen;">ADMIN</td>
+                    <td onclick="getUserInfo('124578963')" style="color:#000000;">#451232</td>
+                    <td onclick="getUserInfo('124578963')" style="color:#000000;">Thobani</td>
+                    <td style="color:#000000;">Mkhize</td>
+                    <td style="color:#000000;">mkhize.thobani@gmail.com</td>
+                    <td style="color:#000000;">0365214587</td>
+                    <td style="color:#000000;">A</td>
+                    <td style="color:#000000;">1.0.1</td>
+                    <td style="color:#000000;">ADMIN</td>
                     <td>
                         <a onclick="addNewSpaza('124578963')" class="badge badge-primary text-white text-center" style="font-size: medium;">SPAZA <i style="font-size: 15px;color: #dddddd;" class="fa fa-plus" aria-hidden="true"></i></a>
                         <a onclick="viewThisSchooInfo('12','1')" class="badge badge-danger text-dark text-center"> <i style="font-size: 20px;color: #dddddd;" class="fa fa-trash-o" aria-hidden="true"></i></a>

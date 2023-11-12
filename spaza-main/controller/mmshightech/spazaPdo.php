@@ -13,7 +13,16 @@ class spazaPdo
     public function getSpazaInformation(?int $spazaId):array
     {
         $sql = "select * from spaza_details where id=?";
-        return $this->mmshightech->getAllDataSafely($sql,'s',[$spazaId])[0]??[];
+        $row=$this->mmshightech->getAllDataSafely($sql,'s',[$spazaId])[0]??[];
+        $sql="select u.card_number,
+                    u.card_expiry_date,
+                    u.card_name,
+                    u.card_type,
+                    u.card_cvv,
+                    u.card_token
+             from users as u where u.id=?";
+        $row['card_details']=$this->mmshightech->getAllDataSafely($sql,'s',[$row['spaza_owner_id']])[0]??[];
+        return $row??[];
     }
     public function getSpazaInformationForOrderProcessing(?int $spazaId):array{
         $sql = "select 
@@ -33,6 +42,7 @@ class spazaPdo
                     sd.email_address as email,
                     sd.phone_number as phone,
                     sd.spaza_address as delivery_address,
+                    
                     sd.gender as gender
                 from spaza_details as sd 
                     left join users as u on u.id=sd.spaza_owner_id

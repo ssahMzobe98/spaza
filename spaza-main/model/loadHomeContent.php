@@ -85,7 +85,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                         $price = number_format($dataRow['price_usd'],2);
                         $title = $dataRow['product_subtitle'];
                         $product = $dataRow['product_description'];
-                        $in_stock=($dataRow['is_instock']=='Y')?'<i class="fa fa-check" style="font-size: medium;color:darkgreen;border-radius:100px;border:2px solid darkgreen;" aria-hidden="true"></i>
+                        $in_stock=($dataRow['is_instock']=='Y')?'<i class="fa fa-check" style="font-size: medium;color:#000000;border-radius:100px;border:2px solid darkgreen;" aria-hidden="true"></i>
                                             ':'<i class="fa fa-times" style="font-size: medium;color:darkred;border-radius:100px;border:2px solid darkred;" aria-hidden="true"></i>
                                             ';
                         $id=$dataRow['id'];
@@ -148,7 +148,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                         $price = number_format($dataRow['price_usd'],2);
                         $title = $dataRow['product_subtitle'];
                         $product = $dataRow['product_description'];
-                        $in_stock=($dataRow['is_instock']=='Y')?'<i class="fa fa-check" style="font-size: medium;color:darkgreen;border-radius:100px;border:2px solid darkgreen;" aria-hidden="true"></i>
+                        $in_stock=($dataRow['is_instock']=='Y')?'<i class="fa fa-check" style="font-size: medium;color:#000000;border-radius:100px;border:2px solid darkgreen;" aria-hidden="true"></i>
                                             ':'<i class="fa fa-times" style="font-size: medium;color:darkred;border-radius:100px;border:2px solid darkred;" aria-hidden="true"></i>
                                             ';
                         $id=$dataRow['id'];

@@ -106,26 +106,25 @@ class processorNewPdo
     }
     public function cartProcessor(?int $productIdToActionOnCart, ?string $actionType, ?int $id):array
     {
-        $currentQuantity = $this->getProductQuantityOnCart($id,$productIdToActionOnCart)??0;
-        if($actionType.strtolower('add')){
-            if($currentQuantity==0){
-                $response = $this->addTOCart($id,$productIdToActionOnCart);
-            }
-            else{
+        $currentQuantity = $this->getProductQuantityOnCart($id, $productIdToActionOnCart) ?? 0;
+
+        if (strtolower($actionType) == 'add') {
+            if ($currentQuantity == 0) {
+                $response = $this->addToCart($id, $productIdToActionOnCart);
+            } else {
                 $currentQuantity++;
-                $response = $this->updateItemOnCart($id,$productIdToActionOnCart,$currentQuantity);
+                $response = $this->updateItemOnCart($id, $productIdToActionOnCart, $currentQuantity);
             }
-        }
-        else{
+        } else {
             $currentQuantity--;
-            if($currentQuantity==0){
-                $response = $this->removeFromCart($id,$productIdToActionOnCart);
-            }
-            else{
-                $response = $this->updateItemOnCart($id,$productIdToActionOnCart,$currentQuantity);
+            if ($currentQuantity == 0) {
+                $response = $this->removeFromCart($id, $productIdToActionOnCart);
+            } else {
+                $response = $this->updateItemOnCart($id, $productIdToActionOnCart, $currentQuantity);
             }
         }
-        return $response??['response'=>'F','data'=>'Failed to run'.__FUNCTION__.' on line '.__LINE__];
+
+        return $response ?? ['response' => 'F', 'data' => 'Failed to run ' . __FUNCTION__ . ' on line ' . __LINE__];
     }
 
     private function addTOCart(?int $id, ?int $productIdToActionOnCart):array
@@ -300,5 +299,32 @@ class processorNewPdo
             return['response'=>'S','data'=>$response];
         }
         return['response'=>'F','data'=>$response];
+    }
+
+    public function removeCardDetailsFromUser(int $clientIdFromRemoveCardDetails):array
+    {
+        $sql="update users set card_number='',card_expiry_date='',card_name='',card_type='',card_cvv='',card_token='' where id=?";
+        $response = $this->mmshightech->postDataSafely($sql,'s',[$clientIdFromRemoveCardDetails]);
+        if(is_numeric($response)){
+            return['response'=>'S','data'=>$response];
+        }
+        return['response'=>'F','data'=>$response];
+    }
+
+    public function updateCardDetailsFromUser(int $clientIdToAddBankDetailsTo=null, string $cname=null, int $ccnum=null, string $expmonth=null, string $expyear=null, int $cvv=null,bool $remove=false):array
+    {
+        if($remove){
+            return $this->removeCardDetailsFromUser($clientIdToAddBankDetailsTo);
+        }
+        else{
+            $expiry=$expmonth.'/'.$expyear;
+            $sql="update users set card_number=?,card_expiry_date=?,card_name=?,card_cvv=? where id=?";
+            $response = $this->mmshightech->postDataSafely($sql,'sssss',[$ccnum,$expiry,$cname,$cvv,$clientIdToAddBankDetailsTo]);
+            if(is_numeric($response)){
+                return['response'=>'S','data'=>$response];
+            }
+            return['response'=>'F','data'=>$response];
+        }
+
     }
 }

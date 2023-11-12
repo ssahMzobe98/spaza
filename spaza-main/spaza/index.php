@@ -508,6 +508,7 @@ function removeSpazaPermanetly(spaza_id_toBeRemoved){
     });
 }
 function removeProductToCart(productIdToActionOnCart,actionType){
+    console.log(actionType);
     $.ajax({
         url:'../controller/mmshightech/processor.php',
         type:'post',
@@ -692,6 +693,63 @@ function removeThisProduct(cartIdToRemove){
         }
     });
 }
+function saveCardDetails(clientIdToAddBankDetailsTo,spazaId){
+    let cname=$("#cname").val();
+    let ccnum=$("#ccnum").val();
+    let expmonth=$("#expmonth").val();
+    let expyear=$("#expyear").val();
+    let cvv=$("#cvv").val();
+    if(cname===''){
+        $("#cname").attr('style','border:1px solid red;');
+        $(".errorDisplay").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(e);
+    }
+    else if(ccnum===''){
+        $("#ccnum").attr('style','border:1px solid red;');
+        $(".errorDisplay").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(e);
+    }
+    else if(expmonth===''){
+        $("#expmonth").attr('style','border:1px solid red;');
+        $(".errorDisplay").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(e);
+    }
+    else if(expyear===''){
+        $("#expyear").attr('style','border:1px solid red;');
+        $(".errorDisplay").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(e);
+    }
+    else if(cvv===''){
+        $("#cvv").attr('style','border:1px solid red;');
+        $(".errorDisplay").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(e);
+    }
+    else{
+        $.ajax({
+            url:'../controller/mmshightech/processor.php',
+            type:'post',
+            data:{clientIdToAddBankDetailsTo:clientIdToAddBankDetailsTo,cname:cname,ccnum:ccnum,expmonth:expmonth,expyear:expyear,cvv:cvv},
+            success:function(e){
+                if(e.length===1){
+                    getSpazaInfo(spazaId);
+                }
+                else{
+                    $(".errorDisplay").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(e);
+                }
+            }
+        });
+    }
+}
+function removeCardDetails(clientIdFromRemoveCardDetails,spazaId){
+    $.ajax({
+        url:'../controller/mmshightech/processor.php',
+        type:'post',
+        data:{clientIdFromRemoveCardDetails:clientIdFromRemoveCardDetails},
+        success:function(e){
+            if(e.length===1){
+                getSpazaInfo(spazaId);
+            }
+            else{
+                $(".errorDisplay").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(e);
+            }
+        }
+    });
+}
 function addProductToCart(productIdToActionOnCart,actionType){
     removeProductToCart(productIdToActionOnCart,actionType);
 }
@@ -710,6 +768,7 @@ function domeSmallModal(filename,request){
   });
   $("#smallModal").modal("show");
 }
+
 function domeSquareModal(filename,request){
   $.ajax({
       url:'../model/'+filename+'.php',

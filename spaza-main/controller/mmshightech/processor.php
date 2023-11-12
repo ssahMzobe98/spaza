@@ -254,6 +254,31 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             }
         }
     }
+    elseif(isset($_POST['clientIdFromRemoveCardDetails'])){
+        $clientIdFromRemoveCardDetails=$processorNewDao->mmshightech->OMO($_POST['clientIdFromRemoveCardDetails']);
+        $response = $processorNewDao->updateCardDetailsFromUser($clientIdFromRemoveCardDetails,'','','','','',true);
+        if($response['response']=='S'){
+            $e=1;
+        }
+        else{
+            $e=$response['data'];
+        }
+    }
+    elseif(isset($_POST['clientIdToAddBankDetailsTo'],$_POST['cname'],$_POST['ccnum'],$_POST['expmonth'],$_POST['expyear'],$_POST['cvv'])){
+        $clientIdToAddBankDetailsTo=$processorNewDao->mmshightech->OMO($_POST['clientIdToAddBankDetailsTo']);
+        $cname=$processorNewDao->mmshightech->OMO($_POST['cname']);
+        $ccnum=$processorNewDao->mmshightech->OMO($_POST['ccnum']);
+        $expmonth=$processorNewDao->mmshightech->OMO($_POST['expmonth']);
+        $expyear=$processorNewDao->mmshightech->OMO($_POST['expyear']);
+        $cvv=$processorNewDao->mmshightech->OMO($_POST['cvv']);
+        $response = $processorNewDao->updateCardDetailsFromUser($clientIdToAddBankDetailsTo,$cname,$ccnum,$expmonth,$expyear,$cvv,false);
+        if($response['response']=='S'){
+            $e=1;
+        }
+        else{
+            $e=$response['data'];
+        }
+    }
     echo json_encode($e);
 }
 else{

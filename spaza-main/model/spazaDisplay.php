@@ -20,6 +20,9 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             }
             else{
                 $getSpazaInfo = $spazaPdo->getSpazaInformationForOrderProcessing(intval($_GET['spazaId']));
+                echo"<pre>";
+                print_r($getSpazaInfo);
+                echo"</pre>";
                 ?>
                     <h2>SPAZA SHIPPING DETAILS</h2>
                     <label>Spaza</label>
