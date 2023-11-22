@@ -1,4 +1,7 @@
 <?php
+
+use controller\mmshightech;
+
 class ClientPdo
 {
     protected mixed $mmshightech;

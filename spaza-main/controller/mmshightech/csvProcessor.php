@@ -1,5 +1,9 @@
 <?php
-class csvProcessor{
+
+namespace controller\mmshightech;
+
+class csvProcessor
+{
     public function processCSV(string $pathFile=null):array{
         $bom = "\xef\xbb\xbf";
         $fp = fopen($pathFile, 'r');
@@ -47,4 +51,3 @@ class csvProcessor{
         return $split;
     }
 }
-?>

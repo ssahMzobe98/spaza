@@ -1,4 +1,7 @@
 <?php
+
+use controller\mmshightech;
+
 class StorePdo
 {
     public function __construct()

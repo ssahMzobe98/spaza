@@ -1,4 +1,7 @@
 <?php
+
+use controller\mmshightech;
+
 if(session_status() !== PHP_SESSION_ACTIVE){
   session_start();
 }
@@ -40,12 +43,12 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
 		    </thead>
 		    <tbody>
 		      <tr>
-		      		<td onclick="getOrderInfo('124578963')" style="color:limegreen;">#451232</td>
-		      		<td style="color:limegreen;">2023-06-12</td>
-			        <td style="color:limegreen;">Adams Spaza</td>
-			        <td style="color:limegreen;">PAID</td>
-			        <td style="color:limegreen;">PICKING</td>
-			        <td style="color:limegreen;">R1 253.00</td>
+		      		<td onclick="getOrderInfo('124578963')" style="color:#000000;">#451232</td>
+		      		<td style="color:#000000;">2023-06-12</td>
+			        <td style="color:#000000;">Adams Spaza</td>
+			        <td style="color:#000000;">PAID</td>
+			        <td style="color:#000000;">PICKING</td>
+			        <td style="color:#000000;">R1 253.00</td>
 			        <td>
 			        	<a onclick="viewThisSchooInfo('12','1')" class="badge badge-danger text-dark text-center">Cancel <i class="fa fa-times" aria-hidden="true"></i></a> 
 			        	
