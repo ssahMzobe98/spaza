@@ -3,7 +3,8 @@
   "description": "This is my PHP project.",
   "require": {
     "php": "^8.1",
-    "ext-openssl": "*"
+    "ext-openssl": "*",
+    "ext-mysqli": "*"
   },
   "license": "MIT",
   "config": {
