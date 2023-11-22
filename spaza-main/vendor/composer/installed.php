@@ -3,7 +3,7 @@
         'name' => 'spaza/spaza-main',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'd0833959c4daa8fc554c24b0c7ce8d3e95aea114',
+        'reference' => 'f59973700cb27c0e5d9d9daab89c0db0ea2c1f5d',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'spaza/spaza-main' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'd0833959c4daa8fc554c24b0c7ce8d3e95aea114',
+            'reference' => 'f59973700cb27c0e5d9d9daab89c0db0ea2c1f5d',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

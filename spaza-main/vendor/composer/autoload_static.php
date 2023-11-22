@@ -6,31 +6,43 @@ namespace Composer\Autoload;
 
 class ComposerStaticInited6d4efd022145da25bf2c609d19df89
 {
-    public static $prefixesPsr0 = array (
-        'C' => 
+    public static $prefixLengthsPsr4 = array (
+        'c' => 
         array (
-            'Controller\\' => 
-            array (
-                0 => __DIR__ . '/../..' . '/controller',
-            ),
+            'controller\\' => 11,
         ),
-        'A' => 
+        'a' => 
         array (
-            'App\\' => 
-            array (
-                0 => __DIR__ . '/../..' . '/app',
-            ),
+            'app\\' => 4,
+        ),
+    );
+
+    public static $prefixDirsPsr4 = array (
+        'controller\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/controller',
+        ),
+        'app\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/app',
         ),
     );
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'controller\\mmshightech' => __DIR__ . '/../..' . '/controller/mmshightech.php',
+        'controller\\mmshightech\\csvProcessor' => __DIR__ . '/../..' . '/controller/mmshightech/csvProcessor.php',
+        'controller\\mmshightech\\processorNewPdo' => __DIR__ . '/../..' . '/controller/mmshightech/processorNewPdo.php',
+        'controller\\mmshightech\\productsPdo' => __DIR__ . '/../..' . '/controller/mmshightech/productsPdo.php',
+        'controller\\mmshightech\\spazaPdo' => __DIR__ . '/../..' . '/controller/mmshightech/spazaPdo.php',
+        'controller\\mmshightech\\usersPdo' => __DIR__ . '/../..' . '/controller/mmshightech/usersPdo.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInited6d4efd022145da25bf2c609d19df89::$prefixesPsr0;
+            $loader->prefixLengthsPsr4 = ComposerStaticInited6d4efd022145da25bf2c609d19df89::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInited6d4efd022145da25bf2c609d19df89::$prefixDirsPsr4;
             $loader->classMap = ComposerStaticInited6d4efd022145da25bf2c609d19df89::$classMap;
 
         }, null, ClassLoader::class);

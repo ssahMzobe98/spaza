@@ -2,7 +2,8 @@
   "name": "spaza/spaza-main",
   "description": "This is my PHP project.",
   "require": {
-    "php": "^8.1"
+    "php": "^8.1",
+    "ext-openssl": "*"
   },
   "license": "MIT",
   "config": {
@@ -14,14 +15,9 @@
   "prefer-stable": true,
   "autoload": {
     "psr-4": {
-      "App\\": "app/",
-      "Controller\\": "controller/"
-    }
-  },
-  "autoload": {
-    "psr-0": {
-      "App\\": "app/",
-      "Controller\\": "controller/"
+      "app\\": "app/",
+      "controller\\": "controller/"
     }
   }
+
 }

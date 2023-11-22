@@ -7,4 +7,10 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'controller\\mmshightech' => $baseDir . '/controller/mmshightech.php',
+    'controller\\mmshightech\\csvProcessor' => $baseDir . '/controller/mmshightech/csvProcessor.php',
+    'controller\\mmshightech\\processorNewPdo' => $baseDir . '/controller/mmshightech/processorNewPdo.php',
+    'controller\\mmshightech\\productsPdo' => $baseDir . '/controller/mmshightech/productsPdo.php',
+    'controller\\mmshightech\\spazaPdo' => $baseDir . '/controller/mmshightech/spazaPdo.php',
+    'controller\\mmshightech\\usersPdo' => $baseDir . '/controller/mmshightech/usersPdo.php',
 );
