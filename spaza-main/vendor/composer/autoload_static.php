@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInited6d4efd022145da25bf2c609d19df89
+class ComposerStaticInit6782591a8daa1528848618dbd69ec81a
 {
     public static $prefixLengthsPsr4 = array (
         'c' => 
@@ -30,7 +30,6 @@ class ComposerStaticInited6d4efd022145da25bf2c609d19df89
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'controller\\mmshightech' => __DIR__ . '/../..' . '/controller/mmshightech.php',
         'controller\\mmshightech\\csvProcessor' => __DIR__ . '/../..' . '/controller/mmshightech/csvProcessor.php',
         'controller\\mmshightech\\processorNewPdo' => __DIR__ . '/../..' . '/controller/mmshightech/processorNewPdo.php',
         'controller\\mmshightech\\productsPdo' => __DIR__ . '/../..' . '/controller/mmshightech/productsPdo.php',
@@ -41,9 +40,9 @@ class ComposerStaticInited6d4efd022145da25bf2c609d19df89
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInited6d4efd022145da25bf2c609d19df89::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInited6d4efd022145da25bf2c609d19df89::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInited6d4efd022145da25bf2c609d19df89::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit6782591a8daa1528848618dbd69ec81a::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit6782591a8daa1528848618dbd69ec81a::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit6782591a8daa1528848618dbd69ec81a::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -1,11 +1,15 @@
 <?php
-
+include("../vendor/autoload.php");
 use controller\mmshightech;
 
 $errorMessage = "UNKNOWN REQUEST!!";
 
-include_once("./mmshightech.php");
+//include_once("./mmshightech.php");
+echo"Heer";
+
 $mmshightech = new mmshightech();
+echo": hrpium";
+die();
 // Function to encrypt data using AES-128-CTR
 function encryptData($data) {
     $ciphering = "AES-128-CTR";
