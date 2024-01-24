@@ -1,8 +1,8 @@
 <?php
 
-use controller\mmshightech;
-use controller\mmshightech\spazaPdo;
-use controller\mmshightech\usersPdo;
+use Controller\mmshightech;
+use Controller\mmshightech\spazaPdo;
+use Controller\mmshightech\usersPdo;
 if(session_status() !== PHP_SESSION_ACTIVE){
     session_start();
 }

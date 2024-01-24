@@ -1,6 +1,6 @@
 <?php
 
-use controller\mmshightech;
+use Controller\mmshightech;
 
 class ClientPdo
 {

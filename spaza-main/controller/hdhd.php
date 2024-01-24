@@ -1,6 +1,6 @@
 <?php
 
-use controller\mmshightech;
+use Controller\mmshightech;
 
 $e="UKNOWN REQUEST!!";
 include_once("./mmshightech.php");

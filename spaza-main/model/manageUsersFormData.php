@@ -1,6 +1,6 @@
 <?php
 
-use controller\mmshightech;
+use Controller\mmshightech;
 
 if(session_status() !== PHP_SESSION_ACTIVE){
     session_start();
@@ -17,7 +17,9 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             <div class="modal-header">
                 <h4 class="modal-title" style="text-align: center;<?php if($cur_user_row['background']==1){echo'color:black;';}else{echo'color:white;';} ?>">User Details</h4>
             </div>
-            <div class="headerTech"></div>
+            <div class="headerTech">
+
+            </div>
         </div>
         <?php
     }

@@ -1,7 +1,7 @@
 <?php
 
-use controller\mmshightech;
-use controller\mmshightech\productsPdo;
+use Controller\mmshightech;
+use Controller\mmshightech\productsPdo;
 if(session_status() !== PHP_SESSION_ACTIVE){
     session_start();
 }

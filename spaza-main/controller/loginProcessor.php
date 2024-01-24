@@ -1,5 +1,11 @@
 <?php
 include("../vendor/autoload.php");
+<<<<<<< HEAD
+use Controller\mmshightech;
+
+$errorMessage = "UNKNOWN REQUEST!!";
+
+=======
 use controller\mmshightech;
 
 $errorMessage = "UNKNOWN REQUEST!!";
@@ -7,6 +13,7 @@ $errorMessage = "UNKNOWN REQUEST!!";
 //include_once("./mmshightech.php");
 echo"Heer";
 
+>>>>>>> 19c9ad2eb86f691e73be2b6ca9ef37df501b7e63
 $mmshightech = new mmshightech();
 echo": hrpium";
 die();
@@ -30,9 +37,7 @@ if (isset($_POST['email'], $_POST['pass'])) {
     if (strlen($pass) < 7) {
         $errorMessage = "Password too short!!";
     } else {
-        echo"Try7";
         $response = $mmshightech->login($email, $pass);
-        echo"Pass";
 
         if ($response['response'] == "S") {
             session_start();
