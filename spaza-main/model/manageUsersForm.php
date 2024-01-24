@@ -1,17 +1,19 @@
 <?php
 
-use controller\mmshightech;
+use Controller\mmshightech;
+use Controller\mmshightech\spazaPdo;
 
 if(session_status() !== PHP_SESSION_ACTIVE){
     session_start();
 }
 if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
-    require_once("../controller/mmshightech.php");
     $mmshightech=new mmshightech();
+    $spaza=new spazaPdo($mmshightech);
     $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
     $userDirect=$cur_user_row['user_type'];
     if($cur_user_row['user_type']==$userDirect){
         date_default_timezone_set('Africa/Johannesburg');
+        $getUsersInfo= $spaza->getSpazaInfoAll();
         ?>
         <div class="orderDataSet">
             <div class="orderDataSetHeader">
@@ -45,38 +47,30 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                 </tr>
                 </thead>
                 <tbody>
-                <tr >
-                    <td onclick="getUserInfo('124578963')" style="color:#000000;">#451232</td>
-                    <td onclick="getUserInfo('124578963')" style="color:#000000;">Thobani</td>
-                    <td style="color:#000000;">Mkhize</td>
-                    <td style="color:#000000;">mkhize.thobani@gmail.com</td>
-                    <td style="color:#000000;">0365214587</td>
-                    <td style="color:#000000;">A</td>
-                    <td style="color:#000000;">1.0.1</td>
-                    <td style="color:#000000;">ADMIN</td>
-                    <td>
-                        <a onclick="addNewSpaza('124578963')" class="badge badge-primary text-white text-center" style="font-size: medium;">SPAZA <i style="font-size: 15px;color: #dddddd;" class="fa fa-plus" aria-hidden="true"></i></a>
+                <?php
+                    foreach($getUsersInfo as $spaza){
+                        ?>
+                        <tr >
+                            <td onclick="getUserInfo(<>PHP eco spaza_i]" style="color:#000000;">#451232</td>
+                            <td onclick="getUserInfo('124578963')" style="color:#000000;">Thobani</td>
+                            <td style="color:#000000;">Mkhize</td>
+                            <td style="color:#000000;">mkhize.thobani@gmail.com</td>
+                            <td style="color:#000000;">0365214587</td>
+                            <td style="color:#000000;">A</td>
+                            <td style="color:#000000;">1.0.1</td>
+                            <td style="color:#000000;">ADMIN</td>
+                            <td>
+                                <a onclick="addNewSpaza()" class="badge badge-primary text-white text-center" style="font-size: medium;">SPAZA <i style="font-size: 15px;color: #dddddd;" class="fa fa-plus" aria-hidden="true"></i></a>
 
-                        <a onclick="viewThisSchooInfo('12','1')" class="badge badge-danger text-white text-center"> <i style="font-size: 20px;color: #dddddd;" class="fa fa-trash-o" aria-hidden="true"></i></a>
+                                <a onclick="viewThisSchooInfo('12','1')" class="badge badge-danger text-white text-center"> <i style="font-size: 20px;color: #dddddd;" class="fa fa-trash-o" aria-hidden="true"></i></a>
 
-                    </td>
-                </tr>
-                <tr>
-                    <td onclick="getUserInfo('124578963')" style="color:#000000;">#451232</td>
-                    <td onclick="getUserInfo('124578963')" style="color:#000000;">Thobani</td>
-                    <td style="color:#000000;">Mkhize</td>
-                    <td style="color:#000000;">mkhize.thobani@gmail.com</td>
-                    <td style="color:#000000;">0365214587</td>
-                    <td style="color:#000000;">A</td>
-                    <td style="color:#000000;">1.0.1</td>
-                    <td style="color:#000000;">ADMIN</td>
-                    <td>
-                        <a onclick="addNewSpaza('124578963')" class="badge badge-primary text-white text-center" style="font-size: medium;">SPAZA <i style="font-size: 15px;color: #dddddd;" class="fa fa-plus" aria-hidden="true"></i></a>
-                        <a onclick="viewThisSchooInfo('12','1')" class="badge badge-danger text-dark text-center"> <i style="font-size: 20px;color: #dddddd;" class="fa fa-trash-o" aria-hidden="true"></i></a>
+                            </td>
+                        </tr>
 
-                    </td>
-                </tr>
 
+                        <?php
+                    }
+                ?>
 
                 </tbody>
                 <tfoot>

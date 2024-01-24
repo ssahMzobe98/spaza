@@ -2,7 +2,7 @@
 
 namespace controller\mmshightech;
 
-use controller\mmshightech;
+use Controller\mmshightech;
 
 class spazaPdo
 {

@@ -1,7 +1,7 @@
 <?php
 
-use controller\mmshightech;
-use controller\mmshightech\spazaPdo;
+use Controller\mmshightech;
+use Controller\mmshightech\spazaPdo;
 
 if(session_status() !== PHP_SESSION_ACTIVE){
     session_start();

@@ -2,7 +2,7 @@
 
 namespace controller\mmshightech;
 include_once ("./csvProcessor.php");
-use controller\mmshightech;
+use Controller\mmshightech;
 //use controller\mmshightech\csvProcessor;
 class processorNewPdo
 {
@@ -217,7 +217,7 @@ class processorNewPdo
             null, null, null,
             null, null,
             0, null, $id,null];
-        $sql = "insert into spaza_details(spaza_name,
+        $sql = "insert into spaza_details(spaza_owner_id,spaza_name,
                                             rep_name,
                                             rep_surname,
                                             phone_number,

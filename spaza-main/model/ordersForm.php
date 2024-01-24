@@ -1,6 +1,6 @@
 <?php
 
-use controller\mmshightech;
+use Controller\mmshightech;
 
 if(session_status() !== PHP_SESSION_ACTIVE){
   session_start();

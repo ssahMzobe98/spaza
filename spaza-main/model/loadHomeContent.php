@@ -1,7 +1,7 @@
 <?php
 
-use controller\mmshightech;
-use controller\mmshightech\productsPdo;
+use Controller\mmshightech;
+use Controller\mmshightech\productsPdo;
 if(session_status() !== PHP_SESSION_ACTIVE){
     session_start();
 }
@@ -40,6 +40,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             }
             .massivBlockDisplay{
                 padding: 10px 10px;
+
             }
             .ProductReader{
                 padding: 2px 2px;

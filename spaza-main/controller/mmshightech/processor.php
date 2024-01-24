@@ -1,8 +1,8 @@
 <?php
 require_once("../mmshightech/processorNewPdo.php");
 require_once("../mmshightech.php");
-use controller\mmshightech;
-use controller\mmshightech\processorNewPdo;
+use Controller\mmshightech;
+use Controller\mmshightech\processorNewPdo;
 
 if(session_status() !== PHP_SESSION_ACTIVE){
   session_start();

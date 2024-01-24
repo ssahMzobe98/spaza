@@ -1,10 +1,9 @@
 <?php
-
-use controller\mmshightech;
+include("../vendor/autoload.php");
+use Controller\mmshightech;
 
 $errorMessage = "UNKNOWN REQUEST!!";
 
-include_once("./mmshightech.php");
 $mmshightech = new mmshightech();
 // Function to encrypt data using AES-128-CTR
 function encryptData($data) {
@@ -26,9 +25,7 @@ if (isset($_POST['email'], $_POST['pass'])) {
     if (strlen($pass) < 7) {
         $errorMessage = "Password too short!!";
     } else {
-        echo"Try7";
         $response = $mmshightech->login($email, $pass);
-        echo"Pass";
 
         if ($response['response'] == "S") {
             session_start();
