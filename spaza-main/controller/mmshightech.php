@@ -266,4 +266,26 @@ class mmshightech
         }
         return $uzwane;
     }
+    public function sendEmail(?string $message,?string $reciever,?string $sender,?string $subject):bool{
+        $from=$sender;
+        $headers  = 'MIME-Version: 1.0' . "\r\n";
+        $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+
+        // Create email headers
+        $headers .= 'From: '.$from."\r\n".
+            'Reply-To: '.$from."\r\n" .
+            'X-Mailer: PHP/' . phpversion();
+
+        // Compose a simple HTML email message
+        $mess = '<html><body> <div style="background-color:#212121;color:#45f3ff;">';
+        $mess .= '<div style="display:flex;">';
+        $mess .='<div style="width:40px;height:40px;margin-left:5%;border-radius:100%;padding:1px 1px;background:#45f3ff;"><img style="width:100%;height:100%;border-radius:100%;" src="https://netchatsa.com/img/aa.jpg"></div>';
+        // $mess .='<div><h3 style="color:#080;font-size:18px;">Netchatsa Mailer Alert</h3></div>';
+        $mess .='</div>';
+        $mess .= '<h3 style="color:#f40;">Dear Customer</h3>'.$message;
+        $mess .="<a href='https://play.google.com/store/apps/details?id=com.mmshightech.netchatsa'><span class='badge badge-primary text-center text-white'>Download APP</span></a>";
+        $mess .= '<div style="padding:10px;border:1px solid #45f3ff;font-style:italic;font-size:12px;color:red;">ispaza mailer is a communication system developed by mms high tech. If this mail does not belong to you please ignore it. Do not reply to this email as it is controlled by RoboTech.<p><small>copyright 2023-to-date all right reserved</small></p></div></div></body></html>';
+        return mail($reciever, $subject, $mess, $headers);
+
+    }
 }
