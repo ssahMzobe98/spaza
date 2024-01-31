@@ -311,7 +311,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         $userPasswordNewUser=$processorNewDao->mmshightech->OMO($_POST['userPasswordNewUser']);
         if(empty($_FILES['passport_id_certifiedcopyNewUser']) || empty($_FILES['countryOfOriginProofOfAddressNewUser']) || empty($_FILES['facialImageNewUser']) || empty($_FILES['sproofOfResidingAddressNewUser'])){
             $e="File missing!!";
-        }   
+        }
         else{
             $newFilesNames= [];
             $terminate = false;
@@ -333,7 +333,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                     }
                     $newFilesNames[]=$newName;
                 }
-                
+
             }
             if($terminate){
                 $e=$error['error'];
@@ -372,7 +372,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     elseif(isset($_POST['client_id2Pay'],$_POST['amountToPayInTotal'])){
         $client_id2Pay=$processorNewDao->mmshightech->OMO($_POST['client_id2Pay']);
         $amountToPayInTotal=$processorNewDao->mmshightech->OMO($_POST['amountToPayInTotal']);
-        $response = $$paymentPdo->paymentGateway($client_id2Pay,$amountToPayInTotal);
+        $response = $paymentPdo->paymentGateway($client_id2Pay,$amountToPayInTotal);
         if($response['response']=='S'){
             $e=1;
         }
