@@ -23,21 +23,21 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         <style>
             .shippingDetails{
                 width:70%;
-                border: 2px solid #000000;
+                border: 2px solid #ddd;
                 color:#000000;
                 border-radius: 10px 10px;
                 padding: 5px 5px;
             }
             .paymentDetails{
                 width:70%;
-                border:2px solid #000000;
+                border:2px solid #ddd;
                 color: #000000;
                 border-radius: 10px 10px;
                 padding: 5px 5px;
             }
             .divSpaz{
                 width:100%;
-                border:2px solid #000000;
+                border:2px solid #ddd;
                 border-radius: 10px;
 
             }
@@ -57,8 +57,10 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                             <select class="spazaShopsDisplay">
                                 <option value="">-- Select Spaza --</option>
                                 <?php
+                                $defaultSpaza= $getOtherSpazas[0]['spaza_id']??null;
                                 if(!empty($getOtherSpazas)){
                                     foreach ($getOtherSpazas as $spaza){
+
                                         ?>
                                         <option value="<?php echo $spaza['spaza_id'];?>"><?php echo $spaza['spaza_name'];?></option>
                                         <?php
@@ -84,7 +86,8 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             </div>
         </div>
         <script>
-            loadAfterQuery('.spazaAddressDetails','../model/spazaDisplay.php?spazaId=<?php echo $cur_user_row['current_spaza'];?>');
+            loadAfterQuery('.spazaAddressDetails','../model/spazaDisplay.php?spazaId=<?php echo $defaultSpaza;?>');
+            loadAfterQuery('.paymentDetailsReal','../model/paymentDisplay.php?spazaId=<?php echo $defaultSpaza;?>');
         </script>
         <?php
     }

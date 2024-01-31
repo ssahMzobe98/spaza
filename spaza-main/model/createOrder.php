@@ -155,6 +155,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         </div>
         <script>
             loadAfterQuery('.flexible-loader','../model/loadHomeContent.php');
+            getCartUpdate();
         </script>
 
 

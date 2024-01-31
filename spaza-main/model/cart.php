@@ -65,8 +65,8 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                         </thead>
                         <tbody>
                         <?php
-                        $deliveryFee = 200.50;
-                        $subTotal = $deliveryFee;
+                        $deliveryFee = 20.50;
+                        $subTotal = 0;
                         $tax = 0.15;
                         foreach ($getProducts as $product){
                             $price = $product['price_usd']*$product['quantity'];
@@ -101,7 +101,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                             ';
                         }
                         $Vat=$subTotal*$tax;
-                        $total = $subTotal+$Vat;
+                        $total = $subTotal+$Vat+$deliveryFee;
                         ?>
                         </tbody>
                         <tfoot>
@@ -152,7 +152,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                     <?php
                     }
                     ?>
-                    <div style="width: 100%;padding: 5px 5px;display: flex;">
+                    <!-- <div style="width: 100%;padding: 5px 5px;display: flex;">
                         <div style="padding: 5px 5px;cursor:pointer;border:2px solid #000000;color: #000000;font-weight: bolder;border-radius: 10px;">
                             <a onclick="loadAfterQuery('.dynamicalLoad1','./model/loadMasomaneSchools.php?start=1&limit=10');">prev</a>
                         </div>
@@ -160,7 +160,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                         <div  style="padding: 5px 5px;cursor:pointer;border:2px solid #000000;color: #000000;font-weight: bolder;border-radius: 10px;">
                             <a onclick="loadAfterQuery('.dynamicalLoad1','./model/loadMasomaneSchools.php?start=10&limit=10');">next</a>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
 

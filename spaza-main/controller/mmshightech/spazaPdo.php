@@ -99,4 +99,9 @@ class spazaPdo
                 from spaza_details where id = ? and status='A'";
         return $this->mmshightech->getAllDataSafely($sql,'s',[$spazaID])[0]??[];
     }
+    public function getSpazaPaymentDetails(?int $spazaId):array{
+        $sql = "select  id as owner_id,card_number,card_cvv,card_token,card_expiry_date,card_type,card_name,name,surname,usermail as email, phone_number as phone ,dob,gender,nationality,sa_residing_address
+                from users where current_spaza = ? and status='A'";
+        return $this->mmshightech->getAllDataSafely($sql,'s',[$spazaId])[0]??[];
+    }
 }

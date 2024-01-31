@@ -19,16 +19,15 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                 echo"<h5>NO SPAZA SELECTED!</h5>";
             }
             else{
+
                 $getSpazaInfo = $spazaPdo->getSpazaInformationForOrderProcessing(intval($_GET['spazaId']));
-                echo"<pre>";
-                print_r($getSpazaInfo);
-                echo"</pre>";
                 ?>
-                    <h2>SPAZA SHIPPING DETAILS</h2>
+                    <h5>SPAZA SHIPPING DETAILS</h5>
                     <label>Spaza</label>
                 <select class="form-control spazaSelected">
                     <option value="<?php echo $_GET['spazaId'];?>"><?php echo $getSpazaInfo['spaza_name'];?></option>
                 </select>
+                <input type="hidden" class="spazaShopsDisplayClientId" value="<?php echo $getSpazaInfo['owner_id'];?>" placeholder="jjjj">
                 <h5>More details...</h5>
                 <div style="width:100%;padding: 5px 5px; border-radius: 10px;border: 1px solid #dddddd;display: flex;">
                     <div style="padding: 5px 5px;">
@@ -46,7 +45,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                         <div><label>Phone Number</label></div>
                     </div>
                     <div style="padding: 5px 5px;">
-                        <div><label><?php echo $getSpazaInfo['delivery_address'];?></label></div>
+                        <div><label><?php echo $getSpazaInfo['delivery_address']??"NOT YET SET.";?></label></div>
                         <div><label><?php echo $getSpazaInfo['rep_name'];?></label></div>
                         <div><label><?php echo $getSpazaInfo['rep_passp_id'];?></label></div>
                         <div><label><?php echo $getSpazaInfo['gender'];?></label></div>

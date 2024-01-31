@@ -1,19 +1,22 @@
 <?php
 
 use Controller\mmshightech;
-use Controller\mmshightech\spazaPdo;
+use Controller\mmshightech\usersPdo;
 
+include("../controller/mmshightech.php");
+include("../controller/mmshightech/usersPdo.php");
 if(session_status() !== PHP_SESSION_ACTIVE){
     session_start();
 }
 if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     $mmshightech=new mmshightech();
-    $spaza=new spazaPdo($mmshightech);
+    $user=new usersPdo($mmshightech);
     $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
     $userDirect=$cur_user_row['user_type'];
     if($cur_user_row['user_type']==$userDirect){
         date_default_timezone_set('Africa/Johannesburg');
-        $getUsersInfo= $spaza->getSpazaInfoAll();
+        $getUsersInfo= $user->getUsersInfoAll();
+        // print_r($getUsersInfo);
         ?>
         <div class="orderDataSet">
             <div class="orderDataSetHeader">
@@ -40,31 +43,39 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                     <th>Email Address</th>
                     <th>Mobile Number</th>
                     <th>Status</th>
-                    <th>Version</th>
-                    <th>User Type</th>
+                    <th>passport|SA ID</th>
+                    <th>nationality</th>
+                    <th>SA Residing Address</th>
                     <th>Manage User</th>
 
                 </tr>
                 </thead>
                 <tbody>
                 <?php
-                    foreach($getUsersInfo as $spaza){
+                    foreach($getUsersInfo as $user){
+                        $dir = '../documents/';
+                        $img = $user['facial_image'];
+                        if(empty($img)){
+                            $img="d.png";
+                        }
                         ?>
                         <tr >
-                            <td onclick="getUserInfo(<>PHP eco spaza_i]" style="color:#000000;">#451232</td>
-                            <td onclick="getUserInfo('124578963')" style="color:#000000;">Thobani</td>
-                            <td style="color:#000000;">Mkhize</td>
-                            <td style="color:#000000;">mkhize.thobani@gmail.com</td>
-                            <td style="color:#000000;">0365214587</td>
-                            <td style="color:#000000;">A</td>
-                            <td style="color:#000000;">1.0.1</td>
-                            <td style="color:#000000;">ADMIN</td>
+                            <td onclick="getUserInfo(<?php echo $user['id']?>)" style="color:#000000; width:1%;"><img style="width:100%;" src="<?php echo $dir.$img;?>"></td>
+                            <td onclick="getUserInfo(<?php echo $user['id']?>)" style="color:#000000;"><?php echo $user['name']?></td>
+                            <td style="color:#000000;"><?php echo $user['surname']?></td>
+                            <td style="color:#000000;"><?php echo $user['usermail']?></td>
+                            <td style="color:#000000;"><?php echo $user['phone_number']?></td>
+                            <td style="color:#000000;"><?php echo $user['status']?></td>
+                            <td style="color:#000000;"><?php echo $user['passport_id_no']?></td>
+                            <td style="color:#000000;"><?php echo $user['nationality']?></td>
+                            <td style="color:#000000;"><?php echo $user['sa_residing_address']?></td>
                             <td>
-                                <a onclick="addNewSpaza()" class="badge badge-primary text-white text-center" style="font-size: medium;">SPAZA <i style="font-size: 15px;color: #dddddd;" class="fa fa-plus" aria-hidden="true"></i></a>
-
-                                <a onclick="viewThisSchooInfo('12','1')" class="badge badge-danger text-white text-center"> <i style="font-size: 20px;color: #dddddd;" class="fa fa-trash-o" aria-hidden="true"></i></a>
+                                <a onclick="addNewSpaza(<?php echo $user['id']?>)" class="badge badge-primary text-white text-center" style="font-size: medium;"><i style="font-size: 12px;color: white;" class="fa fa-plus" aria-hidden="true"></i></a>
+                                <a onclick="addNewSpaza(<?php echo $user['id']?>)" class="badge badge-success text-white text-center" style="font-size: medium;"><i style="font-size: 12px;color: white;" class="fa fa-eye" aria-hidden="true"></i></a>
+                                <a onclick="viewAllMySpazas(<?php echo $user['id']?>)" class="badge badge-danger text-white text-center"> <i style="font-size: 20px;color: white;" class="fa fa-trash-o" aria-hidden="true"></i></a>
 
                             </td>
+
                         </tr>
 
 

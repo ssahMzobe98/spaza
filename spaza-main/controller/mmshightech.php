@@ -35,6 +35,12 @@ class mmshightech
 
 
     }
+    public function isUserExists(string $userEmailAddressNewUser=""):bool{
+        $sql="select usermail from users where usermail=?";
+        $result = $this->getAllDataSafely($sql,'s',[$userEmailAddressNewUser])[0]??[];
+        return isset($result['usermail']);
+
+    }
     public function postDataSafely($query, $paramType, $paramArray):array|int{
         $stmt = $this->connection->prepare($query);
         $this->bindQueryParams($stmt, $paramType, $paramArray);

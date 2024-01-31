@@ -44,4 +44,12 @@ class productsPdo
               where c.user_id=?";
         return $this->mmshightech->getAllDataSafely($sql,'s',[$user_id])??[];
     }
+    public function getCartProductsTotal(?int $user_id):array{
+        $sql = "select 
+                    sum(c.quantity * p.price_usd) as sub_total 
+                from cart as c 
+                    left join products as p on p.id=c.product_id
+                where c.user_id=?";
+        return $this->mmshightech->getAllDataSafely($sql,'s',[$user_id])[0]??[];
+    }
 }

@@ -117,7 +117,7 @@ class processorNewPdo
             }
         } else {
             $currentQuantity--;
-            if ($currentQuantity == 0) {
+            if ($currentQuantity < 1) {
                 $response = $this->removeFromCart($id, $productIdToActionOnCart);
             } else {
                 $response = $this->updateItemOnCart($id, $productIdToActionOnCart, $currentQuantity);
@@ -127,9 +127,9 @@ class processorNewPdo
         return $response ?? ['response' => 'F', 'data' => 'Failed to run ' . __FUNCTION__ . ' on line ' . __LINE__];
     }
 
-    private function addTOCart(?int $id, ?int $productIdToActionOnCart):array
+    private function addToCart(?int $id, ?int $productIdToActionOnCart):array
     {
-        $sql = "insert into cart(product_id,user_id,store_id,quantity,time_added)values(?,?,NULL,1,now())";
+        $sql = "insert into cart(product_id,user_id,store_id,quantity,time_added)values(?,?,1,1,now())";
         $response = $this->mmshightech->postDataSafely($sql,'ss',[$productIdToActionOnCart,$id]);
         if(is_numeric($response)){
             return['response'=>'S','data'=>1];
@@ -197,7 +197,8 @@ class processorNewPdo
         return['response'=>'F','data'=>$response];
     }
 
-    public function addNewSpazaDetails(?string $userPhoneNo,
+    public function addNewSpazaDetails(?int $spazaOwnerId,
+                                       ?string $userPhoneNo,
                                        ?string $userDOB,
                                        ?string $gender,
                                        ?string $country,
@@ -208,7 +209,7 @@ class processorNewPdo
                                        ?string $userEmailAddress,
                                        ?string $id):array
     {
-        $params=[$spaza, $fname,
+        $params=[$spazaOwnerId,$spaza,$fname,
             $lname, $userPhoneNo,
             $userEmailAddress, $id_passport,
             null, null,
@@ -217,7 +218,8 @@ class processorNewPdo
             null, null, null,
             null, null,
             0, null, $id,null];
-        $sql = "insert into spaza_details(spaza_owner_id,spaza_name,
+        $sql = "insert into spaza_details(spaza_owner_id,
+                                            spaza_name,
                                             rep_name,
                                             rep_surname,
                                             phone_number,
@@ -240,8 +242,8 @@ class processorNewPdo
                                             time_verified,
                                             added_by,
                                             verified_by	
-                                        )values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?,?,?)";
-        $response = $this->mmshightech->postDataSafely($sql,'ssssssssssssssssssssss',$params);
+                                        )values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?,?,?)";
+        $response = $this->mmshightech->postDataSafely($sql,'sssssssssssssssssssssss',$params);
         if(is_numeric($response)){
             return['response'=>'S','data'=>$response];
         }
@@ -326,5 +328,49 @@ class processorNewPdo
             return['response'=>'F','data'=>$response];
         }
 
+    }
+    public function createNewUser($fnameNewUser,$lnameNewUser,$phoneNumberNewUser,$nationalityNewUser,$Passport_idNewUser,$genderNewUser,$userDOBNewUser,$permitNumberNewUser,$coutryOfOriginAddressNewUser,$saResidingAddressNewUser,$userEmailAddressNewUser,$userPasswordNewUser,array $newFilesNames=[],int $id=0):array{
+        if($this->mmshightech->isUserExists($userEmailAddressNewUser)){
+            return ['response'=>'F','data'=>'user with this email already exist.'];
+        }
+        $userPasswordNewUser = $this->mmshightech->lockPassWord($userPasswordNewUser);
+        $params = [$userEmailAddressNewUser,$userPasswordNewUser,$fnameNewUser,$lnameNewUser,$phoneNumberNewUser,$userDOBNewUser,$genderNewUser,$nationalityNewUser,$Passport_idNewUser,$permitNumberNewUser,$coutryOfOriginAddressNewUser,$saResidingAddressNewUser,$newFilesNames[0],$newFilesNames[1],$newFilesNames[2],$newFilesNames[3],$id];
+        $sql = "insert into users(usermail,
+                                security,
+                                name,
+                                background,
+                                surname,
+                                user_type,
+                                store_id,
+                                app_version,
+                                phone_number,
+                                dob,
+                                gender,
+                                nationality,
+                                passport_id_no,
+                                permit_no,
+                                country_of_origin_address,
+                                sa_residing_address,
+                                passport_id_copy,
+                                country_of_origin_proof_of_address,
+                                facial_image,
+                                proof_of_residental_address_sa,
+                                time_added,
+                                added_by)values(?,?,?,1,?,'APP',1,'',?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?)";
+        $response = $this->mmshightech->postDataSafely($sql,'sssssssssssssssss',$params);
+        if(is_numeric($response)){
+            return['response'=>'S','data'=>$response];
+        }
+        return['response'=>'F','data'=>$response];
+
+    }
+    public function addaPaymentDetails(?string $NameOnCard,?string $cardNumber,?string $expiryDate,?string $cvv,?string $client_id_toSave2):array{
+        $params=[$NameOnCard,$cardNumber,$expiryDate,$cvv,$client_id_toSave2];
+        $sql = "update users set card_name=?,card_number=?,card_expiry_date=?,card_cvv=? where id=?";
+        $response = $this->mmshightech->postDataSafely($sql,'sssss',$params);
+        if(is_numeric($response)){
+            return['response'=>'S','data'=>$response];
+        }
+        return['response'=>'F','data'=>$response];
     }
 }

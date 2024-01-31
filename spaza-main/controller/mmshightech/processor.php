@@ -1,9 +1,10 @@
 <?php
 require_once("../mmshightech/processorNewPdo.php");
 require_once("../mmshightech.php");
+require_once("../classes/payment_integration/paymentPdo.php");
 use Controller\mmshightech;
 use Controller\mmshightech\processorNewPdo;
-
+use classes\payment_integration\paymentPdo;
 if(session_status() !== PHP_SESSION_ACTIVE){
   session_start();
 }
@@ -11,6 +12,7 @@ if(session_status() !== PHP_SESSION_ACTIVE){
 if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     $e="UKNOWN REQUEST!!";
     $processorNewDao = new processorNewPdo(new mmshightech());
+    $paymentPdo = new paymentPdo(new mmshightech());
     $cur_user_row = $processorNewDao->userInfo($_SESSION['user_agent']);
     if(isset($_POST['dome'])){
         $dome = $processorNewDao->processBackgroundDisplay($_POST['dome'],$cur_user_row['id']);
@@ -109,9 +111,10 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             $e=$response['data'];
         }
     }
-    elseif (isset($_POST['spazaShopsDisplay'])){
+    elseif (isset($_POST['spazaShopsDisplay'],$_POST['spazaShopsDisplayClientId'])){
         $spazaShopsDisplay = $processorNewDao->mmshightech->OMO($_POST['spazaShopsDisplay']);
-        $response = $processorNewDao->spazaUpdater($spazaShopsDisplay,$cur_user_row['id']);
+        $spazaShopsDisplayClientId = $processorNewDao->mmshightech->OMO($_POST['spazaShopsDisplayClientId']);
+        $response = $processorNewDao->spazaUpdater($spazaShopsDisplay,$spazaShopsDisplayClientId);
         if($response['response']=="S"){
             $e=1;
         }
@@ -119,7 +122,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             $e=$response['data'];
         }
     }
-    elseif(isset($_POST['userEmailAddress'],
+    elseif(isset($_POST['spazaOwnerId'],$_POST['userEmailAddress'],
         $_POST['userPhoneNo'],
         $_POST['userDOB'],
         $_POST['gender'],
@@ -136,7 +139,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             $_POST['id_passport'],
             $_POST['lname'],
             $_POST['fname'],
-            $_POST['spaza']
+            $_POST['spaza'],$_POST['spazaOwnerId']
         ]);
         $userPhoneNo=$cleanData['1'];
         $userDOB = $cleanData['2'];
@@ -146,8 +149,9 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         $lname = $cleanData['6'];
         $fname = $cleanData['7'];
         $spaza = $cleanData['8'];
+        $spazaOwnerId = $cleanData['9'];
         $userEmailAddress=$cleanData['0'];
-        $response = $processorNewDao->addNewSpazaDetails($userPhoneNo,$userDOB,$gender,$country,$id_passport,$lname,$fname,$spaza,$userEmailAddress,$cur_user_row['id']);
+        $response = $processorNewDao->addNewSpazaDetails($spazaOwnerId,$userPhoneNo,$userDOB,$gender,$country,$id_passport,$lname,$fname,$spaza,$userEmailAddress,$cur_user_row['id']);
         $e=$response['data'];
     }
     elseif(isset($_POST['spaza_id_toBeRemoved'])){
@@ -187,7 +191,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         $dir = "../../documents/";
         foreach ($_FILES as $file){
             $ext = explode(".",$file['name']);
-            if(!in_array($ext[1],['PDF','pdf'])){
+            if(!in_array($ext[1],['PDF','pdf','png','PNG','JPG','jpg'])){
                 $errorLog[]=$ext[1]." Not Supported. Please upload .pdf";
                 $break = true;
                 break;
@@ -226,7 +230,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         $newNames=[];
         foreach ($_FILES as $file){
             $ext = explode(".",$file['name']);
-            if(!in_array($ext[1],['PDF','pdf'])){
+            if(!in_array($ext[1],['PDF','pdf','png','PNG','JPG','jpg'])){
                 $errorLog[]=$ext[1]." Not Supported. Please upload .pdf";
                 $break = true;
                 break;
@@ -278,6 +282,104 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         else{
             $e=$response['data'];
         }
+    }
+    elseif(
+        isset($_POST['fnameNewUser'],
+        $_POST['lnameNewUser'],
+        $_POST['nationalityNewUser'],
+        $_POST['Passport_idNewUser'],
+        $_POST['genderNewUser'],
+        $_POST['userDOBNewUser'],
+        $_POST['permitNumberNewUser'],
+        $_POST['coutryOfOriginAddressNewUser'],
+        $_POST['saResidingAddressNewUser'],
+        $_POST['userEmailAddressNewUser'],
+        $_POST['userPasswordNewUser'],
+        $_POST['phoneNumberNewUser'])
+    ){
+        $fnameNewUser=$processorNewDao->mmshightech->OMO($_POST['fnameNewUser']);
+        $lnameNewUser=$processorNewDao->mmshightech->OMO($_POST['lnameNewUser']);
+        $nationalityNewUser=$processorNewDao->mmshightech->OMO($_POST['nationalityNewUser']);
+        $Passport_idNewUser=$processorNewDao->mmshightech->OMO($_POST['Passport_idNewUser']);
+        $genderNewUser=$processorNewDao->mmshightech->OMO($_POST['genderNewUser']);
+        $userDOBNewUser=$processorNewDao->mmshightech->OMO($_POST['userDOBNewUser']);
+        $phoneNumberNewUser=$processorNewDao->mmshightech->OMO($_POST['phoneNumberNewUser']);
+        $permitNumberNewUser=$processorNewDao->mmshightech->OMO($_POST['permitNumberNewUser']);
+        $coutryOfOriginAddressNewUser=$processorNewDao->mmshightech->OMO($_POST['coutryOfOriginAddressNewUser']);
+        $saResidingAddressNewUser=$processorNewDao->mmshightech->OMO($_POST['saResidingAddressNewUser']);
+        $userEmailAddressNewUser=$processorNewDao->mmshightech->OMO($_POST['userEmailAddressNewUser']);
+        $userPasswordNewUser=$processorNewDao->mmshightech->OMO($_POST['userPasswordNewUser']);
+        if(empty($_FILES['passport_id_certifiedcopyNewUser']) || empty($_FILES['countryOfOriginProofOfAddressNewUser']) || empty($_FILES['facialImageNewUser']) || empty($_FILES['sproofOfResidingAddressNewUser'])){
+            $e="File missing!!";
+        }   
+        else{
+            $newFilesNames= [];
+            $terminate = false;
+            $error['error']= "!!";
+            foreach($_FILES as $file){
+                $ext = explode(".",$file['name']);
+                if(!in_array($ext[1], ['PDF','pdf','PNG','png','jpg','JPG'])){
+                    $error['error']=$ext[1].' Not supported. only PDF,PNG,JPG supported.';
+                    $terminate = true;
+                    break;
+                }
+                else{
+                    $dir = "../../documents/";
+                    $newName = rand(0,9999)."_".$ext[0].'.'.$ext[1];
+                    if(!move_uploaded_file($file['tmp_name'], basename($dir.$newName))){
+                        $error['error']='Failed to upload due to internet. Please try again.';
+                        $terminate = true;
+                        break;
+                    }
+                    $newFilesNames[]=$newName;
+                }
+                
+            }
+            if($terminate){
+                $e=$error['error'];
+            }
+            else{
+                if(count($newFilesNames)===4){
+                    $response = $processorNewDao->createNewUser($fnameNewUser,$lnameNewUser,$phoneNumberNewUser,$nationalityNewUser,$Passport_idNewUser,$genderNewUser,$userDOBNewUser,$permitNumberNewUser,$coutryOfOriginAddressNewUser,$saResidingAddressNewUser,$userEmailAddressNewUser,$userPasswordNewUser,$newFilesNames,$cur_user_row['id']);
+                    if($response['response']=='S'){
+                        $e=1;
+                    }
+                    else{
+                        $e=$response['data'];
+                    }
+                }
+                else{
+                    $e="Files require un-matching. please check if you added all required files.";
+                }
+            }
+        }
+    }
+    elseif(isset($_POST['NameOnCard'],$_POST['cardNumber'],$_POST['expiryDate'],$_POST['cvv'],$_POST['client_id_toSave2'])){
+        $NameOnCard=$processorNewDao->mmshightech->OMO($_POST['NameOnCard']);
+        $cardNumber=$processorNewDao->mmshightech->OMO($_POST['cardNumber']);
+        $expiryDate=$processorNewDao->mmshightech->OMO($_POST['expiryDate']);
+        $cvv=$processorNewDao->mmshightech->OMO($_POST['cvv']);
+        $client_id_toSave2=$processorNewDao->mmshightech->OMO($_POST['client_id_toSave2']);
+        $response = $processorNewDao->addaPaymentDetails($NameOnCard,$cardNumber,$expiryDate,$cvv,$client_id_toSave2);
+        // print_r($response);
+        if($response['response']=='S'){
+            $e=1;
+        }
+        else{
+            $e=$response['data'];
+        }
+    }
+    elseif(isset($_POST['client_id2Pay'],$_POST['amountToPayInTotal'])){
+        $client_id2Pay=$processorNewDao->mmshightech->OMO($_POST['client_id2Pay']);
+        $amountToPayInTotal=$processorNewDao->mmshightech->OMO($_POST['amountToPayInTotal']);
+        $response = $$paymentPdo->paymentGateway($client_id2Pay,$amountToPayInTotal);
+        if($response['response']=='S'){
+            $e=1;
+        }
+        else{
+            $e=$response['data'];
+        }
+
     }
     echo json_encode($e);
 }

@@ -1,5 +1,6 @@
 <?php
 include "../vendor/autoload.php";
+include "../controller/mmshightech.php";
 use Controller\mmshightech;
 
 if(session_status() !== PHP_SESSION_ACTIVE){
@@ -55,13 +56,609 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
   <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+  <script src="https://www.payfast.co.za/onsite/engine.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+}
+.selected{
+  border-bottom: 2px solid mediumvioletred;
+  border-top: 2px solid rebeccapurple;
+  background: -webkit-linear-gradient(mediumvioletred,purple,rebeccapurple);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.twinsPack{
+  padding: 0 10px; 
+  display: flex;
+  width: 100%;
+}
+h3{
+  font-size: 16px;
+}
+.sidebar{
+  position: fixed;
+  height: 100%;
+  width: 240px;
+  background: #fff;
+  transition: all 0.5s ease;
+  border-right: 2px solid #f1f1f1;
+}
+.sidebar.active{
+  width: 60px;
+}
+.sidebar .logo-details{
+  height: 80px;
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid #ddd;
+}
+.sidebar .logo-details i{
+  font-size: 28px;
+  font-weight: 500;
+  color: #000;
+  min-width: 60px;
+  text-align: center
+}
+.largeModal{
+  width:1350px;
+  margin-left: -85%;
+}
+.sidebar .logo-details .logo_name{
+  color: #000;
+  font-size: 18px;
+  font-weight: 500;
+}
+.sidebar .nav-links{
+  margin-top: 10px;
+  margin-left: -21px;
+}
+.sidebar .nav-links li{
+  position: relative;
+  list-style: none;
+  height: 50px;
+}
+.sidebar .nav-links li a{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: all 0.4s ease;
+  font-size: 15px;
+}
+.sidebar .nav-links li a.active{
+  background: #f1f1f1;
+}
+.sidebar .nav-links li a:hover{
+  background: #f1f1f1;
+}
+.sidebar .nav-links li i{
+  min-width: 60px;
+  text-align: center;
+  font-size: 18px;
+  color: #000;
+}
+
+.sidebar .nav-links li a .links_name{
+  color: #000;
+  font-size: 12px;
+  font-weight: 400;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.sidebar .nav-links .log_out{
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+.home-section{
+  position: relative;
+  background: #fff;
+  min-height: 100vh;
+  width: calc(100% - 240px);
+  left: 240px;
+  transition: all 0.5s ease;
+}
+.sidebar.active ~ .home-section{
+  width: calc(100% - 60px);
+  left: 60px;
+}
+.home-section nav{
+  display: flex;
+  justify-content: space-between;
+  height: 80px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  width: calc(100% - 240px);
+  left: 240px;
+  z-index: 100;
+  padding: 0 20px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  transition: all 0.5s ease;
+}
+.sidebar.active ~ .home-section nav{
+  left: 60px;
+  width: calc(100% - 60px);
+}
+.home-section nav .sidebar-button{
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  font-weight: 500;
+  color:#000;
+}
+nav .sidebar-button i{
+  font-size: 35px;
+  margin-right: 10px;
+}
+.maKhathiSpazaSearch{
+  padding: 0 10px;
+  width: 40%;
+}
+.maKhathiSpazaSearch input{
+  width:100%;
+  padding: 10px 10px;
+  background: none;
+  border:1px solid #ddd;
+  text-align: left;
+  color:#000;
+  border-radius: 10px;
+
+}
+.home-section nav .search-box{
+  position: relative;
+  height: 50px;
+  max-width: 550px;
+  width: 100%;
+  margin: 0 20px;
+  font-size: 18px;
+  color:#000;
+}
+.searchMasomaneSchoolSlide .searchMasomaneSchool{
+  width: 100%;
+  height:100%;
+  outline: none;
+  background: #fff;;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-size: 18px;
+  padding: 0 15px;
+  color:#000;
+}
+.searchMasomaneSchoolSlide{
+  position: absolute;
+  height: 40px;
+  width: 250px;
+  background: #fff;
+  border-radius: 4px;
+  line-height: 40px;
+  text-align: center;
+  color: #000;
+  font-size: 22px;
+  transition: all 0.4 ease;
+  padding: 0 10px;
+}
+.home-section nav .profile-details{
+  display: flex;
+  align-items: center;
+  background: #fff;;
+  border: 2px solid #EFEEF1;
+  border-radius: 6px;
+  height: 50px;
+  min-width: 190px;
+  padding: 0 15px 0 2px;
+}
+nav .profile-details img{
+  height: 40px;
+  width: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+th,td{
+  color: #000;
+}
+
+nav .profile-details .admin_name{
+  font-size: 15px;
+  font-weight: 500;
+  color: #000;
+  margin: 0 10px;
+  white-space: nowrap;
+}
+nav .profile-details i{
+  font-size: 25px;
+  color: #000;
+}
+.home-section .home-content{
+  position: relative;
+  padding-top: 104px;
+
+}
+.home-content .overview-boxes{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 0 20px;
+  margin-bottom: 26px;
+}
+.overview-boxes .box{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(100% / 4 - 15px);
+  background: #fff;
+  padding: 15px 14px;
+  border-radius: 12px;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+  color:#000;
+}
+.overview-boxes .box-topic{
+  font-size: 20px;
+  font-weight: 500;
+  color: #ddd;
+}
+.home-content .box .number{
+  display: inline-block;
+  font-size: 35px;
+  margin-top: -6px;
+  font-weight: 500;
+}
+.home-content .box .indicator{
+  display: flex;
+  align-items: center;
+}
+.home-content .box .indicator i{
+  height: 20px;
+  width: 20px;
+  background: #8FDACB;
+  line-height: 20px;
+  text-align: center;
+  border-radius: 50%;
+  color: #000;
+  font-size: 20px;
+  margin-right: 5px;
+}
+.box .indicator i.down{
+  background: #e87d88;
+}
+.home-content .box .indicator .text{
+  font-size: 12px;
+}
+.home-content .box .cart{
+  display: inline-block;
+  font-size: 32px;
+  height: 50px;
+  width: 50px;
+  background: #cce5ff;
+  line-height: 50px;
+  text-align: center;
+  color: #66b0ff;
+  border-radius: 12px;
+  margin: -15px 0 0 6px;
+}
+.home-content .box .cart.two{
+   color: #2BD47D;
+   background: #C0F2D8;
+ }
+.home-content .box .cart.three{
+   color: #ffc233;
+   background: #ffe8b3;
+ }
+.home-content .box .cart.four{
+   color: #e05260;
+   background: #f7d4d7;
+ }
+.home-content .total-order{
+  font-size: 20px;
+  font-weight: 500;
+}
+.home-content .masomane{
+  display: flex;
+  justify-content: space-between;
+  /* padding: 0 20px; */
+}
+.orderDataSet{
+  width: 100%;
+}
+.orderDataSet .orderDataSetHeader{
+  width: 100%;
+  padding: 10px 10px;
+  display: flex;
+}
+.orderDataSet .orderDataSetHeader .maKhathiOrdersSearch{
+  width:20%;
+}
+.fullBody-tech{
+  width:100%;
+}
+.fullBody-tech .headerTech{
+  padding: 10px 10px;
+  border-bottom: 1px solid #ddd;
+}
+.orderDataSet .orderDataSetHeader .maKhathiOrdersSearch input{
+  width:100%;
+  padding: 4px 10px;
+  border:1px solid #ddd;
+  color:#000;
+  background: none;
+  border-radius: 10px;
+}
+/* left box */
+.home-content .masomane .makhanyile{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  background: #fff;
+  padding: 20px 30px;
+  margin: 0 20px;
+  border-radius: 12px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  color:#000;
+  overflow-y: scroll;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+  height: 82vh;
+  
+}
+.box-shadow{
+  box-shadow: 3px 5px 3px #000;
+}
+.home-content .masomane .makhanyile::-webkit-scrollbar{
+  width:1px;
+}
+.home-content .masomane .makhanyile::-webkit-scrollbar-thumb {
+  background: red; 
+  border-radius: 10px;
+}
+.home-content .masomane .makhanyileDtails{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  color:#000;
+}
+.masomane .box .title{
+  font-size: 24px;
+  font-weight: 500;
+  border-bottom: 1px solid white;
+  /* margin-bottom: 10px; */
+}
+.masomane .makhanyileDtails li.topic{
+  font-size: 20px;
+  font-weight: 500;
+  color: #ddd;
+}
+.masomane .makhanyileDtails li{
+  list-style: none;
+  margin: 8px 0;
+}
+
+.masomane .makhanyileDtails li a{
+  font-size: 18px;
+  color: #000;
+  font-size: 400;
+  text-decoration: none;
+  cursor: pointer;
+}
+.masomane .box .button{
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+.masomane .box .button a{
+  color: white;
+  background: #0A2558;
+  padding: 4px 12px;
+  font-size: 15px;
+  font-weight: 400;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.masomane .box .button a:hover{
+  background:  #0d3073;
+}
+
+/* Right box */
+.home-content .masomane .maKhathi{
+  width: 28%;
+  height: 100%;
+  background: #fff;
+  padding: 20px 30px;
+  margin: 0 20px 0 0;
+  border-radius: 12px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  color:#000;
+  overflow-y: auto;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+  height: 85vh;
+}
+.badge{
+  cursor: pointer;
+}
+.home-content .masomane .maKhathi::-webkit-scrollbar{
+  width:1px;
+}
+.home-content .masomane .maKhathi::-webkit-scrollbar-thumb {
+  background: red; 
+  border-radius: 10px;
+}
+
+
+.masomane .maKhathi li{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px 0;
+}
+.masomane .maKhathi li a img{
+  height: 40px;
+  width: 40px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-right: 10px;
+  background: #333;
+}
+.masomane .maKhathi li a{
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+.masomane .maKhathi li .product,
+.marks{
+  font-size: 17px;
+  font-weight: 400;
+  color: #000;
+  background:#fff;
+}
+.modal-content{
+  background: #fff;
+}
+.inputVals{
+  width: 100%;
+  padding:10px 10px;
+}
+.modal-title{
+  text-align: center;
+  color: white;
+
+}
+.inputVals .addMasomaneNewSchool{
+  border:2px solid white;
+  color:#000;
+  border-radius: 100px;
+  text-align: center;
+  cursor: pointer;
+}
+.inputVals input,select{
+  width:100%;
+  border:1px solid #ddd;
+  border-bottom: 2px solid #ddd;
+  background:none;
+  color:#000;
+  padding: 10px 10px;
+}
+select{
+  background: #fff;
+  color: #000;
+}
+/* Responsive Media Query */
+@media (max-width: 1240px) {
+  .sidebar{
+    width: 60px;
+  }
+  .sidebar.active{
+    width: 220px;
+  }
+  .home-section{
+    width: calc(100% - 60px);
+    left: 60px;
+  }
+  .sidebar.active ~ .home-section{
+    /* width: calc(100% - 220px); */
+    overflow: hidden;
+    left: 220px;
+  }
+  .home-section nav{
+    width: calc(100% - 60px);
+    left: 60px;
+  }
+  .sidebar.active ~ .home-section nav{
+    width: calc(100% - 220px);
+    left: 220px;
+  }
+}
+@media (max-width: 1150px) {
+  .home-content .masomane{
+    flex-direction: column;
+  }
+  .home-content .masomane .box{
+    width: 100%;
+    overflow-x: scroll;
+    margin-bottom: 30px;
+  }
+  .home-content .masomane .maKhathi{
+    margin: 0;
+  }
+}
+@media (max-width: 1000px) {
+  .overview-boxes .box{
+    width: calc(100% / 2 - 15px);
+    margin-bottom: 15px;
+  }
+}
+@media (max-width: 700px) {
+  nav .sidebar-button .dashboard,
+  nav .profile-details .admin_name,
+  nav .profile-details i{
+    display: none;
+  }
+  .home-content .masomane .makhanyile{
+    margin: 0;
+  }
+  .home-section nav .profile-details{
+    height: 50px;
+    min-width: 40px;
+  }
+  .home-content .masomane .makhanyileDtails{
+    width: 560px;
+  }
+}
+@media (max-width: 550px) {
+  .overview-boxes .box{
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  .sidebar.active ~ .home-section nav .profile-details{
+    display: none;
+  }
+}
+  @media (max-width: 400px) {
+  .sidebar{
+    width: 0;
+  }
+  .sidebar.active{
+    width: 60px;
+  }
+  .home-section{
+    width: 100%;
+    left: 0;
+  }
+  .sidebar.active ~ .home-section{
+    left: 60px;
+    width: calc(100% - 60px);
+  }
+  .home-section nav{
+    width: 100%;
+    left: 0;
+  }
+  .sidebar.active ~ .home-section nav{
+    left: 60px;
+    width: calc(100% - 60px);
+  }
+}
+  </style>
   <?php
-  if($cur_user_row['background']==0){
-    echo'<link rel="stylesheet" href="../css/dark.css">';
-  }
-  else{
-    echo'<link rel="stylesheet" href="../css/light.css">';
-  }
+  // if($cur_user_row['background']==0){
+  //   echo'<link rel="stylesheet" href="../css/dark.css">';
+  // }
+  // else{
+  //   echo'<link rel="stylesheet" href="../css/light.css">';
+  // }
   ?>
   
    </head>
@@ -78,12 +675,12 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
       <span class="logo_name">SPAZA</span>
     </div>
       <ul class="nav-links">
-        <li>
+        <!-- <li>
           <a onclick='loadAfterQuery(".makhanyile","../model/ordersForm.php")'>
             <i class='bx bx-pie-chart-alt-2' ></i>
             <span class="links_name">Orders</span>
           </a>
-        </li>
+        </li> -->
         <li>
           <a data-bs-toggle="modal" data-bs-target="#addNewUser">
             <i class='bx bx-grid-alt' ></i>
@@ -122,7 +719,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
           </a>
         </li>
         <li>
-          <a onclick='loadAfterQuery(".makhanyile","../model/activeOrder.php")'>
+          <a onclick='loadAfterQuery(".makhanyile","../model/ordersForm.php")'>
             <i class='bx bx-pie-chart-alt-2' ></i>
             <span class="links_name">Active Orders</span>
           </a>
@@ -187,45 +784,108 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
   </section>
 <div class="modal" id="addNewUser">
   <div class="modal-dialog">
-    <div class="modal-content">
+    <div class="modal-content" style="width:670px;margin-left: -12%;">
       <div class="modal-header">
         <h4 class="modal-title" style="text-align: center;<?php if($cur_user_row['background']==1){echo'color:black;';}else{echo'color:white;';} ?>">Create User</h4>
         <button type="button" style="color: white;" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <div class="inputVals">
-          <input type="text" required class="fname" placeholder="User First Name ...">
+        <div class="twinsPack">
+          <div class="inputVals">
+            <label class="col-form-label">First name</label>
+            <input type="text" required class="form-control fname" placeholder="User First Name ...">
+          </div>
+          <div class="inputVals">
+            <label>Last name</label>
+            <input type="text" required class="form-control lname" placeholder="User Last Name">
+          </div>
         </div>
-        <div class="inputVals">
-          <input type="text" required class="lname" placeholder="User Last Name">
+        <div class="twinsPack">
+          <div class="inputVals">
+            <label>Nationality</label>
+            <select class="form-control nationality" required>
+              <option value="">-- Nationality --</option>
+              <option value="South Africa">South Africa</option>
+            </select>
+          </div>
+          <div class="inputVals">
+            <label>Passport|SA ID No. </label>
+            <input type="text" required class="form-control Passport_id" placeholder="Passport or SA ID Number">
+          </div>
         </div>
-        <div class="inputVals">
-          <select class="gender">
-            <option value="">-- Select Gender--</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </select>
+        <div class="twinsPack">
+          <div class="inputVals">
+            <label>Gender</label>
+            <select class="form-control gender">
+              <option value="">-- Select Gender--</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+          <div class="inputVals">
+            <label>DOB</label>
+            <input type="date" required class="form-control userDOB" placeholder="date of birth">
+          </div>
         </div>
-        <div class="inputVals">
-          <input type="date" required class="userDOB" placeholder="date of birth">
+        <div class="twinsPack">
+          <div class="inputVals">
+            <label>Permit Number</label>
+            <input type="text" required class="form-control permitNumber" placeholder="Permit/visa number">
+          </div>
+          <div class="inputVals">
+            <label>Country of origin address</label>
+            <input type="text" required class="form-control coutryOfOriginAddress" placeholder="Country of origin address">
+          </div>
         </div>
-        <div class="inputVals">
-          <input type="number" required class="userPhoneNo" placeholder="User Phone No.">
+        <div class="twinsPack">
+          <div class="inputVals">
+            <label>SA Residing Address</label>
+            <input type="text" required class="form-control saResidingAddress" placeholder="SA Residing address">
+          </div>
+          <div class="inputVals">
+            <label>Email Address</label>
+            <input type="email" required class="form-control userEmailAddress" placeholder="Email Address">
+            
+          </div>
         </div>
-        <div class="inputVals">
-          <input type="email" required class="userEmailAddress" placeholder="Email Address">
+        <div class="twinsPack">
+          <div class="inputVals">
+            <label>Certified passport|SA ID Copy</label>
+            <input type="file" required name="passport_id_certifiedcopy" accept=".pdf" class="form-control passport_id_certifiedcopy" id="passport_id_certifiedcopy" placeholder="certifies copy Passport or SA ID">
+          </div>
+          <div class="inputVals">
+            <label>Proof of country of origin address</label>
+            <input type="file" name="CountryOfOriginProofOfAddress" accept=".pdf" class="form-control CountryOfOriginProofOfAddress" id="CountryOfOriginProofOfAddress">
+          </div>
         </div>
-        <div class="inputVals">
-          <input type="password" required class="userPassword" placeholder="User Password">
+        <div class="twinsPack">
+          <div class="inputVals">
+            <label>Facial Image</label>
+            <input type="file" required name="facialImage" class="form-control facialImage" accept="image/*" id="facialImage" placeholder="facialImage">
+          </div>
+          <div class="inputVals">
+            <label>Proof of SA Residing address</label>
+            <input type="file" name="SAproofOfResidingAddress" accept=".pdf" class="form-control SAproofOfResidingAddress" id="SAproofOfResidingAddress">
+          </div>
         </div>
-        
+        <div class="twinsPack">
+          <div class="inputVals">
+            <label>Phone Number</label>
+            <input type="number" required class="form-control phoneNumber" placeholder="Phone number">
+          </div>
+          <div class="inputVals">
+            <label>Password</label>
+            <input type="password" required class="form-control userPassword" placeholder="User Password">
+            
+          </div>
+        </div>
         <br>
         <div class="inputVals">
           <center>
-            <span style="padding:10px 10px;border:1px solid #ddd;" class="addMasomaneNewSchool" onclick="maSomaneAddNewSchool()"> Create New User <span style="padding:2px 2px;"><i style="padding:10px 10px;color:green;" class="fa fa-plus"></i></span></span>
+            <span style="padding:10px 10px;border:1px solid #ddd;" class="addMasomaneNewSchool" onclick="createNewUser()"> Create New User <span style="padding:2px 2px;"><i style="padding:10px 10px;color:green;" class="fa fa-plus"></i></span></span>
           </center>
         </div>
-        <div class="errorLogMasoManeAddSchool" hidden></div>
+        <div class="createUserErrorLog" hidden></div>
         
       </div>
       <div class="modal-footer">
@@ -329,10 +989,12 @@ $(document).ready(function(){
 })
 $(document).on("change",".spazaShopsDisplay",function(){
     const spazaShopsDisplay = $('.spazaShopsDisplay').val();
+    const spazaShopsDisplayClientId = $('.spazaShopsDisplayClientId').val();
+    // console.log(spazaShopsDisplayClientId);
     $.ajax({
         url:'../controller/mmshightech/processor.php',
         type:'post',
-        data:{spazaShopsDisplay:spazaShopsDisplay},
+        data:{spazaShopsDisplay:spazaShopsDisplay,spazaShopsDisplayClientId:spazaShopsDisplayClientId},
         success:function(e){
             console.log(e);
             if(e.length===1){
@@ -346,6 +1008,7 @@ $(document).on("change",".spazaShopsDisplay",function(){
 
 
 });
+
 $(document).on("change",".filesUpload",function(){
   const filesUpload = document.getElementById('filesUpload').files;
   // console.log("sending "+filesUpload);
@@ -374,6 +1037,191 @@ $(document).on("change",".filesUpload",function(){
     }
   });
 });
+function saveCardDetailsFromPayment(client_id_toSave2){
+  const NameOnCard = $(".NameOnCard").val();
+  const cardNumber = $(".cardNumber").val();
+  const expiryDate = $(".expiryDate").val();
+  const cvv = $(".cvv").val();
+  $(".errorTagDisplay").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("<img style='width:10%;' src='../img/loader.gif'><h5 style='color:green;'>Processing Request..</h5>");
+  $(".NameOnCard").attr("style","width:100%;padding:10px 10px;border:none;border-radius:10px;border:2px solid #ddd;");
+  $(".cardNumber").attr("style","width:100%;padding:10px 10px;border:none;border-radius:10px;border:2px solid #ddd;");
+  $(".expiryDate").attr("style","width:100%;padding:10px 10px;border:none;border-radius:10px;border:2px solid #ddd;");
+  $(".cvv").attr("style","width:100%;padding:10px 10px;border:none;border-radius:10px;border:2px solid #ddd;");
+
+  if(NameOnCard===""){
+    $(".NameOnCard").attr("style","width:100%;padding:10px 10px;border:1px solid red;border-radius:10px;");
+    $(".errorTagDisplay").removeAttr("hidden").attr("style","padding:10x 10px;color:red;").html("Field required!");
+  }
+  else if(cardNumber===""){
+    $(".cardNumber").attr("style","width:100%;padding:10px 10px;border:1px solid red;border-radius:10px;");
+    $(".errorTagDisplay").removeAttr("hidden").attr("style","padding:10x 10px;color:red;").html("Field required!");
+  }
+  else if(expiryDate===""){
+    $(".expiryDate").attr("style","width:100%;padding:10px 10px;border:1px solid red;border-radius:10px;");
+    $(".errorTagDisplay").removeAttr("hidden").attr("style","padding:10x 10px;color:red;").html("Field required!");
+  }
+  else if(cvv===""){
+    $(".cvv").attr("style","width:100%;padding:10px 10px;border:1px solid red;border-radius:10px;");
+    $(".errorTagDisplay").removeAttr("hidden").attr("style","padding:10x 10px;color:red;").html("Field required!");
+  }
+  else{
+    let data={'NameOnCard':NameOnCard,'cardNumber':cardNumber,'expiryDate':expiryDate,'cvv':cvv,'client_id_toSave2':client_id_toSave2};
+    console.log("sending request");
+    sendAjaxToPHP("",data,'.errorTagDisplay','Card added successfully.')?console.log("true"):console.log(false);
+  }
+
+}
+function sendAjaxToPHP(url,dataArray,processorClass,successResponse){
+  url = (url==="")?"../controller/mmshightech/processor.php":url;
+  console.log(processorClass);
+  $.ajax({
+      url:url,
+      type:'post',
+      data:dataArray,
+      success:function(e){
+          console.log(e);
+          if(e.length>1){
+              $(processorClass).removeAttr("hidden").attr("style","padding:5px 5px;color:red;text-align:center;").html(e);
+              return false;
+          }
+          else{
+              $(processorClass).removeAttr("hidden").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html(successResponse);
+              return true;
+          }
+      }
+    });
+}
+function makePayment(client_id2Pay,amountToPayInTotal){
+  let data={'client_id2Pay':client_id2Pay,'amountToPayInTotal':amountToPayInTotal};
+  sendAjaxToPHP("",data,'.errorTagDisplay','Payment Successfully.')?console.log("true"):console.log(false);
+}
+function createNewUser(){
+    const fname  = $(".fname").val();
+    const lname  = $(".lname").val();
+    const nationality  = $(".nationality").val();
+    const Passport_id  = $(".Passport_id").val();
+    const gender  = $(".gender").val();
+    const userDOB  = $(".userDOB").val();
+    const permitNumber  = $(".permitNumber").val();
+    const coutryOfOriginAddress  = $(".coutryOfOriginAddress").val();
+    const saResidingAddress  = $(".saResidingAddress").val();
+    const userEmailAddress  = $(".userEmailAddress").val();
+    const phoneNumber = $(".phoneNumber").val();
+    // const passport_id_certifiedcopy  = $(".passport_id_certifiedcopy").val();
+    // const CountryOfOriginProofOfAddress  = $(".CountryOfOriginProofOfAddress").val();
+    // const facialImage  = $(".facialImage").val();
+    // const SAproofOfResidingAddress  = $(".SAproofOfResidingAddress").val();
+    const userPassword  = $(".userPassword").val();
+
+    const passport_id_certifiedcopy = document.getElementById('passport_id_certifiedcopy').files;
+    const countryOfOriginProofOfAddress = document.getElementById('CountryOfOriginProofOfAddress').files;
+    const facialImage = document.getElementById('facialImage').files;
+    const saproofOfResidingAddress = document.getElementById('SAproofOfResidingAddress').files;
+
+    $(".createUserErrorLog").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("<img style='width:10%;' src='../img/loader.gif'><h5 style='color:green;'>Processing Request..</h5>");
+    if(fname.length==0){
+      $(".fname").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(phoneNumber.length==0){
+      $(".phoneNumber").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(lname.length==0){
+      $(".lname").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(nationality.length==0){
+      $(".nationality").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(Passport_id.length==0){
+      $(".Passport_id").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(gender.length==0){
+      $(".gender").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(userDOB.length==0){
+      $(".userDOB").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(permitNumber.length==0){
+      $(".permitNumber").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(coutryOfOriginAddress.length==0){
+      $(".coutryOfOriginAddress").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(saResidingAddress.length==0){
+      $(".saResidingAddress").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(userEmailAddress.length==0){
+      $(".userEmailAddress").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(userPassword.length==0){
+      $(".userPassword").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(passport_id_certifiedcopy.length==0){
+      $(".passport_id_certifiedcopy").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(countryOfOriginProofOfAddress.length==0){
+      $(".countryOfOriginProofOfAddress").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(facialImage.length==0){
+      $(".facialImage").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(saproofOfResidingAddress.length==0){
+      $(".saproofOfResidingAddress").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else{
+      var form_data = new FormData();
+      form_data.append("fnameNewUser",fname);
+      form_data.append("lnameNewUser",lname);
+      form_data.append("nationalityNewUser",nationality);
+      form_data.append("Passport_idNewUser",Passport_id);
+      form_data.append("genderNewUser",gender);
+      form_data.append("userDOBNewUser",userDOB);
+      form_data.append("permitNumberNewUser",permitNumber);
+      form_data.append("coutryOfOriginAddressNewUser",coutryOfOriginAddress);
+      form_data.append("saResidingAddressNewUser",saResidingAddress);
+      form_data.append("userEmailAddressNewUser",userEmailAddress);
+      form_data.append("userPasswordNewUser",userPassword);
+      form_data.append("phoneNumberNewUser",phoneNumber);
+      form_data.append("passport_id_certifiedcopyNewUser",passport_id_certifiedcopy[0]);
+      form_data.append("countryOfOriginProofOfAddressNewUser",countryOfOriginProofOfAddress[0]);
+      form_data.append("facialImageNewUser",facialImage[0]);
+      form_data.append("sproofOfResidingAddressNewUser",saproofOfResidingAddress[0]);
+      const url="../controller/mmshightech/processor.php";
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("<img style='width:10%;' src='../img/loader.gif'><h5 style='color:green;'>Processing Request..</h5>");
+      $.ajax({
+        url:url,
+        processData: false,
+        contentType: false,
+        type:"POST",
+        data:form_data,
+        cache:false,
+        enctype: 'multipart/form-data',
+        success:function(e){
+          if(e.length===1){
+            $(".createUserErrorLog").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("New user added.");
+          }
+          else{
+            $(".createUserErrorLog").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:red;border:2px solid red;border-radius:10px;").html(e);
+          }
+        }
+      });
+    }
+}
 function getOrderInfo(orderNo){
   domeSquareModal('ordersFormData',orderNo);
 }
@@ -391,13 +1239,14 @@ let sidebarBtn = document.querySelector(".sidebarBtn");
 sidebarBtn.onclick = function() {
   sidebar.classList.toggle("active");
   if(sidebar.classList.contains("active")){
-  sidebarBtn.classList.replace("bx-menu" ,"bx-menu-alt-right");
-}else
-  sidebarBtn.classList.replace("bx-menu-alt-right", "bx-menu");
+    sidebarBtn.classList.replace("bx-menu" ,"bx-menu-alt-right");
+  }
+  else{
+    sidebarBtn.classList.replace("bx-menu-alt-right", "bx-menu");
+  }
 }
 function changeToggle(domea){
   const dome = (domea==1)?0:1;
-
   $.ajax({
       url:'../controller/mmshightech/processor.php',
       type:'post',
@@ -414,7 +1263,7 @@ function changeToggle(domea){
       }
   });
 }
-function addNewSpazaDetails(){
+function addNewSpazaDetails(spazaOwnerId){
     const userEmailAddress = $("#userEmailAddress").val();
     const userPhoneNo = $("#userPhoneNo").val();
     const userDOB = $("#userDOB").val();
@@ -466,6 +1315,7 @@ function addNewSpazaDetails(){
             url:'../controller/mmshightech/processor.php',
             type:'post',
             data:{
+                spazaOwnerId:spazaOwnerId,
                 userEmailAddress:userEmailAddress,
                 userPhoneNo:userPhoneNo,
                 userDOB:userDOB,
@@ -749,6 +1599,7 @@ function removeCardDetails(clientIdFromRemoveCardDetails,spazaId){
     });
 }
 function addProductToCart(productIdToActionOnCart,actionType){
+  // console.log(productIdToActionOnCart+" - "+actionType);
     removeProductToCart(productIdToActionOnCart,actionType);
 }
 function domeSmallModal(filename,request){

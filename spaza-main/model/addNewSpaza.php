@@ -301,7 +301,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                     <br>
                     <div class="inputVals">
                         <center>
-                            <span style="padding:10px 10px;border:1px solid #ddd;" class="addNewSpazaDetails" onclick="addNewSpazaDetails()"> Create New User <span style="padding:2px 2px;"><i style="padding:10px 10px;color:green;" class="fa fa-plus"></i></span></span>
+                            <span style="padding:10px 10px;border:1px solid #ddd;" class="addNewSpazaDetails" onclick="addNewSpazaDetails(<?php echo $_POST['request'];?>)"> Create New User <span style="padding:2px 2px;"><i style="padding:10px 10px;color:green;" class="fa fa-plus"></i></span></span>
                         </center>
                     </div>
                     <div class="errorLogaddNewSpazaDetails" hidden></div>

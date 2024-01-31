@@ -6,5 +6,9 @@ class usersPdo{
     public function __construct(mmshightech $mmshightech){
         $this->mmshightech=$mmshightech;
     }
+    public function getUsersInfoAll(){
+        $sql="select*from users;";
+        return $this->mmshightech->getAllDataSafely($sql)??[];
+    }
 
 }
