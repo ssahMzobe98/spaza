@@ -670,6 +670,7 @@ class ComposerStaticInit9c491b8531eec05ba41a11d9276a5749
         'Carbon\\Translator' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Translator.php',
         'Carbon\\TranslatorImmutable' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/TranslatorImmutable.php',
         'Carbon\\TranslatorStrongTypeInterface' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/TranslatorStrongTypeInterface.php',
+        'Classes\\payment_integration\\paymentPdo' => __DIR__ . '/../..' . '/classes/payment_integration/paymentPdo.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Controller\\mmshightech' => __DIR__ . '/../..' . '/controller/mmshightech.php',
         'Cron\\AbstractField' => __DIR__ . '/..' . '/dragonmantank/cron-expression/src/Cron/AbstractField.php',

@@ -124,6 +124,7 @@ return array(
     'Carbon\\Translator' => $vendorDir . '/nesbot/carbon/src/Carbon/Translator.php',
     'Carbon\\TranslatorImmutable' => $vendorDir . '/nesbot/carbon/src/Carbon/TranslatorImmutable.php',
     'Carbon\\TranslatorStrongTypeInterface' => $vendorDir . '/nesbot/carbon/src/Carbon/TranslatorStrongTypeInterface.php',
+    'Classes\\payment_integration\\paymentPdo' => $baseDir . '/classes/payment_integration/paymentPdo.php',
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'Controller\\mmshightech' => $baseDir . '/controller/mmshightech.php',
     'Cron\\AbstractField' => $vendorDir . '/dragonmantank/cron-expression/src/Cron/AbstractField.php',
