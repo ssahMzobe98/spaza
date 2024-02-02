@@ -1079,7 +1079,6 @@ function sendAjaxToPHP(url,dataArray,processorClass,successResponse){
       type:'post',
       data:dataArray,
       success:function(e){
-          console.log(e);
           if(e.length>1){
               $(processorClass).removeAttr("hidden").attr("style","padding:5px 5px;color:red;text-align:center;").html(e);
               return false;
@@ -1093,7 +1092,55 @@ function sendAjaxToPHP(url,dataArray,processorClass,successResponse){
 }
 function makePayment(client_id2Pay,amountToPayInTotal){
   let data={'client_id2Pay':client_id2Pay,'amountToPayInTotal':amountToPayInTotal};
-  sendAjaxToPHP("",data,'.errorTagDisplay','Payment Successfully.')?console.log("true"):console.log(false);
+  url = "../controller/mmshightech/processor.php";
+  $(".errorTagDisplay").removeAttr("hidden").html("Processing payment request...")
+  $.ajax({
+      url:url,
+      type:'post',
+      data:data,
+      success:function(e){
+        data = JSON.parse(e);
+        console.log(data);
+          if(data['response']==="S"){
+            
+            window.payfast_do_onsite_payment({"uuid":data['identifier']}, function (result){
+              if(result){
+                const client_id="";
+                const amountToPay="";
+                const pfData ="";
+                const pfParamString ="";
+                $(".errorTagDisplay").removeAttr("hidden").html(result +"Prossesing..");
+                $.ajax({
+                url:'processPayment.php',
+                type:'post',
+                data:{client_id:client_id,amountToPay:amountToPay,pfData:pfData,pfParamString:pfParamString},
+                success:function(e){
+                    if(e.length<=2){
+                        $(".errorTagDisplay").attr("style","width:100%;padding:10px 10px;color:#45f3ff;background:green;border:2px solid white;text-align:center;font-size:14px;");
+                        $(".errorTagDisplay").html("Payment Successful. please wait, redirecting you to your order.");
+                    }
+                    else{
+                        $(".errorTagDisplay").attr("style","width:100%;padding:10px 10px;color:#45f3ff;background:red;border:2px solid white;text-align:center;font-size:14px;");
+                        $(".errorTagDisplay").html(e);
+                    }
+
+                }
+                });
+              }
+              else{
+                  //window.location=("./?_=apply&failedProcessing=true");
+                  $(".errorTagDisplay").attr("style","width:100%;padding:10px 10px;color:#45f3ff;background:red;border:2px solid white;text-align:center;font-size:14px;");
+                $(".errorTagDisplay").html("Payment Cancelled ");
+
+              }
+            }); 
+          }
+          else{
+              $(".processorClass").removeAttr("hidden").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html("Success");
+              return true;
+          }
+      }
+  });
 }
 function createNewUser(){
     const fname  = $(".fname").val();

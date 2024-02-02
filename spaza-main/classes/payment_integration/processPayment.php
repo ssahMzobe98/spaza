@@ -8,9 +8,13 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 if (isset($_SESSION['user_agent'], $_SESSION['var_agent'])) {
     //require_once("../controller/mmshightech.php");
+    echo 1;
     $mmshightech = new mmshightech();
+    echo 2;
     $paymentPdo = new paymentPdo($mmshightech);
+    echo 3;
     $usersPdo = new usersPdo($mmshightech);
+    echo 4;
     $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
     $userDirect = $cur_user_row['user_type'];
     $e="YOU DO NOT HAVE PERMISSIONS TO BE HERE!!..";
@@ -79,11 +83,10 @@ if (isset($_SESSION['user_agent'], $_SESSION['var_agent'])) {
             $emailFrom="np-reply@ispaza.com";
             $Message="<p>{$client_info['name']}</p><h5 style='color:green;'>PAYMENT OF (".$amountToPay.") SUCCESSFUL</h5><p>Your order has been placed successfully with complete payment👏😇.</p><h5 style='color:green;'>BURSARIES & NSFAS</h5><p>By completing your Application TAMA Organizationsa you give TAMA Organizationsa the authority to start and complete applications with NSFAS and other relevant Bursary applications depending on the choice of Career/Course </p><h5 style='color:green;'>TERTIARY INSTITUTIONS</h5><p>With TAMA Organizationsa, You will place one application with all the tertiary institutions you desire. TAMA ORGANIZATIONSA will forward your application to all selected (by applicant choice) Tertiry Institutions.</p>";
             $subject="Payment Success";
-            $mmshightech->sendEmail($emailTo,$emailFrom,$Message,$subject);
-            $emailFrom="np-reply@ispaza.com";
+            //$mmshightech->sendEmail($emailTo,$emailFrom,$Message,$subject);
             $Message="<p>Mr MS Mzobe </p><h5 style='color:green;'>PAYMENT OF (".$amountToPay.") SUCCESSFUL By user ({$emailTo} - {$id})</h5><p></p>";
             $subject="Payment success from customer-{$_POST['client_id']}";
-            $mmshightech->sendEmail("netchatsa@gmail.com",$emailFrom,$Message,$subject);
+            //$mmshightech->sendEmail("netchatsa@gmail.com",$emailFrom,$Message,$subject);
             $e=1;
         }
     }

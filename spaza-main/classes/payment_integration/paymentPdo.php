@@ -41,52 +41,15 @@ class paymentPdo{
         $data['amount_fee'] = 2.48;
         $data['amount_net'] = $amount_net;
         $data['payment_status'] = 'PAID';
+        $data['identifier']=$identifier;
+        $data['pfParamString']=$pfParamString;
+
 
         if($identifier!==null){
-               ?>
-               <script>
-                  window.payfast_do_onsite_payment({"uuid":"<?php echo $identifier;?>"}, function (result){
-                      if(result){
-                        //   window.location=("./?_=apply&Processing=true");
-                        const client_id="<?php echo $clientId;?>";
-                        const amountToPay="<?php echo $amount;?>";
-                        const pfData ='<?php echo json_encode($data);?>';
-                        const pfParamString = '<?php echo $pfParamString;?>';
-                        $(".sudoCodeoSitePayment").removeAttr("hidden");
-                        $.ajax({
-                    		url:'processPayment.php',
-                    		type:'post',
-                    		data:{client_id:client_id,amountToPay:amountToPay,pfData:pfData,pfParamString:pfParamString},
-                    		success:function(e){
-                    		    console.log(e);
-                    		    if(e.length<=2){
-                    		        $(".errorTagDisplay").attr("style","width:100%;padding:10px 10px;color:#45f3ff;background:green;border:2px solid white;text-align:center;font-size:14px;");
-                    		        $(".errorTagDisplay").html("Payment Successful. please wait, redirecting you to your order.");
-                    		    }
-                    		    else{
-                    		        $(".errorTagDisplay").attr("style","width:100%;padding:10px 10px;color:#45f3ff;background:red;border:2px solid white;text-align:center;font-size:14px;");
-                    		        $(".errorTagDisplay").html(e);
-                    		    }
-
-                    		}
-                        });
-                      }
-                      else{
-                          //window.location=("./?_=apply&failedProcessing=true");
-                          $(".errorTagDisplay").attr("style","width:100%;padding:10px 10px;color:#45f3ff;background:red;border:2px solid white;text-align:center;font-size:14px;");
-                    	  $(".errorTagDisplay").html("Payment Cancelled ");
-
-                      }
-                  });
-                </script>
-                   <?php
-       }
-       else{
-           echo'<div style="width:100%;padding:10px 10px;color:#45f3ff;background:red;border:2px solid white;text-align:center;font-size:14px;">
-            Could not Identify your payment request {'.$identifier.'}
-        </div>';
-       }
-       return ['response'=>"S","data"=>"Success"];
+            $data["response"]="S";
+            return $data;
+        }
+        return ['response'=>"F","data"=>"Failed to generate Payment Identifier - {$identifier}"];
 	}
     public function generateSignature($data, $passPhrase = null):string {
         // Create parameter string

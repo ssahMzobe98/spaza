@@ -1,10 +1,11 @@
 <?php
-require_once("../mmshightech/processorNewPdo.php");
-require_once("../mmshightech.php");
-require_once("../classes/payment_integration/paymentPdo.php");
+//require_once("../mmshightech/processorNewPdo.php");
+//require_once("../mmshightech.php");
+//require_once("../classes/payment_integration/paymentPdo.php");
+require_once("../../vendor/autoload.php");
 use Controller\mmshightech;
 use Controller\mmshightech\processorNewPdo;
-use classes\payment_integration\paymentPdo;
+use Classes\payment_integration\paymentPdo;
 if(session_status() !== PHP_SESSION_ACTIVE){
   session_start();
 }
@@ -372,14 +373,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     elseif(isset($_POST['client_id2Pay'],$_POST['amountToPayInTotal'])){
         $client_id2Pay=$processorNewDao->mmshightech->OMO($_POST['client_id2Pay']);
         $amountToPayInTotal=$processorNewDao->mmshightech->OMO($_POST['amountToPayInTotal']);
-        $response = $paymentPdo->paymentGateway($client_id2Pay,$amountToPayInTotal);
-        if($response['response']=='S'){
-            $e=1;
-        }
-        else{
-            $e=$response['data'];
-        }
-
+        $e = $paymentPdo->paymentGateway($client_id2Pay,$amountToPayInTotal);
     }
     echo json_encode($e);
 }
