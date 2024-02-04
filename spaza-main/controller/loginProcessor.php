@@ -1,6 +1,6 @@
 <?php
 include("../vendor/autoload.php");
-include("./mmshightech.php");
+// include("./mmshightech.php");
 use Controller\mmshightech;
 $mmshightech = new mmshightech();
 $errorMessage = "UNKNOWN REQUEST!!";

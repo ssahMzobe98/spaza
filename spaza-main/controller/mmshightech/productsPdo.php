@@ -11,17 +11,21 @@ class productsPdo
         $this->mmshightech=$mmshightech;
     }
     public function getSpecialProducts(?int $min,?int $limit):array{
-        $sql="select p.*, if(c.quantity='',0,c.quantity) as cart_quantity
+        $sql="select p.*, 
+            if(c.quantity='',0,c.quantity) as cart_quantity,
+            if(now() > p.promo_start_date and now() < p.promo_end_date, p.promo_price,'') as promo_price_to_display
             from products as p
                 left join cart as c on c.product_id = p.id
-            where p.product_discountable = 'Y' limit ?,?";
+            where p.product_discountable = 'Y' and p.is_instock='Y' and p.product_status='A' limit ?,?";
         return $this->mmshightech->getAllDataSafely($sql,'ss',[$min, $limit])??[];
     }
     public function getProducts(?int $min,?int $limit):array{
-        $sql="select p.*, if(c.quantity='',0,c.quantity) as cart_quantity
+        $sql="select p.*, 
+                if(c.quantity='',0,c.quantity) as cart_quantity,
+                if(now() > p.promo_start_date and now() < p.promo_end_date, p.promo_price,'') as promo_price_to_display
             from products as p
                 left join cart as c on c.product_id = p.id
-            limit ?,?";
+            where p.is_instock='Y' and p.product_status='A' limit ?,?";
         return $this->mmshightech->getAllDataSafely($sql,'ss',[$min, $limit])??[];
     }
 

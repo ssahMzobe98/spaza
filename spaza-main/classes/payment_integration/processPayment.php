@@ -8,13 +8,9 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 if (isset($_SESSION['user_agent'], $_SESSION['var_agent'])) {
     //require_once("../controller/mmshightech.php");
-    echo 1;
     $mmshightech = new mmshightech();
-    echo 2;
     $paymentPdo = new paymentPdo($mmshightech);
-    echo 3;
     $usersPdo = new usersPdo($mmshightech);
-    echo 4;
     $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
     $userDirect = $cur_user_row['user_type'];
     $e="YOU DO NOT HAVE PERMISSIONS TO BE HERE!!..";

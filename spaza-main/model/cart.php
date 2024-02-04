@@ -1,13 +1,13 @@
 <?php
-
+include("../vendor/autoload.php");
 use Controller\mmshightech;
 use Controller\mmshightech\productsPdo;
 if(session_status() !== PHP_SESSION_ACTIVE){
     session_start();
 }
 if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
-    require_once("../controller/mmshightech.php");
-    require_once("../controller/mmshightech/productsPdo.php");
+    // require_once("../controller/mmshightech.php");
+    // require_once("../controller/mmshightech/productsPdo.php");
     $mmshightech=new mmshightech();
     $products = new productsPdo($mmshightech);
     $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);

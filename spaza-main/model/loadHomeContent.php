@@ -1,5 +1,5 @@
 <?php
-
+include("../vendor/autoload.php");
 use Controller\mmshightech;
 use Controller\mmshightech\productsPdo;
 if(session_status() !== PHP_SESSION_ACTIVE){
@@ -45,14 +45,14 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             .ProductReader{
                 padding: 2px 2px;
                 border-radius: 10px;
-                width:147px;
-                height: 180px;
+                width:110px;
+                height: 150px;
                 box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
 
             }
             .reform-format{
                 width: 100%;
-                height: 60%;
+                height: 50%;
                 display: flex;
             }
             .reform-format .img-tag{
@@ -64,7 +64,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                 height: 100%;
             }
             .reform-format .Counter-tag{
-                width: 20%;
+                width: 17%;
                 padding: 1px 1px;
             }
             .reform-format .Counter-tag .dopeIn-ex{
@@ -82,12 +82,13 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
 
             <div class="displaySpecialsInline">
                 <?php
+                // echo"<pre>";print_r($getSpecialProducts);echo"</pre>";
                     foreach ($getSpecialProducts as $dataRow){
                         $price = number_format($dataRow['price_usd'],2);
                         $title = $dataRow['product_subtitle'];
                         $product = $dataRow['product_description'];
-                        $in_stock=($dataRow['is_instock']=='Y')?'<i class="fa fa-check" style="font-size: medium;color:#000000;border-radius:100px;border:2px solid darkgreen;" aria-hidden="true"></i>
-                                            ':'<i class="fa fa-times" style="font-size: medium;color:darkred;border-radius:100px;border:2px solid darkred;" aria-hidden="true"></i>
+                        $in_stock=($dataRow['is_instock']=='Y')?'<i class="fa fa-check" style="font-size: small;color:lime;" aria-hidden="true"></i>
+                                            ':'<i class="fa fa-close" style="font-size: small;color:darkred;" aria-hidden="true"></i>
                                             ';
                         $id=$dataRow['id'];
                         $cartQuantity = $dataRow['cart_quantity']??0;
@@ -95,29 +96,31 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                         $addProductToCart=($dataRow['is_instock']=='N')?"":"onclick='addProductToCart({$id},{$add})'";
                         $remove ='"remove"';
                         $removeProductToCart="onclick='removeProductToCart({$id},{$remove})'";
-
+                        $promo_price_to_display = empty($dataRow['promo_price_to_display'])?'':number_format($dataRow['promo_price_to_display'],2);
+                        $displayFormater = empty($promo_price_to_display)?"R".$price:"<span style='color:red;text-decoration: line-through;font-size:8px;'>R{$price}</span> <span style='font-size:8px;'>R{$promo_price_to_display}</span>";
+                        $img = $dataRow['product_thumbnail']??'';
                         echo '
                             <div class="massivBlockDisplay">
                                 <div class="ProductReader">
                                     <div class="reform-format">
                                         <div class="img-tag">
-                                            <img src="../img/rice.jpg" >
+                                            <img src="../img/'.$img.'" >
                                         </div>
                                         <div class="Counter-tag">
                                             <div class="dopeIn-ex">
-                                                <div title="Add Item to cart"><i '.$addProductToCart.' class="fa fa-plus-circle" style="cursor:pointer;font-size:30px; " aria-hidden="true"></i></div>
-                                                <div title="Quantity of items in cart" style="font-size:18px;padding: 8px 0; text-align: center;" class="itemQuantity'.$id.'">'.$cartQuantity.'</div>
-                                                <div title="remove Item from cart"><i '.$removeProductToCart.' class="fa fa-minus-circle" style="cursor:pointer;font-size:30px; " aria-hidden="true"></i></div>
+                                                <div title="Add Item to cart"><i '.$addProductToCart.' class="fa fa-plus-circle" style="cursor:pointer;font-size:20px; " aria-hidden="true"></i></div>
+                                                <div title="Quantity of items in cart" style="font-size:11px;padding: 8px 0; text-align: center;" class="itemQuantity'.$id.'">'.$cartQuantity.'</div>
+                                                <div title="remove Item from cart"><i '.$removeProductToCart.' class="fa fa-minus-circle" style="cursor:pointer;font-size:20px; " aria-hidden="true"></i></div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="ProductBottom">
-                                        <div style="font-size: medium;width:100%; display:flex;padding: 2px 2px;">
-                                            <div style="font-size: medium;width:80%;" class="price-product">R'.$price.'</div>
+                                        <div style="font-size: smaller;width:100%; display:flex;padding: 2px 2px;">
+                                            <div style="font-size: 9px;width:80%;" class="price-product">'.$displayFormater.'</div>
                                             <div style="width:20%;" title="promo item">
-                                                <i class="fa fa-star" style="font-size: medium;color:blue;border-radius:100px;border:2px solid blue;" aria-hidden="true"></i>
+                                                <i class="fa fa-star" style="font-size: small;color:blue;" aria-hidden="true"></i>
                                             </div>
-                                            <div style="width:20%;" title="in stock">
+                                            <div style="width:20%;display:flex;" title="in stock">
                                                 '.$in_stock.'
                                             </div>
                                         </div>
@@ -149,8 +152,8 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                         $price = number_format($dataRow['price_usd'],2);
                         $title = $dataRow['product_subtitle'];
                         $product = $dataRow['product_description'];
-                        $in_stock=($dataRow['is_instock']=='Y')?'<i class="fa fa-check" style="font-size: medium;color:#000000;border-radius:100px;border:2px solid darkgreen;" aria-hidden="true"></i>
-                                            ':'<i class="fa fa-times" style="font-size: medium;color:darkred;border-radius:100px;border:2px solid darkred;" aria-hidden="true"></i>
+                        $in_stock=($dataRow['is_instock']=='Y')?'<i class="fa fa-check" style="font-size: small;color:lime;" aria-hidden="true"></i>
+                                            ':'<i class="fa fa-close" style="font-size: small;color:darkred;" aria-hidden="true"></i>
                                             ';
                         $id=$dataRow['id'];
                         $add ='"add"';
@@ -159,26 +162,29 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                         $cartQuantity = $dataRow['cart_quantity']??0;
                         $removeProductToCart="onclick='removeProductToCart({$id},{$remove})'";
                         $promo = ($dataRow['product_discountable']=='Y')?'<div style="width:20%;" title="promo item">
-                                                <i class="fa fa-star" style="font-size: medium;color:blue;border-radius:100px;border:2px solid blue;" aria-hidden="true"></i>
+                                                <i class="fa fa-star" style="font-size: small;color:blue;" aria-hidden="true"></i>
                                             </div>':'';
+                        $img = $dataRow['product_thumbnail']??'';
+                        $promo_price_to_display = empty($dataRow['promo_price_to_display'])?'':number_format($dataRow['promo_price_to_display'],2);
+                        $displayFormater = empty($promo_price_to_display)?"R".$price:"<span style='color:red;text-decoration: line-through;font-size:8px;'>R{$price}</span> <span style='font-size:8px;'>R{$promo_price_to_display}</span>";
                         echo '
                             <div class="massivBlockDisplay">
                                 <div class="ProductReader">
                                     <div class="reform-format">
                                         <div class="img-tag">
-                                            <img src="../img/rice.jpg" >
+                                            <img src="../img/'.$img.'" >
                                         </div>
                                         <div class="Counter-tag">
                                             <div class="dopeIn-ex">
-                                                <div title="Add Item to cart"><i '.$addProductToCart.' class="fa fa-plus-circle" style="cursor:pointer;font-size:30px; " aria-hidden="true"></i></div>
-                                                <div title="Quantity of items in cart" style="font-size:18px;padding: 8px 0; text-align: center;" class="itemQuantity'.$id.'">'.$cartQuantity.'</div>
-                                                <div title="remove Item from cart"><i '.$removeProductToCart.' class="fa fa-minus-circle" style="cursor:pointer;font-size:30px; " aria-hidden="true"></i></div>
+                                                <div title="Add Item to cart"><i '.$addProductToCart.' class="fa fa-plus-circle" style="cursor:pointer;font-size:20px; " aria-hidden="true"></i></div>
+                                                <div title="Quantity of items in cart" style="font-size:11px;padding: 8px 0; text-align: center;" class="itemQuantity'.$id.'">'.$cartQuantity.'</div>
+                                                <div title="remove Item from cart"><i '.$removeProductToCart.' class="fa fa-minus-circle" style="cursor:pointer;font-size:20px; " aria-hidden="true"></i></div>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="ProductBottom">
                                         <div style="font-size: smaller;width:100%; display:flex;padding: 2px 0;">
-                                            <div style="font-size: smaller;width:80%;" class="price-product">R'.$price.'</div>
+                                            <div style="font-size: smaller;width:80%;" class="price-product">'.$displayFormater.'</div>
                                             '.$promo.'
                                             <div style="width:20%;" title="in stock">
                                                 '.$in_stock.'

@@ -1,14 +1,13 @@
 <?php
-
+include("../vendor/autoload.php");
 use Controller\mmshightech;
 use Controller\mmshightech\spazaPdo;
-
 if(session_status() !== PHP_SESSION_ACTIVE){
     session_start();
 }
 if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
-    require_once("../controller/mmshightech.php");
-    require_once("../controller/mmshightech/spazaPdo.php");
+    // require_once("../controller/mmshightech.php");
+    // require_once("../controller/mmshightech/spazaPdo.php");
     $mmshightech=new mmshightech();
     $spazaPdo=new spazaPdo($mmshightech);
     $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);

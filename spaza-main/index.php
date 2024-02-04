@@ -57,7 +57,7 @@
         align-items: center;
         min-height: 100vh;
         width: 100%;
-        background: url('img/img.jpg')no-repeat;
+        background: url('img/ddd.jpg')no-repeat;
         background-position: center;
         background-size: cover;
     }

@@ -1093,14 +1093,14 @@ function sendAjaxToPHP(url,dataArray,processorClass,successResponse){
 function makePayment(client_id2Pay,amountToPayInTotal){
   let data={'client_id2Pay':client_id2Pay,'amountToPayInTotal':amountToPayInTotal};
   url = "../controller/mmshightech/processor.php";
-  $(".errorTagDisplay").removeAttr("hidden").html("Processing payment request...")
+  $(".errorTagDisplay").removeAttr("hidden").html("Processing payment request...");
   $.ajax({
       url:url,
       type:'post',
       data:data,
       success:function(e){
         data = JSON.parse(e);
-        console.log(data);
+        $(".errorTagDisplay").removeAttr("hidden").html("Contacting the bank..");
           if(data['response']==="S"){
             
             window.payfast_do_onsite_payment({"uuid":data['identifier']}, function (result){
@@ -1136,7 +1136,7 @@ function makePayment(client_id2Pay,amountToPayInTotal){
             }); 
           }
           else{
-              $(".processorClass").removeAttr("hidden").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html("Success");
+              $(".processorClass").removeAttr("hidden").attr("style","padding:5px 5px;color:red;text-align:center;border:1px solid red;").html(data['data']);
               return true;
           }
       }

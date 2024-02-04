@@ -81,7 +81,7 @@ class paymentPdo{
         // Use cURL (if available)
         if( in_array( 'curl', get_loaded_extensions(), true ) ) {
             // Variable initialization
-            $url = 'https://www.payfast.co.za/onsite/process';
+            $url = 'https://sandbox.payfast.co.za/onsite/process';//'https://www.payfast.co.za/onsite/process';
 
             // Create default cURL object
             $ch = curl_init();

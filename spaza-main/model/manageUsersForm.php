@@ -1,10 +1,10 @@
 <?php
-
+include("../vendor/autoload.php");
 use Controller\mmshightech;
 use Controller\mmshightech\usersPdo;
-
-include("../controller/mmshightech.php");
-include("../controller/mmshightech/usersPdo.php");
+// include("../controller/mmshightech.php");
+// // 
+// include("../controller/mmshightech/usersPdo.php");
 if(session_status() !== PHP_SESSION_ACTIVE){
     session_start();
 }

@@ -1,16 +1,18 @@
 
 <?php
-
+include("../vendor/autoload.php");
 use Controller\mmshightech;
-
+use Controller\mmshightech\ClientPdo;
+use Controller\mmshightech\StorePdo;
+use Controller\mmshightech\MenuCategoryPdo;
 if(session_status() !== PHP_SESSION_ACTIVE){
     session_start();
 }
 if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
-    require_once("../controller/mmshightech.php");
-    include_once ("../controller/mmshightech/ClientPdo.php");
-    include_once ("../controller/mmshightech/StorePdo.php");
-    include_once ("../controller/mmshightech/MenuCategoryPdo.php");
+    // require_once("../controller/mmshightech.php");
+    // include_once ("../controller/mmshightech/ClientPdo.php");
+    // include_once ("../controller/mmshightech/StorePdo.php");
+    // include_once ("../controller/mmshightech/MenuCategoryPdo.php");
     $mmshightech=new mmshightech();
     $storePdo = new StorePdo();
     $clientPdo = new ClientPdo();
