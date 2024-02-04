@@ -1,17 +1,19 @@
 <?php
 include("../vendor/autoload.php");
 use Controller\mmshightech;
-
+use Controller\mmshightech\productsPdo;
 if(session_status() !== PHP_SESSION_ACTIVE){
     session_start();
 }
 if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     // require_once("../controller/mmshightech.php");
     $mmshightech=new mmshightech();
+    $productsDao = new productsPdo($mmshightech);
     $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
     $userDirect=$cur_user_row['user_type'];
     date_default_timezone_set('Africa/Johannesburg');
     if($cur_user_row['user_type']==$userDirect){
+        $productCategories = $productsDao->getAllAvailableCategoties();
         $specials = [];
         $allProducts = [];
         ?>
@@ -48,6 +50,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             }
             .categoryList .listCategory{
                 padding: 10px 10px;
+                margin-top: -1.8%;
 
             }
             .categoryList .listCategory span{
@@ -74,81 +77,21 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                 </div>
                 <div onclick="loadAfterQuery('.flexible-loader','../model/cart.php')" class="cart-icon" style="display: flex;color: red;"><i  style="font-size: large;cursor:pointer;" class="fa fa-cart-plus"></i><sup><span style="font-size: smaller;" class="cartDisplay">0</span></sup></div>
                 <div class="categoryList">
-                    <div class="listCategory">
-                        <div class="boxInCategory">
-                            <span class="badge badge-dark text-center text-white" onclick="loadAfterQuery('.flexible-loader','../model/loadHomeContent.php')"><i style="font-size: large;cursor:pointer;" class="fa fa-home"></i></span>
-                        </div>
+                    <div class="boxInCategory">
+                        <span class="badge badge-dark text-center text-white" onclick="loadAfterQuery('.flexible-loader','../model/loadHomeContent.php')"><i style="font-size: large;cursor:pointer;" class="fa fa-home"></i></span>
                     </div>
-                    <div class="listCategory">
-                        <div class="boxInCategory">
-                            <span class="badge badge-primary text-center text-white" onclick="loadAfterQuery('.flexible-loader','../model/productDynamicLoader.php?map=1')">Specials</span>
+                    <?php
+                    foreach($productCategories as $cartegory){
+                        $cartegoryMenu = implode("_", explode(" ",$cartegory['menu']));
+                        ?>
+                        <div class="listCategory">
+                            <div class="boxInCategory">
+                                <span class="badge <?php echo $cartegory['bg_color'];?> text-center text-white" onclick="loadAfterQuery('.flexible-loader','../model/productDynamicLoader.php?map=<?php echo $cartegory['id'];?>&identifier=<?php echo $cartegoryMenu;?>')"><?php echo $cartegory['menu'];?></span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="listCategory">
-                        <div class="boxInCategory">
-                            <span class="badge badge-warning text-center text-white" onclick="loadAfterQuery('.flexible-loader','../model/productDynamicLoader.php?map=1')">Meat, Poultry, Chicken</span>
-                        </div>
-                    </div>
-                    <div class="listCategory">
-                        <div class="boxInCategory">
-                            <span class="badge badge-success text-center text-white " onclick="loadAfterQuery('.flexible-loader','../model/productDynamicLoader.php?map=1')">Fruits & Vegetables</span>
-                        </div>
-                    </div>
-                    <div class="listCategory">
-                        <div class="boxInCategory">
-                            <span class="badge badge-primary text-center text-white" onclick="loadAfterQuery('.flexible-loader','../model/productDynamicLoader.php?map=1')">Drinks</span>
-                        </div>
-                    </div>
-                    <div class="listCategory">
-                        <div class="boxInCategory">
-                            <span class="badge badge-danger text-center text-white">Alcohol</span>
-                        </div>
-                    </div>
-                    <div class="listCategory">
-                        <div class="boxInCategory">
-                            <span class="badge badge-success text-center text-white">Bakery</span>
-                        </div>
-                    </div>
-                    <div class="listCategory">
-                        <div class="boxInCategory">
-                            <span class="badge badge-primary text-center text-white">Milk, Dairy and Eggs</span>
-                        </div>
-                    </div>
-                    <div class="listCategory">
-                        <div class="boxInCategory">
-                            <span class="badge badge-danger text-center text-white">Personal Care & Health</span>
-                        </div>
-                    </div>
-                    <div class="listCategory">
-                        <div class="boxInCategory">
-                            <span class="badge badge-success text-center text-white">Chocolate, Sweet & chips</span>
-                        </div>
-                    </div>
-                    <div class="listCategory">
-                        <div class="boxInCategory">
-                            <span class="badge badge-primary text-center text-white">Food Cupboard</span>
-                        </div>
-                    </div>
-                    <div class="listCategory">
-                        <div class="boxInCategory">
-                            <span class="badge badge-danger text-center text-white">Baby</span>
-                        </div>
-                    </div>
-                    <div class="listCategory">
-                        <div class="boxInCategory">
-                            <span class="badge badge-danger text-center text-white">Tools & Appliances</span>
-                        </div>
-                    </div>
-                    <div class="listCategory">
-                        <div class="boxInCategory">
-                            <span class="badge badge-danger text-center text-white">Office & School Stationary</span>
-                        </div>
-                    </div>
-                    <div class="listCategory">
-                        <div class="boxInCategory">
-                            <span class="badge badge-danger text-center text-white"></span>
-                        </div>
-                    </div>
+                        <?php
+                    }
+                    ?>
                 </div>
             </div>
             <div class="flexible-loader"></div>

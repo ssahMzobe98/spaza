@@ -706,7 +706,7 @@ select{
           </a>
         </li>
         <li>
-          <a onclick='loadAfterQuery(".makhanyile","../model/matricUpgrade.php")'>
+          <a onclick='loadAfterQuery(".makhanyile","../model/manageSpazaProducts.php")'>
             <i class='bx bx-pie-chart-alt-2' ></i>
             <span class="links_name">Manage Products</span>
           </a>

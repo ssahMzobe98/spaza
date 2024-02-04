@@ -251,7 +251,7 @@
                 type:'post',
                 data:{email:email,pass:pass},
                 success:function(e){
-                    console.log(e);
+                    // console.log(e);
                     if(e.length>1){
                         $(".processing").attr("style","padding:5px 5px;color:red;text-align:center;").html(e);
                     }
@@ -368,7 +368,7 @@
     //                 psw:psw,
     //                 re_psw:re_psw},
     //             success:function(e){
-    //                 console.log(e);
+                    console.log(e);
     //                 if(e.length>1){
     //                     $(".processing").attr("style","padding:5px 5px;color:red;width:100%;").html(e);
     //                 }
@@ -397,7 +397,7 @@
     //             type:'post',
     //             data:{emailForgot:emailForgot},
     //             success:function(e){
-    //                 console.log(e);
+                    console.log(e);
     //                 if(e.length>1){
     //                     $(".emailForgotError").removeAttr("hidden").attr("style","width:100%;padding:10px 10px;background:red;color:white;border-radius:50px;text-align:center;").html(e);
     //                 }
@@ -423,7 +423,7 @@
     //             type:'post',
     //             data:{verifyCode:verifyCode},
     //             success:function(e){
-    //                 console.log(e);
+                    console.log(e);
     //                 if(e.length>1){
     //                     $(".VerificationForgotError").removeAttr("hidden").attr("style","width:100%;padding:10px 10px;background:red;color:white;border-radius:50px;text-align:center;").html(e);
     //                 }
@@ -459,7 +459,7 @@
     //                 re_pass_reset:re_pass_reset,
     //                 coupon:coupon},
     //             success:function(e){
-    //                 console.log(e);
+                    console.log(e);
     //                 if(e.length>1){
     //                     $(".emailForgotError").removeAttr("hidden").attr("style","width:100%;padding:10px 10px;background:red;color:white;border-radius:50px;text-align:center;").html(e);
     //                 }
