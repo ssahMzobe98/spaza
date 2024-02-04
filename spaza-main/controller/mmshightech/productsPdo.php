@@ -19,6 +19,10 @@ class productsPdo
             where p.product_discountable = 'Y' and p.is_instock='Y' and p.product_status='A' limit ?,?";
         return $this->mmshightech->getAllDataSafely($sql,'ss',[$min, $limit])??[];
     }
+    public function getProductTotalCount():int{
+        $sql = "select id from products where product_status='A'";
+        return $this->mmshightech->numRows($sql,'',[])??0;
+    }
     public function getProducts(?int $min,?int $limit):array{
         $sql="select p.*, 
                 if(c.quantity='',0,c.quantity) as cart_quantity,
@@ -26,6 +30,15 @@ class productsPdo
             from products as p
                 left join cart as c on c.product_id = p.id
             where p.is_instock='Y' and p.product_status='A' limit ?,?";
+        return $this->mmshightech->getAllDataSafely($sql,'ss',[$min, $limit])??[];
+    }
+    public function getProductsForDisplay(?int $min,?int $limit):array{
+        $sql="select p.*, 
+                if(c.quantity='',0,c.quantity) as cart_quantity,
+                if(now() > p.promo_start_date and now() < p.promo_end_date, p.promo_price,'') as promo_price_to_display
+            from products as p
+                left join cart as c on c.product_id = p.id
+            where p.product_status='A' order by product_title ASC limit ?,?";
         return $this->mmshightech->getAllDataSafely($sql,'ss',[$min, $limit])??[];
     }
     public function getProductOfCategory(?int $categoryID,int $min=0,int $limit=100):array{
@@ -72,5 +85,30 @@ class productsPdo
     public function getAllAvailableCategoties(){
         $sql = "select id,menu,description,bg_color from menu_category_ids";
         return $this->mmshightech->getAllDataSafely($sql,'',[])??[];
+    }
+    public function getSearchData(?string $searchProductTableColumn,?string $queryToSearchOnTable,int $min=0,int $limit=20):array{
+        $sql = "select p.*, 
+                if(c.quantity='',0,c.quantity) as cart_quantity,
+                if(now() > p.promo_start_date and now() < p.promo_end_date, p.promo_price,'') as promo_price_to_display
+            from products as p
+                left join cart as c on c.product_id = p.id
+            where p.product_status='A' and p.{$searchProductTableColumn} like ? limit ?,?";
+        return $this->mmshightech->getAllDataSafely($sql,'sss',["%".$queryToSearchOnTable."%",$min, $limit])??[];
+    }
+    public function productExists(?int $productUid){
+        $sql="select id from products where id=?";
+        $re= $this->mmshightech->getAllDataSafely($sql,'s',[$productUid])[0]??[];
+        return (empty($re)?
+                false:
+                ($re['id']===$productUid))?
+                    true:
+                    false;
+    }
+    public function getDataOnThisProduct(?int $productUid):array{
+        if(!$this->productExists($productUid)){
+            return ['error'=>$productUid." Not found."];
+        }
+        $sql="select*from products where id=?";
+        return $this->mmshightech->getAllDataSafely($sql,'s',[$productUid])[0]??[];
     }
 }

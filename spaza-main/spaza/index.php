@@ -1090,6 +1090,34 @@ function sendAjaxToPHP(url,dataArray,processorClass,successResponse){
       }
     });
 }
+function ProductSearchByName(searchProductTableColumn){
+  const ProductSearchByName=$(".ProductSearchByName").val();
+  searchProduct(searchProductTableColumn,ProductSearchByName);
+}
+function ProductSearchByUid(searchProductTableColumn){
+  const ProductSearchByUid=$(".ProductSearchByUid").val();
+  searchProduct(searchProductTableColumn,ProductSearchByUid);
+}
+function ProductSearchByDescription(searchProductTableColumn){
+  const ProductSearchByDescription=$(".ProductSearchByDescription").val();
+  searchProduct(searchProductTableColumn,ProductSearchByDescription);
+}
+function ProductSearchByBarcode(searchProductTableColumn){
+  const ProductSearchByBarcode=$(".ProductSearchByBarcode").val();
+  searchProduct(searchProductTableColumn,ProductSearchByBarcode);
+}
+function searchProduct(searchProductTableColumn,queryToSearchOnTable){
+  url = "../controller/mmshightech/search/productSearchProcessor.php";
+  dataArray={'searchProductTableColumn':searchProductTableColumn,'queryToSearchOnTable':queryToSearchOnTable};
+  $.ajax({
+      url:url,
+      type:'post',
+      data:dataArray,
+      success:function(e){
+        $(".productDisplay").html(e);
+      }
+    });
+}
 function makePayment(client_id2Pay,amountToPayInTotal){
   let data={'client_id2Pay':client_id2Pay,'amountToPayInTotal':amountToPayInTotal};
   url = "../controller/mmshightech/processor.php";
@@ -1141,6 +1169,9 @@ function makePayment(client_id2Pay,amountToPayInTotal){
           }
       }
   });
+}
+function productInfo(productId){
+  domeSquareModal('productDataForm',productId);
 }
 function createNewUser(){
     const fname  = $(".fname").val();

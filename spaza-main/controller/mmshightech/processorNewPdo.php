@@ -1,9 +1,7 @@
 <?php
-
 namespace controller\mmshightech;
-include_once ("./csvProcessor.php");
 use Controller\mmshightech;
-//use controller\mmshightech\csvProcessor;
+use Controller\mmshightech\csvProcessor;
 class processorNewPdo
 {
     public mmshightech $mmshightech;

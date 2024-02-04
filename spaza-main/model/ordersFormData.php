@@ -15,7 +15,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
  	?>
  		<div class="fullBody-tech">
  			<div class="modal-header">
-        <h4 class="modal-title" style="text-align: center;<?php if($cur_user_row['background']==1){echo'color:black;';}else{echo'color:white;';} ?>">Add Netchatsa Subject</h4>
+        <h4 class="modal-title" style="text-align: center;<?php if($cur_user_row['background']==1){echo'color:black;';}else{echo'color:white;';} ?>">ORDER <?php echo $_POST['request'];?></h4>
       </div>
  			<div class="headerTech">
  				
