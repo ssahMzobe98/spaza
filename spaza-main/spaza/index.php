@@ -919,7 +919,7 @@ select{
     </div>
   </div>
 </div>
-<div class="modal" id="addNetchatsaSubjects">
+<!-- <div class="modal" id="addNetchatsaSubjects">
   <style>
     input.errorLogMasoManeAddNetchatsaSubject{
       width: 100%;
@@ -972,7 +972,7 @@ select{
 
     </div>
   </div>
-</div>
+</div> -->
 <script>
 // let sidebar = document.querySelector(".sidebar");
 // let sidebarBtn = document.querySelector(".sidebarBtn");
@@ -1066,14 +1066,14 @@ function saveCardDetailsFromPayment(client_id_toSave2){
   }
   else{
     let data={'NameOnCard':NameOnCard,'cardNumber':cardNumber,'expiryDate':expiryDate,'cvv':cvv,'client_id_toSave2':client_id_toSave2};
-    console.log("sending request");
+    // console.log("sending request");
     sendAjaxToPHP("",data,'.errorTagDisplay','Card added successfully.')?console.log("true"):console.log(false);
   }
 
 }
 function sendAjaxToPHP(url,dataArray,processorClass,successResponse){
   url = (url==="")?"../controller/mmshightech/processor.php":url;
-  console.log(processorClass);
+  // console.log(processorClass);
   $.ajax({
       url:url,
       type:'post',
@@ -1118,6 +1118,23 @@ function searchProduct(searchProductTableColumn,queryToSearchOnTable){
       }
     });
 }
+function validateNewOrder(order_total_amount,order_total_Vat,order_subTotal_amount,order_deliveryFee){
+  $.ajax({
+      url:'../controller/mmshightech/processor.php',
+      type:'post',
+      data:{'order_total_amount':order_total_amount,'order_total_Vat':order_total_Vat,'order_subTotal_amount':order_subTotal_amount,'order_deliveryFee':order_deliveryFee},
+      success:function(e){
+          response=JSON.parse(e);
+          if(response['response']!=='S'){
+              $(".validateOrder").attr("style","padding:5px 5px;color:red;text-align:center;").html(response['data']);
+          }
+          else{
+              $(".validateOrder").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html("ORDER OK!!");
+              loadAfterQuery('.makhanyile','./model/checkout.php?order_id='+response['data']);
+          }
+      }
+  });
+}
 function makePayment(client_id2Pay,amountToPayInTotal){
   let data={'client_id2Pay':client_id2Pay,'amountToPayInTotal':amountToPayInTotal};
   url = "../controller/mmshightech/processor.php";
@@ -1130,38 +1147,37 @@ function makePayment(client_id2Pay,amountToPayInTotal){
         data = JSON.parse(e);
         $(".errorTagDisplay").removeAttr("hidden").html("Contacting the bank..");
           if(data['response']==="S"){
-            
-            window.payfast_do_onsite_payment({"uuid":data['identifier']}, function (result){
-              if(result){
-                const client_id="";
-                const amountToPay="";
-                const pfData ="";
-                const pfParamString ="";
-                $(".errorTagDisplay").removeAttr("hidden").html(result +"Prossesing..");
-                $.ajax({
-                url:'processPayment.php',
-                type:'post',
-                data:{client_id:client_id,amountToPay:amountToPay,pfData:pfData,pfParamString:pfParamString},
-                success:function(e){
-                    if(e.length<=2){
-                        $(".errorTagDisplay").attr("style","width:100%;padding:10px 10px;color:#45f3ff;background:green;border:2px solid white;text-align:center;font-size:14px;");
-                        $(".errorTagDisplay").html("Payment Successful. please wait, redirecting you to your order.");
-                    }
-                    else{
-                        $(".errorTagDisplay").attr("style","width:100%;padding:10px 10px;color:#45f3ff;background:red;border:2px solid white;text-align:center;font-size:14px;");
-                        $(".errorTagDisplay").html(e);
-                    }
+            // window.payfast_do_onsite_payment({"uuid":data['identifier']}, function (result){
+            //   if(result){
+            //     const client_id="";
+            //     const amountToPay="";
+            //     const pfData ="";
+            //     const pfParamString ="";
+            //     $(".errorTagDisplay").removeAttr("hidden").html(result +"Prossesing..");
+            //     $.ajax({
+            //     url:'processPayment.php',
+            //     type:'post',
+            //     data:{client_id:client_id,amountToPay:amountToPay,pfData:pfData,pfParamString:pfParamString},
+            //     success:function(e){
+            //         if(e.length<=2){
+            //             $(".errorTagDisplay").attr("style","width:100%;padding:10px 10px;color:#45f3ff;background:green;border:2px solid white;text-align:center;font-size:14px;");
+            //             $(".errorTagDisplay").html("Payment Successful. please wait, redirecting you to your order.");
+            //         }
+            //         else{
+            //             $(".errorTagDisplay").attr("style","width:100%;padding:10px 10px;color:#45f3ff;background:red;border:2px solid white;text-align:center;font-size:14px;");
+            //             $(".errorTagDisplay").html(e);
+            //         }
 
-                }
-                });
-              }
-              else{
-                  //window.location=("./?_=apply&failedProcessing=true");
-                  $(".errorTagDisplay").attr("style","width:100%;padding:10px 10px;color:#45f3ff;background:red;border:2px solid white;text-align:center;font-size:14px;");
-                $(".errorTagDisplay").html("Payment Cancelled ");
+            //     }
+            //     });
+            //   }
+            //   else{
+            //       //window.location=("./?_=apply&failedProcessing=true");
+            //       $(".errorTagDisplay").attr("style","width:100%;padding:10px 10px;color:#45f3ff;background:red;border:2px solid white;text-align:center;font-size:14px;");
+            //     $(".errorTagDisplay").html("Payment Cancelled ");
 
-              }
-            }); 
+            //   }
+            // }); 
           }
           else{
               $(".processorClass").removeAttr("hidden").attr("style","padding:5px 5px;color:red;text-align:center;border:1px solid red;").html(data['data']);

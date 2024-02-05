@@ -70,6 +70,9 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                         $tax = 0.15;
                         foreach ($getProducts as $product){
                             $price = $product['price_usd']*$product['quantity'];
+                            if($product['product_discountable']==='Y'){
+                                $price = (isset($product['promo_price'])?$product['promo_price']:$product['price_usd'])*$product['quantity'];
+                            }
                             $subTotal += $price;
                             $id=$product['id'];
                             $add ='"add"';
@@ -89,7 +92,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                                         <div class="removeQuantity"><i '.$removeProductToCart.' class="fa fa-minus-circle" style="cursor:pointer;font-size:30px; " aria-hidden="true"></i></div>
                                     </div>
                                 </td>
-                                <td style="color:#000000;">R'.number_format($product['price_usd'],2).'</td>
+                                <td style="color:#000000;">R'.number_format($product['product_discountable']==='Y'?isset($product['promo_price'])?$product['promo_price']:$product['price_usd']:$product['price_usd'],2).'</td>
                                 <td style="color:#000000;">
                                     <div>
                                         R'.number_format($price,2).'
@@ -134,7 +137,8 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                                     <tr></tr>
                                     <tr>
                                         <th></th>
-                                        <th><div class='button' onclick="loadAfterQuery('.makhanyile','../model/checkout.php');">
+                                        <th><div class='button validateOrder' onclick="validateNewOrder('<?php echo $total;?>','<?php echo $Vat;?>','<?php echo $subTotal;?>','<?php echo $deliveryFee?>')">
+                                            <!-- loadAfterQuery('.makhanyile','../model/checkout.php') -->
                                                 <a>CHECKOUT - R<?php echo number_format($total,2);?></a>
                                             </div>
                                         </th>

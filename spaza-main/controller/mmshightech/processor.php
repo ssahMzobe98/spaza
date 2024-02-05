@@ -6,14 +6,15 @@ require_once("../../vendor/autoload.php");
 use Controller\mmshightech;
 use Controller\mmshightech\processorNewPdo;
 use Classes\payment_integration\paymentPdo;
+use Controller\mmshightech\OrderPdo;
 if(session_status() !== PHP_SESSION_ACTIVE){
   session_start();
 }
-//use controller\mmshightech\processorDao;
 if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     $e="UKNOWN REQUEST!!";
     $processorNewDao = new processorNewPdo(new mmshightech());
     $paymentPdo = new paymentPdo(new mmshightech());
+    $orderPdo = new OrderPdo(new mmshightech());
     $cur_user_row = $processorNewDao->userInfo($_SESSION['user_agent']);
     if(isset($_POST['dome'])){
         $dome = $processorNewDao->processBackgroundDisplay($_POST['dome'],$cur_user_row['id']);
@@ -374,6 +375,16 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         $client_id2Pay=$processorNewDao->mmshightech->OMO($_POST['client_id2Pay']);
         $amountToPayInTotal=$processorNewDao->mmshightech->OMO($_POST['amountToPayInTotal']);
         $e = $paymentPdo->paymentGateway($client_id2Pay,$amountToPayInTotal);
+    }
+    elseif(isset($_POST['order_total_amount'],
+                 $_POST['order_total_Vat'],
+                 $_POST['order_subTotal_amount'],
+                 $_POST['order_deliveryFee'])){
+        $order_total_amount=$processorNewDao->mmshightech->OMO($_POST['order_total_amount']);
+        $order_total_Vat=$processorNewDao->mmshightech->OMO($_POST['order_total_Vat']);
+        $order_subTotal_amount=$processorNewDao->mmshightech->OMO($_POST['order_subTotal_amount']);
+        $order_deliveryFee=$processorNewDao->mmshightech->OMO($_POST['order_deliveryFee']);
+        $e = $orderPdo->validateOrder($order_total_amount,$order_total_Vat,$order_subTotal_amount,$order_deliveryFee,$cur_user_row['id']);
     }
     echo json_encode($e);
 }

@@ -62,8 +62,9 @@ class productsPdo
                     p.product_thumbnail as product_thumbnail,
                     p.product_weight as product_weight,
                     p.is_instock as is_instock,
-                    p.product_discountable as product_discountable,
-                    p.price_usd as price_usd
+                    (if(p.product_discountable='Y' and (now() > p.promo_start_date and now() < p.promo_end_date),'Y','N')) as product_discountable,
+                    p.price_usd as price_usd,
+                    p.promo_price as promo_price
                 from cart as c
                     left join products as p on p.id=c.product_id
               where c.user_id=?";
