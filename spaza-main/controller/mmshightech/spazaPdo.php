@@ -76,7 +76,7 @@ class spazaPdo
         return $this->mmshightech->getAllDataSafely($sql)??[];
     }
 
-    public function getOrderSpazas(?int $exclude):array
+    public function getOtherSpazas(?int $exclude):array
     {
         $sql = "select spaza_name, id as spaza_id from spaza_details where id!=? and status='A'";
         return $this->mmshightech->getAllDataSafely($sql,'s',[$exclude])??[];

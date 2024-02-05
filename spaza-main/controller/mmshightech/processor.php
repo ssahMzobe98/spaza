@@ -1,7 +1,4 @@
 <?php
-//require_once("../mmshightech/processorNewPdo.php");
-//require_once("../mmshightech.php");
-//require_once("../classes/payment_integration/paymentPdo.php");
 require_once("../../vendor/autoload.php");
 use Controller\mmshightech;
 use Controller\mmshightech\processorNewPdo;
@@ -371,10 +368,11 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             $e=$response['data'];
         }
     }
-    elseif(isset($_POST['client_id2Pay'],$_POST['amountToPayInTotal'])){
+    elseif(isset($_POST['client_id2Pay'],$_POST['amountToPayInTotal'],$_POST['order_number_toPay'])){
         $client_id2Pay=$processorNewDao->mmshightech->OMO($_POST['client_id2Pay']);
         $amountToPayInTotal=$processorNewDao->mmshightech->OMO($_POST['amountToPayInTotal']);
-        $e = $paymentPdo->paymentGateway($client_id2Pay,$amountToPayInTotal);
+        $order_number_toPay=$processorNewDao->mmshightech->OMO($_POST['order_number_toPay']);
+        $e = $paymentPdo->paymentGateway($client_id2Pay,$amountToPayInTotal,$order_number_toPay);
     }
     elseif(isset($_POST['order_total_amount'],
                  $_POST['order_total_Vat'],

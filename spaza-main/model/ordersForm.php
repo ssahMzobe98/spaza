@@ -1,16 +1,18 @@
 <?php
 include("../vendor/autoload.php");
 use Controller\mmshightech;
-
+use Controller\mmshightech\orderPdo;
 if(session_status() !== PHP_SESSION_ACTIVE){
   session_start();
 }
 if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
   // require_once("../controller/mmshightech.php");
   $mmshightech=new mmshightech();
+  $orderPdo = new orderPdo($mmshightech);
   $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
   $userDirect=$cur_user_row['user_type'];
   if($cur_user_row['user_type']==$userDirect){
+  	$orders = $orderPdo->getAllactiveOrder();
     date_default_timezone_set('Africa/Johannesburg');
  	?>
  	<div class="orderDataSet">
@@ -38,36 +40,26 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
 		        <th>Payment Status</th>
 		        <th>Fulfilment Status</th>
 		        <th>Total</th>
-		        <th>Manage Order</th>
+		        <th>isInvoiced</th>
 		      </tr>
 		    </thead>
 		    <tbody>
-		      <tr>
-		      		<td onclick="getOrderInfo('124578963')" style="color:#000000;">#451232</td>
-		      		<td style="color:#000000;">2023-06-12</td>
-			        <td style="color:#000000;">Adams Spaza</td>
-			        <td style="color:#000000;">PAID</td>
-			        <td style="color:#000000;">PICKING</td>
-			        <td style="color:#000000;">R1 253.00</td>
-			        <td>
-			        	<a onclick="viewThisSchooInfo('12','1')" class="badge badge-danger text-dark text-center">Cancel <i class="fa fa-times" aria-hidden="true"></i></a> 
-			        	
-			        </td>
-		      </tr>
-		      <tr>
-		      		<td onclick="getOrderInfo('124578963')" style="color:#ddd;">#451232</td>
-		      		<td style="color:#ddd;">2023-06-12</td>
-			        <td style="color:#ddd;">Adams Spaza</td>
-			        <td style="color:#ddd;">PAID</td>
-			        <td style="color:#ddd;">PICKING</td>
-			        <td style="color:#ddd;">R1 253.00</td>
-			        <td>
-			        	<a onclick="viewThisSchooInfo('12','1')" class="badge badge-danger text-dark text-center">Cancel <i class="fa fa-times" aria-hidden="true"></i></a> 
-			        	
-			        </td>
-		      </tr>
-			  
-		     
+		    	<?php
+		    	foreach($orders as $order){
+		    		?>
+		    			<tr>
+				      		<td onclick="getOrderInfo(<?php echo $order['order_id'];?>)" style="color:#000000;">#<?php echo $order['order_id'];?></td>
+				      		<td style="color:#000000;"><?php echo $order['created_date'];?></td>
+					        <td style="color:#000000;"><?php echo $order['spaza_name'];?></td>
+					        <td style="color:#000000;"><?php echo $order['payment_status'];?></td>
+					        <td style="color:#000000;"><?php echo $order['order_status'];?></td>
+					        <td style="color:#000000;"><?php echo 'R'.number_format($order['total'],2);?></td>
+					        <td style="color:#000000;"><?php echo $order['is_invoiced']=='Y'?'INVOICED':'NOT INVOICED';?></td>
+					        
+				      </tr>
+		    		<?php
+		    	}
+		    	?>
 		    </tbody>
 		      <tfoot>
 		      	<tr>

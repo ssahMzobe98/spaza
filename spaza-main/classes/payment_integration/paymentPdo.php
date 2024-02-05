@@ -11,12 +11,12 @@ class paymentPdo{
         $this->mmshightech=$mmshightech;
         $this->usersPdo = new usersPdo($mmshightech);
     }
-	public function paymentGateway(?int $clientId=0,?float $amount=0.00):array{
+	public function paymentGateway(?int $clientId=0,?float $amount=0.00,?int $order_number_toPay):array{
         $user_details = $this->usersPdo->getUserDetailsForUser($clientId);
 		$passPhrase = 'msiziMzobe98';
         $amount_net=$amount-4.60;
         $data = array(
-            'merchant_id' => '18152361',
+            'merchant_id' => $clientId,
             'merchant_key' => '2ammma77nrah4',
             'return_url' => 'https://netchatsa.com/?apply',
             'cancel_url' => 'https://netchatsa.com/cancel.php',
@@ -24,7 +24,7 @@ class paymentPdo{
             'name_first'=>$user_details['name'],
             'name_last'=>$user_details['surname'],
             'email_address'=>$user_details['usermail'],
-            'm_payment_id' => $user_details['passport_id_no'],
+            'm_payment_id' => $order_number_toPay,
             'amount' => number_format( sprintf( '%.2f', $amount ), 2, '.', '' ),
             'item_name' => 'ISPAZA PRODUCTS PURCHASE'
 

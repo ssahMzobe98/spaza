@@ -3,6 +3,7 @@ include("../vendor/autoload.php");
 use Controller\mmshightech;
 use Controller\mmshightech\spazaPdo;
 use Controller\mmshightech\productsPdo;
+use Controller\mmshightech\orderPdo;
 if(session_status() !== PHP_SESSION_ACTIVE){
     session_start();
 }
@@ -13,27 +14,42 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     $mmshightech=new mmshightech();
     $products = new productsPdo($mmshightech);
     $spazaPdo = new spazaPdo($mmshightech);
+    $orderPdo = new orderPdo($mmshightech);
     $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
     $userDirect=$cur_user_row['user_type'];
     date_default_timezone_set('Africa/Johannesburg');
     if($cur_user_row['user_type']==$userDirect){
-        if(isset($_GET['spazaId'])){
+        if(isset($_GET['spazaId'],$_GET['order_id'])){
             if(empty($_GET['spazaId'])){
                 echo"<h5>NO SPAZA SELECTED!</h5>";
+            }
+            elseif(empty($_GET['order_id'])){
+              echo"<h5>NO ORDER ID FOUND!</h5>";
+            }
+            elseif(!$orderPdo->isActiveOrder($_GET['order_id'])){
+              echo"<h5>This Order({$_GET['order_id']}) does NOT exist, stop fooling your self.</h5>";
             }
             else{ 
 
               $accountDetails = $spazaPdo->getSpazaPaymentDetails($_GET['spazaId']);
-              $sub_total = $products->getCartProductsTotal($cur_user_row['id'])['sub_total']??0;
+              $sub_total = $orderPdo->getOrderTotal($_GET['order_id']);
               $terminate = false;
-              if($sub_total==0){
+              $error='';
+              $total=0;
+              if(isset($sub_total['response'])){
                 $terminate=true;
+                $error=$sub_total['data'];
               }
-              $vat=$sub_total*0.15;
+              else{
+                if($sub_total['total']<1){
+                  $terminate=false;
+                  $error="Can not read payment of < 0";
+                }
+                else{
+                  $total=$sub_total['total'];
+                }
+              }
               
-              $deliveryFee=20.50;
-
-              $total = $sub_total+$vat+$deliveryFee;
 
               ?>
               <div style="width:100%;padding:0 10px;">
@@ -59,11 +75,11 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                       <?php 
                       if($terminate){
                         ?>
-                          <span style="padding:10px 10px;border-radius:50px;" class="badge badge-danger text-center text-white"> Can not read payment of < 0</span>
+                          <span style="padding:10px 10px;border-radius:50px;" class="badge badge-danger text-center text-white"><?php echo $error;?> </span>
                         <?php
                       }
                       else{
-                        ?><span onclick="makePayment(<?php echo $accountDetails['owner_id'];?>,<?php echo $total;?>)" style="padding:10px 10px;border-radius:50px;" class="badge badge-success text-center text-white">Pay R<?php echo number_format($total,2);?></span>
+                        ?><span onclick="makePayment(<?php echo $_GET['order_id'];?>,<?php echo $accountDetails['owner_id'];?>,<?php echo $total;?>)" style="padding:10px 10px;border-radius:50px;" class="badge badge-success text-center text-white">Pay R<?php echo number_format($total,2);?></span>
                         <?php
                       }
                         ?>
