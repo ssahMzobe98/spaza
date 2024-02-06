@@ -96,7 +96,7 @@ class OrderPdo{
     	$sql="select total from orders where id=?";
     	return $this->mmshightech->getAllDataSafely($sql,'s',[$order_id])[0]??[];
     }
-    public function getAllactiveOrder():array{
+    public function getAllactiveOrder(int $min=0,int $limit=10):array{
     	$sql="select 
     		s.status as order_status,
     		o.id as order_id,
@@ -120,8 +120,98 @@ class OrderPdo{
     		left join statuses as s on s.id=o.process_status
     		left join users as u on u.id=o.user_id
     		left join spaza_details as sd on sd.id=o.spaza_id
-    	where o.process_status in (1,2,3,4,5,6,8,9,10,11,12,13,14,15)";
-    	return $this->mmshightech->getAllDataSafely($sql,'',[])??[];
+    	where o.process_status in (2,3,4,5,6,8,9,10,11,12) limit ?,?";
+    	return $this->mmshightech->getAllDataSafely($sql,'ss',[$min,$limit])??[];
     }
+    public function searchOrderWithId(?int $searchOrderNumber=0):array{
+    	$sql="select 
+    		s.status as order_status,
+    		o.id as order_id,
+    		o.user_id,
+    		o.spaza_id,
+    		o.is_invoiced,
+    		o.total,
+    		u.name,
+    		u.surname,
+    		sd.spaza_name,
+    		o.payment_status,
+    		sd.rep_name,
+    		date(o.created_datetime) as created_date,
+    		time(o.created_datetime) as created_time,
+    		sd.rep_surname,
+    		sd.phone_number,
+    		sd.email_address,
+    		sd.spaza_address,
+    		o.driver_id
+    	from orders as o
+    		left join statuses as s on s.id=o.process_status
+    		left join users as u on u.id=o.user_id
+    		left join spaza_details as sd on sd.id=o.spaza_id
+    	where o.id like ?";
+    	return $this->mmshightech->getAllDataSafely($sql,'s',['%'.$searchOrderNumber.'%'])??[];
+    }
+    public function getAllactiveCount():int{
+    	$sql="select id from orders where process_status in (1,2,3,4,5,6,8,9,10,11,12,13,14,15)";
+    	return $this->mmshightech->numRows($sql,'',[])??0;
+    }
+    public function getAllStatusCount(int $id1=0,int $id2=0):int{
+    	$sql="select id from orders where process_status in (?,?)";
+    	return $this->mmshightech->numRows($sql,'ss',[$id1,$id2])??0;
+    }
+	public function getAllStatusOrder(int $id1=0,int $id2,$min,$limit):array{
+		$sql="select 
+    		s.status as order_status,
+    		o.id as order_id,
+    		o.user_id,
+    		o.spaza_id,
+    		o.is_invoiced,
+    		o.total,
+    		u.name,
+    		u.surname,
+    		sd.spaza_name,
+    		o.payment_status,
+    		sd.rep_name,
+    		date(o.created_datetime) as created_date,
+    		time(o.created_datetime) as created_time,
+    		sd.rep_surname,
+    		sd.phone_number,
+    		sd.email_address,
+    		sd.spaza_address,
+    		o.driver_id
+    	from orders as o
+    		left join statuses as s on s.id=o.process_status
+    		left join users as u on u.id=o.user_id
+    		left join spaza_details as sd on sd.id=o.spaza_id
+    	where o.process_status in ($id1,$id2) limit ?,?";
+    	return $this->mmshightech->getAllDataSafely($sql,'ss',[$min,$limit])??[];
+	}
+}
+public function confirmOrderData(int $user_id=0,int $order_id=0):array{
+	$sql="select 
+    		s.status as order_status,
+    		o.id as order_id,
+    		o.user_id,
+    		o.spaza_id,
+    		o.is_invoiced,
+    		o.total,
+    		u.name,
+    		u.surname,
+    		sd.spaza_name,
+    		o.payment_status,
+    		sd.rep_name,
+    		date(o.created_datetime) as created_date,
+    		time(o.created_datetime) as created_time,
+    		sd.rep_surname,
+    		sd.phone_number,
+    		sd.email_address,
+    		sd.spaza_address,
+    		o.driver_id
+    	from orders as o
+    		left join statuses as s on s.id=o.process_status
+    		left join users as u on u.id=o.user_id
+    		left join spaza_details as sd on sd.id=o.spaza_id
+    	where o.id=? and o.user_id=?
+	";
+	return $this->mmshightech->getAllDataSafely($sql,'s',[$order_id,$user_id])??[];
 }
 ?>

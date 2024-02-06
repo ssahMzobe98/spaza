@@ -1071,6 +1071,7 @@ function saveCardDetailsFromPayment(client_id_toSave2){
   }
 
 }
+
 function sendAjaxToPHP(url,dataArray,processorClass,successResponse){
   url = (url==="")?"../controller/mmshightech/processor.php":url;
   // console.log(processorClass);
@@ -1110,13 +1111,31 @@ function searchProduct(searchProductTableColumn,queryToSearchOnTable){
   url = "../controller/mmshightech/search/productSearchProcessor.php";
   dataArray={'searchProductTableColumn':searchProductTableColumn,'queryToSearchOnTable':queryToSearchOnTable};
   $.ajax({
+    url:url,
+    type:'post',
+    data:dataArray,
+    success:function(e){
+      $(".productDisplay").html(e);
+    }
+  });
+}
+function findOrderNumberInput(){
+  const searchOrderNumber=$(".findOrderNumberInput").val();
+  if(searchOrderNumber.length==0){
+      loadAfterQuery(".displayOrderData","../model/loadLiveOrdersPagination.php?min=0&limit=10");
+  }
+  else{
+    url = "../controller/mmshightech/search/orderSearchProcessor.php";
+    dataArray={'searchOrderNumber':searchOrderNumber};
+    $.ajax({
       url:url,
       type:'post',
       data:dataArray,
       success:function(e){
-        $(".productDisplay").html(e);
+        $(".displayOrderData").html(e);
       }
     });
+  }
 }
 function validateNewOrder(order_total_amount,order_total_Vat,order_subTotal_amount,order_deliveryFee){
   $.ajax({
