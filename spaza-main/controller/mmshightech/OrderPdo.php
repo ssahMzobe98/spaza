@@ -74,7 +74,7 @@ class OrderPdo{
     	if(!isset($orderNo)){
     		return ['response'=>'F','data'=>'Order placement process failed to retrieve order ID'];
     	}
-    	$sql="insert into order_details(order_id,product_id,label,product_unit_size,price,quantity,is_out_of_stock,comments,is_promo,promo_price,time_added)values(?,?,?,?,?,?,?,?,?,?,NOW())";
+    	$sql="insert into order_details(order_id,product_id,label,product_unit_size,price,quantity,is_instock,comments,is_promo,promo_price,time_added)values(?,?,?,?,?,?,?,?,?,?,NOW())";
     	$response=[];
     	foreach($getProducts as $product){
     		$params=[$orderNo,$product['id'],$product['product_description'],$product['product_weight'],$product['price_usd'],$product['quantity'],$product['is_instock'],'No Comment',$product['product_discountable'],$product['promo_price']];
@@ -185,33 +185,38 @@ class OrderPdo{
     	where o.process_status in ($id1,$id2) limit ?,?";
     	return $this->mmshightech->getAllDataSafely($sql,'ss',[$min,$limit])??[];
 	}
+	public function orderSummary(int $order_id=0):array{
+		$sql="select 
+				od.order_id,
+				od.product_id,
+	    		od.label,
+	    		(if(od.is_promo='Y',od.promo_price,od.price)) as price,
+	    		od.quantity,
+	    		od.is_instock,
+	    		od.is_picked,
+	    		od.comments
+	    	from order_details as od
+	    	where od.order_id=? and od.status='A'
+		";
+		return $this->mmshightech->getAllDataSafely($sql,'s',[$order_id])??[];
+	}
+	public function removeProductFromOrder(int $removeThisProductFromOrder_order_id=0,int $removeThisProductFromOrder_product_id=0,int $removed_by):array{
+		$sql="update order_details set status='D', removed_by=? where order_id=? and product_id=?";
+		$response = $this->mmshightech->postDataSafely($sql,'sss',[$removed_by,$removeThisProductFromOrder_order_id,$removeThisProductFromOrder_product_id]);
+		if(!is_numeric($response)){
+			return ['response'=>'F','data'=>$response];
+		}
+		return ['response'=>'S','data'=>'Success'];
+
+	}
+	public function pickProduct(int $markDownPicker_order_id=0,int $markDownPicker_product_id=0):array{
+		$sql="update order_details set is_picked='Y', time_picked=NOW() where order_id=? and product_id=?";
+		$response = $this->mmshightech->postDataSafely($sql,'ss',[$markDownPicker_order_id,$markDownPicker_product_id]);
+		if(!is_numeric($response)){
+			return ['response'=>'F','data'=>$response];
+		}
+		return ['response'=>'S','data'=>'Success'];
+	}
 }
-public function confirmOrderData(int $user_id=0,int $order_id=0):array{
-	$sql="select 
-    		s.status as order_status,
-    		o.id as order_id,
-    		o.user_id,
-    		o.spaza_id,
-    		o.is_invoiced,
-    		o.total,
-    		u.name,
-    		u.surname,
-    		sd.spaza_name,
-    		o.payment_status,
-    		sd.rep_name,
-    		date(o.created_datetime) as created_date,
-    		time(o.created_datetime) as created_time,
-    		sd.rep_surname,
-    		sd.phone_number,
-    		sd.email_address,
-    		sd.spaza_address,
-    		o.driver_id
-    	from orders as o
-    		left join statuses as s on s.id=o.process_status
-    		left join users as u on u.id=o.user_id
-    		left join spaza_details as sd on sd.id=o.spaza_id
-    	where o.id=? and o.user_id=?
-	";
-	return $this->mmshightech->getAllDataSafely($sql,'s',[$order_id,$user_id])??[];
-}
+
 ?>

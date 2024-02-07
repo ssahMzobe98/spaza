@@ -384,6 +384,16 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         $order_deliveryFee=$processorNewDao->mmshightech->OMO($_POST['order_deliveryFee']);
         $e = $orderPdo->validateOrder($order_total_amount,$order_total_Vat,$order_subTotal_amount,$order_deliveryFee,$cur_user_row['id']);
     }
+    elseif(isset($_POST['removeThisProductFromOrder_order_id'],$_POST['removeThisProductFromOrder_product_id'])){
+        $removeThisProductFromOrder_order_id=$processorNewDao->mmshightech->OMO($_POST['removeThisProductFromOrder_order_id']);
+        $removeThisProductFromOrder_product_id=$processorNewDao->mmshightech->OMO($_POST['removeThisProductFromOrder_product_id']);
+        $e = $orderPdo->removeProductFromOrder($removeThisProductFromOrder_order_id,$removeThisProductFromOrder_product_id,$cur_user_row['id']);
+    }
+    elseif(isset($_POST['markDownPicker_order_id'],$_POST['markDownPicker_product_id'])){
+        $markDownPicker_order_id=$processorNewDao->mmshightech->OMO($_POST['markDownPicker_order_id']);
+        $markDownPicker_product_id=$processorNewDao->mmshightech->OMO($_POST['markDownPicker_product_id']);
+        $e=$orderPdo->pickProduct($markDownPicker_order_id,$markDownPicker_product_id);
+    }
     echo json_encode($e);
 }
 else{

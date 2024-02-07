@@ -1339,6 +1339,36 @@ function createNewUser(){
       });
     }
 }
+function removeThisProductFromOrder(removeThisProductFromOrder_order_id,removeThisProductFromOrder_product_id){
+  $(".removeThisProductFromOrder").html("Removing Product-"+removeThisProductFromOrder_product_id+" please wait...");
+  $.ajax({
+      url:'../controller/mmshightech/processor.php',
+      type:'post',
+      data:{removeThisProductFromOrder_order_id:removeThisProductFromOrder_order_id,removeThisProductFromOrder_product_id:removeThisProductFromOrder_product_id},
+      success:function(e){
+          response=JSON.parse(e);
+          if(response['response']!=='S'){
+              $(".removeThisProductFromOrder").attr("style","padding:5px 5px;color:red;text-align:center;").html(e);
+          }
+          else{
+              $(".proceremoveThisProductFromOrderssing").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html("Item Removed.");
+              getOrderInfo(removeThisProductFromOrder_order_id);
+              
+          }
+      }
+  });
+}
+function markDownPicker(markDownPicker_order_id,markDownPicker_product_id){
+  $.ajax({
+      url:'../controller/mmshightech/processor.php',
+      type:'post',
+      data:{markDownPicker_order_id:markDownPicker_order_id,markDownPicker_product_id:markDownPicker_product_id},
+      success:function(e){
+          response=JSON.parse(e);
+          console.log(response['data']);
+      }
+  });
+}
 function getOrderInfo(orderNo){
   domeSquareModal('ordersFormData',orderNo);
 }
