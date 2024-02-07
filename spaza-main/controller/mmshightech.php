@@ -10,6 +10,9 @@ class mmshightech
         $this->dbConn();
     }
     public function dbConn(){
+        // $user='u405316555_ispaza';
+        // $pass='iSpaza2024';
+        // $dbnam='u405316555_ispaza';
         $user='root';
         $pass='';
         $dbnam='spaza';
