@@ -2,7 +2,7 @@
 include("../vendor/autoload.php");
 use Controller\mmshightech;
 use Controller\mmshightech\spazaPdo;
-
+use Classes\constants\Constants;
 if(session_status() !== PHP_SESSION_ACTIVE){
     session_start();
 }
@@ -13,7 +13,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     $spazaDao=new spazaPdo($mmshightech);
     $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
     $userDirect=$cur_user_row['user_type'];
-    if($cur_user_row['user_type']==$userDirect){
+    if($cur_user_row['user_type']==Constants::USER_TYPE_ADMIN){
         date_default_timezone_set('Africa/Johannesburg');
         $spaza_details = $spazaDao->getSpazaInfoAll();
         ?>

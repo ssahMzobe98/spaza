@@ -5,6 +5,7 @@ use Controller\mmshightech;
 use Controller\mmshightech\ClientPdo;
 use Controller\mmshightech\StorePdo;
 use Controller\mmshightech\MenuCategoryPdo;
+use Classes\constants\Constants;
 if(session_status() !== PHP_SESSION_ACTIVE){
     session_start();
 }
@@ -18,7 +19,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     $clientPdo = new ClientPdo();
     $menuPdo = new MenuCategoryPdo();
     $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
-    if($cur_user_row['user_type']=='app'){
+    if($cur_user_row['user_type']==Constants::USER_TYPE_APP){
         date_default_timezone_set('Africa/Johannesburg');
         if(isset($_GET['menuId'],$_GET['clientId'],$_GET['storeId'])){
             $cleanData = $mmshightech->cleanAll([$_GET['menuId'],$_GET['clientId'],$_GET['storeId']]);

@@ -46,7 +46,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                     $dir = "../../csvFiles/";
                     $filename = rand(0,9999).$fileData['name'];
                     print_r($fileData);
-                    if(move_uploaded_file($fileData['tmp_name'],$dir.basename($filename))){
+                    if(move_uploaded_file($fileData['tmp_name'],$dir.basename($dir.$filename))){
                         $response=$processorNewDao->processCSVfileSave($filename,$cur_user_row['id']);
                         if($response['response']=="S"){
                             $processCSV = $processorNewDao->csvProcessor->processCSV($dir.$filename);
@@ -197,7 +197,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             }
             $newFileName =$tmp[$i]."_".rand(0,99999).'.'.$ext[1];
             $i++;
-            if(!move_uploaded_file($file['tmp_name'],$dir.basename($newFileName))){
+            if(!move_uploaded_file($file['tmp_name'],$dir.basename($dir.$newFileName))){
                 $errorLog[]="Failed to upload file {$file['name']}. Please try again.";
                 $break = true;
                 break;
@@ -335,20 +335,15 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
 
             }
             if($terminate){
-                $e=$error['error'];
+                $e=['response'=>'F','data'=>$error['error']];
             }
             else{
                 if(count($newFilesNames)===4){
                     $response = $processorNewDao->createNewUser($fnameNewUser,$lnameNewUser,$phoneNumberNewUser,$nationalityNewUser,$Passport_idNewUser,$genderNewUser,$userDOBNewUser,$permitNumberNewUser,$coutryOfOriginAddressNewUser,$saResidingAddressNewUser,$userEmailAddressNewUser,$userPasswordNewUser,$newFilesNames,$cur_user_row['id']);
-                    if($response['response']=='S'){
-                        $e=1;
-                    }
-                    else{
-                        $e=$response['data'];
-                    }
+                    $e=$response['response'];
                 }
                 else{
-                    $e="Files require un-matching. please check if you added all required files.";
+                    $e=['response'=>'F','data'=>"Files require un-matching. please check if you added all required files."];
                 }
             }
         }
@@ -393,6 +388,14 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         $markDownPicker_order_id=$processorNewDao->mmshightech->OMO($_POST['markDownPicker_order_id']);
         $markDownPicker_product_id=$processorNewDao->mmshightech->OMO($_POST['markDownPicker_product_id']);
         $e=$orderPdo->pickProduct($markDownPicker_order_id,$markDownPicker_product_id);
+    }
+    elseif(isset($_POST['invoiceOrder_orderNo'])){
+        $invoiceOrder_orderNo=$processorNewDao->mmshightech->OMO($_POST['invoiceOrder_orderNo']);
+        $e=$orderPdo->invoiceOrder($invoiceOrder_orderNo,$cur_user_row['id']);
+    }
+    elseif(isset($_POST['acceptOrderId'])){
+        $acceptOrderId=$processorNewDao->mmshightech->OMO($_POST['acceptOrderId']);
+        $e=$orderPdo->acceptOrder($acceptOrderId,$cur_user_row['id']);
     }
     echo json_encode($e);
 }

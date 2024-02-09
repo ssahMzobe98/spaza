@@ -2,6 +2,7 @@
 include("../vendor/autoload.php");
 use Controller\mmshightech;
 use Controller\mmshightech\productsPdo;
+use Classes\constants\Constants;
 if(session_status() !== PHP_SESSION_ACTIVE){
     session_start();
 }
@@ -13,7 +14,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
     $userDirect=$cur_user_row['user_type'];
     date_default_timezone_set('Africa/Johannesburg');
-    if($cur_user_row['user_type']==$userDirect){
+    if($cur_user_row['user_type']==Constants::USER_TYPE_APP){
         $getProducts=$products->getProducts(0,100);
         $getSpecialProducts=$products->getSpecialProducts(0,50);
 

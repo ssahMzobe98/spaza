@@ -3,14 +3,22 @@ namespace Controller\mmshightech;
 use Controller\mmshightech;
 use Controller\mmshightech\productPdo;
 use Controller\mmshightech\processorNewPdo;
+use Classes\factory\PDOFactoryOOPClass;
+use Classes\constants\Constants;
+use Classes\payment_integration\InvoicePdo;
+use Classes\payment_integration\WalletPdo;
 class OrderPdo{
 	private mmshightech $mmshightech;
 	private productsPdo $products;
 	private processorNewPdo $processorNewPdo;
+    private WalletPdo $walletPdo;
+    private InvoicePdo $invoice;
     public function __construct(mmshightech $mmshightech){
         $this->mmshightech=$mmshightech;
         $this->products = new productsPdo($mmshightech);
         $this->processorNewPdo = new processorNewPdo($mmshightech);
+        $this->invoicePdo=PDOFactoryOOPClass::make(Constants::INVOICE,[$mmshightech,$this->products]);
+        $this->walletPdo=PDOFactoryOOPClass::make(Constants::WALLET,[$mmshightech,$this->products]);
     }
     public function validateOrder(?string $order_total_amount,?string $order_total_Vat,?string $order_subTotal_amount,?string $order_deliveryFee,?int $user_id):array{
     	if(!isset($user_id)){
@@ -27,7 +35,7 @@ class OrderPdo{
         foreach ($getProducts as $product){
         	$price = $product['price_usd']*$product['quantity'];
         	if($product['product_discountable']==='Y'){
-        		$price = (isset($product['promo_price'])?$product['promo_price']:$product['price_usd'])*$product['quantity'];
+        		$price = (isset($product['promo_price'])?$product['promo_price']:$price);
         	}
             $subTotal += $price;
         }
@@ -61,7 +69,7 @@ class OrderPdo{
     }
     protected function createNewOrder(string|int|array|null $getProducts=null,?string $vat,?string $total,?string $subTotal,?string $deliveryFee,?string $user_id):array{
     	$sql="insert into orders(user_id,created_datetime,process_status,total,sub_total,vat,delivery_fee,order_json)values(?,NOW(),1,?,?,?,?,?)";
-    	$params = [$user_id,$vat,$total,$subTotal,$deliveryFee,json_encode($getProducts)];
+    	$params = [$user_id,$total,$subTotal,$vat,$deliveryFee,json_encode($getProducts)];
     	$response = $this->mmshightech->postDataSafely($sql,'ssssss',$params);
     	if(is_numeric($response)){
             return ['response'=>"S",'data'=>$response];
@@ -159,7 +167,7 @@ class OrderPdo{
     	return $this->mmshightech->numRows($sql,'ss',[$id1,$id2])??0;
     }
 	public function getAllStatusOrder(int $id1=0,int $id2,$min,$limit):array{
-		$sql="select 
+		$sql="SELECT 
     		s.status as order_status,
     		o.id as order_id,
     		o.user_id,
@@ -186,20 +194,37 @@ class OrderPdo{
     	return $this->mmshightech->getAllDataSafely($sql,'ss',[$min,$limit])??[];
 	}
 	public function orderSummary(int $order_id=0):array{
-		$sql="select 
-				od.order_id,
-				od.product_id,
-	    		od.label,
-	    		(if(od.is_promo='Y',od.promo_price,od.price)) as price,
-	    		od.quantity,
-	    		od.is_instock,
-	    		od.is_picked,
-	    		od.comments
-	    	from order_details as od
-	    	where od.order_id=? and od.status='A'
+		$sql="SELECT 
+                o.user_id,
+                od.order_id,
+                od.product_id,
+                od.label,
+                (CASE WHEN od.is_promo='Y' THEN od.promo_price ELSE od.price END) AS price,
+                od.quantity,
+                od.is_instock,
+                od.is_picked,
+                o.total AS order_total,
+                (CASE WHEN o.payment_status='NOT PAID' THEN 'N' ELSE 'Y' END) AS is_paid,
+                (CASE WHEN o.accepted_datetime IS NULL THEN 'N' ELSE 'Y' END) AS is_accepted,
+                o.is_invoiced,
+                od.comments
+            FROM 
+                order_details AS od
+            LEFT JOIN 
+                orders AS o ON o.id = od.order_id 
+            WHERE 
+                od.order_id = ? AND od.status = 'A'
 		";
 		return $this->mmshightech->getAllDataSafely($sql,'s',[$order_id])??[];
 	}
+    public function acceptOrder(?int $acceptOrderId=null,?int $adminUserId=null):array{
+        $sql="update orders set accepted_datetime=NOW(),processed_by=? where id=?";
+        $response =$this->mmshightech->postDataSafely($sql,'ss',[$adminUserId,$acceptOrderId]);
+        if(!is_numeric($response)){
+            return ['response'=>'F','data'=>$response];
+        }
+        return ['response'=>'S','data'=>'Success'];
+    }
 	public function removeProductFromOrder(int $removeThisProductFromOrder_order_id=0,int $removeThisProductFromOrder_product_id=0,int $removed_by):array{
 		$sql="update order_details set status='D', removed_by=? where order_id=? and product_id=?";
 		$response = $this->mmshightech->postDataSafely($sql,'sss',[$removed_by,$removeThisProductFromOrder_order_id,$removeThisProductFromOrder_product_id]);
@@ -217,6 +242,58 @@ class OrderPdo{
 		}
 		return ['response'=>'S','data'=>'Success'];
 	}
+	public function invoiceOrder(?int $invoiceOrder_orderNo=0,$invoicedBy):array{
+        if(!isset($invoiceOrder_orderNo)){
+    		return ['response'=>'F','data'=>'Order Invoicing process failed to retrieve order ID'];
+    	}
+    	$orderSummary=$this->orderSummary($invoiceOrder_orderNo);
+    	$orderInvoiceTotal=0;
+        $user_id=$orderSummary[0]['user_id'];
+        $orderTotal=$orderSummary[0]['order_total'];
+        foreach($orderSummary as $summary){
+            $total_price = $summary['price']*$summary['quantity'];
+            $orderInvoiceTotal+=$total_price;
+            if($summary['is_picked']==="N"){
+            	return ['response'=>"F",'data'=>$summary['product_id']." is not PICKED. please pick the the item or remove it from list."];
+            } 
+        }
+        $vat=$orderInvoiceTotal*0.15;
+        $deliveryFee = 20.50;
+        $invoiceTotal=$orderInvoiceTotal+$vat+$deliveryFee;
+        $refundTotal = $orderTotal-$invoiceTotal;
+        $response = $this->invoicePdo->finaliseInvoice($invoiceOrder_orderNo,$vat,$deliveryFee,$invoiceTotal,$orderTotal,$refundTotal,$invoicedBy);
+        if($response['response']==="F"){
+        	return ['response'=>'F','data'=>$response['data']]; 
+        }
+        $invoiceId=$response['data']??0;
+        if($refundTotal>0 ){
+            $response= $this->walletPdo->actionToWallet($response['data'],$invoiceOrder_orderNo,$vat,$deliveryFee,$invoiceTotal,$orderTotal,$refundTotal,$invoicedBy,'WALLET_REFUND',$user_id); 
+        }
+        if($response['response']==="F"){
+            return ['response'=>'F','data'=>$response['data']]; 
+        }
+        $response = $this->updateOrderProcessStatus(4,$invoiceOrder_orderNo);
+        if($response['response']==="F"){
+            return ['response'=>'F','data'=>$response['data']]; 
+        }
+        return $this->updateInvoiceIdOnOrder($invoiceId,$invoiceOrder_orderNo);
+    }
+    public function updateInvoiceIdOnOrder(?int $invoiceId=null,?int $invoiceOrder_orderNo=null):array{
+        $sql="update orders set invoice_datetime=NOW(),is_invoiced='Y',invoice_id=? where id=?";
+        $response =$this->mmshightech->postDataSafely($sql,'ss',[$invoiceId,$invoiceOrder_orderNo]);
+        if(!is_numeric($response)){
+            return ['response'=>'F','data'=>$response];
+        }
+        return ['response'=>'S','data'=>'Success'];
+    }
+    public function updateOrderProcessStatus(?int $status=null,?int $invoiceOrder_orderNo=null):array{
+        $sql="update orders set process_status=? where id=?";
+        $response =$this->mmshightech->postDataSafely($sql,'ss',[$status,$invoiceOrder_orderNo]);
+        if(!is_numeric($response)){
+            return ['response'=>'F','data'=>$response];
+        }
+        return ['response'=>'S','data'=>'Success'];
+    }
 }
 
 ?>

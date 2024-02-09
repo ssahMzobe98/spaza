@@ -1,6 +1,7 @@
 <?php
 include("../vendor/autoload.php");
 use Controller\mmshightech;
+use Classes\constants\Constants;
 if(session_status() !== PHP_SESSION_ACTIVE){
     session_start();
 }
@@ -8,8 +9,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     // require_once("../controller/mmshightech.php");
     $mmshightech=new mmshightech();
     $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
-    $userDirect=$cur_user_row['user_type'];
-    if($cur_user_row['user_type']==$userDirect){
+    if($cur_user_row['user_type']==Constants::USER_TYPE_ADMIN){
         if(isset($_GET['map'],$_GET['spazaID'])){
             ?>
             <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
