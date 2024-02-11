@@ -5,12 +5,16 @@ use Classes\constants\Constants;
 use Classes\payment_integration\WalletPdo;
 use Classes\payment_integration\InvoicePdo;
 use Classes\iclass\IPDOFactoryOOPClass;
+use Controller\mmshightech\OrderPdo;
+use Controller\mmshightech\spazaPdo;
 
 class PDOFactoryOOPClass implements IPDOFactoryOOPClass
 {
     protected static array $data = [
         Constants::INVOICE => InvoicePdo::class,
-        Constants::WALLET => WalletPdo::class
+        Constants::WALLET => WalletPdo::class,
+        Constants::ORDER =>OrderPdo::class,
+        Constants::SPAZA =>spazaPdo::class
     ];
 
     public static function make(?string $classDao = null, array $array = [])

@@ -23,7 +23,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     if($cur_user_row['user_type']==Constants::USER_TYPE_APP){
         if(isset($_GET['order_id'])){
             if($orderPdo->isActiveOrder($_GET['order_id'])){
-                $getOtherSpazas=$spazaPdo->getOtherSpazas($exclude=0);
+                $getOtherSpazas=$spazaPdo->getOtherSpazas($cur_user_row['id']);
                 ?>
                 <style>
                     .shippingDetails{

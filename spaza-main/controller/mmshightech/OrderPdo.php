@@ -159,7 +159,7 @@ class OrderPdo{
     	return $this->mmshightech->getAllDataSafely($sql,'s',['%'.$searchOrderNumber.'%'])??[];
     }
     public function getAllactiveCount():int{
-    	$sql="select id from orders where process_status in (1,2,3,4,5,6,8,9,10,11,12,13,14,15)";
+    	$sql="SELECT id from orders where process_status in (1,2,3,4,5,6,8,9,10,11,12,13,14,15)";
     	return $this->mmshightech->numRows($sql,'',[])??0;
     }
     public function getAllStatusCount(int $id1=0,int $id2=0):int{
@@ -193,6 +193,39 @@ class OrderPdo{
     	where o.process_status in ($id1,$id2) limit ?,?";
     	return $this->mmshightech->getAllDataSafely($sql,'ss',[$min,$limit])??[];
 	}
+    public function getMyOrderDetailsByUser(?int $userId=null):array{
+        if(empty($userId)){
+            return ['response'=>'F','data'=>'Cannot process undefined request.'];
+        }
+        $sql="SELECT 
+                o.user_id,
+                od.order_id,
+                od.product_id,
+                od.label,
+                (CASE WHEN od.is_promo='Y' THEN od.promo_price ELSE od.price END) AS price,
+                od.quantity,
+                o.total,
+                od.is_instock,
+                od.is_picked,
+                o.payment_status,
+                s.status as process_status,
+                o.total AS order_total,
+                (CASE WHEN o.payment_status='NOT PAID' THEN 'N' ELSE 'Y' END) AS is_paid,
+                (CASE WHEN o.accepted_datetime IS NULL THEN 'N' ELSE 'Y' END) AS is_accepted,
+                o.is_invoiced,
+                od.comments,
+                od.status
+            FROM 
+                order_details AS od
+            LEFT JOIN 
+                orders AS o ON o.id = od.order_id
+            left join statuses as s on s.id=o.process_status
+            WHERE 
+                o.user_id = ? and o.process_status in (1,2,3,4,5,6,8,9,10,11,12,13,14,15)
+        ";
+        return $this->mmshightech->getAllDataSafely($sql,'s',[$userId])??[];
+
+    }
 	public function orderSummary(int $order_id=0):array{
 		$sql="SELECT 
                 o.user_id,
@@ -218,7 +251,7 @@ class OrderPdo{
 		return $this->mmshightech->getAllDataSafely($sql,'s',[$order_id])??[];
 	}
     public function acceptOrder(?int $acceptOrderId=null,?int $adminUserId=null):array{
-        $sql="update orders set accepted_datetime=NOW(),processed_by=? where id=?";
+        $sql="UPDATE orders set accepted_datetime=NOW(),processed_by=? where id=?";
         $response =$this->mmshightech->postDataSafely($sql,'ss',[$adminUserId,$acceptOrderId]);
         if(!is_numeric($response)){
             return ['response'=>'F','data'=>$response];
@@ -226,7 +259,7 @@ class OrderPdo{
         return ['response'=>'S','data'=>'Success'];
     }
 	public function removeProductFromOrder(int $removeThisProductFromOrder_order_id=0,int $removeThisProductFromOrder_product_id=0,int $removed_by):array{
-		$sql="update order_details set status='D', removed_by=? where order_id=? and product_id=?";
+		$sql="UPDATE order_details set status='D', removed_by=? where order_id=? and product_id=?";
 		$response = $this->mmshightech->postDataSafely($sql,'sss',[$removed_by,$removeThisProductFromOrder_order_id,$removeThisProductFromOrder_product_id]);
 		if(!is_numeric($response)){
 			return ['response'=>'F','data'=>$response];
@@ -235,7 +268,7 @@ class OrderPdo{
 
 	}
 	public function pickProduct(int $markDownPicker_order_id=0,int $markDownPicker_product_id=0):array{
-		$sql="update order_details set is_picked='Y', time_picked=NOW() where order_id=? and product_id=?";
+		$sql="UPDATE order_details set is_picked='Y', time_picked=NOW() where order_id=? and product_id=?";
 		$response = $this->mmshightech->postDataSafely($sql,'ss',[$markDownPicker_order_id,$markDownPicker_product_id]);
 		if(!is_numeric($response)){
 			return ['response'=>'F','data'=>$response];
@@ -279,7 +312,7 @@ class OrderPdo{
         return $this->updateInvoiceIdOnOrder($invoiceId,$invoiceOrder_orderNo);
     }
     public function updateInvoiceIdOnOrder(?int $invoiceId=null,?int $invoiceOrder_orderNo=null):array{
-        $sql="update orders set invoice_datetime=NOW(),is_invoiced='Y',invoice_id=? where id=?";
+        $sql="UPDATE orders set invoice_datetime=NOW(),is_invoiced='Y',invoice_id=? where id=?";
         $response =$this->mmshightech->postDataSafely($sql,'ss',[$invoiceId,$invoiceOrder_orderNo]);
         if(!is_numeric($response)){
             return ['response'=>'F','data'=>$response];
@@ -287,7 +320,7 @@ class OrderPdo{
         return ['response'=>'S','data'=>'Success'];
     }
     public function updateOrderProcessStatus(?int $status=null,?int $invoiceOrder_orderNo=null):array{
-        $sql="update orders set process_status=? where id=?";
+        $sql="UPDATE orders set process_status=? where id=?";
         $response =$this->mmshightech->postDataSafely($sql,'ss',[$status,$invoiceOrder_orderNo]);
         if(!is_numeric($response)){
             return ['response'=>'F','data'=>$response];

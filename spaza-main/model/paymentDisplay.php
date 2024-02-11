@@ -55,17 +55,17 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
               ?>
               <div style="width:100%;padding:0 10px;">
                 <div style="width:100%;"><label>Name on card</label>
-                  <input type="text" value="<?php echo $accountDetails['card_name'];?>" style="width:100%;padding:10px 10px;border:none;border-radius:10px;border:2px solid #ddd;" class="form-control NameOnCard" placeholder="Enter name on card">
+                  <input type="text" value="<?php echo $accountDetails['card_name']??'';?>" style="width:100%;padding:10px 10px;border:none;border-radius:10px;border:2px solid #ddd;" class="form-control NameOnCard" placeholder="Enter name on card">
                 </div>
                 <div style="width:100%;"><label>Card Number</label>
-                  <input type="number" value="<?php echo $accountDetails['card_number'];?>" maxlength="16" minlength="13" style="width:100%;padding:10px 10px;border:none;border-radius:10px;border:2px solid #ddd;" class="form-control cardNumber" placeholder="4444 4444 4444 4444">
+                  <input type="number" value="<?php echo $accountDetails['card_number']??'';?>" maxlength="16" minlength="13" style="width:100%;padding:10px 10px;border:none;border-radius:10px;border:2px solid #ddd;" class="form-control cardNumber" placeholder="4444 4444 4444 4444">
                 </div>
                 <div style="width:100%;display: flex;">
                     <div style="width:100%;padding: 0 3px;"><label>Expiry Date</label>
-                      <input type="month" value="<?php echo $accountDetails['card_expiry_date'];?>" style="width:100%;padding:10px 10px;border:none;border-radius:10px;border:2px solid #ddd;" class="form-control expiryDate" placeholder="Enter name on card">
+                      <input type="month" value="<?php echo $accountDetails['card_expiry_date']??'';?>" style="width:100%;padding:10px 10px;border:none;border-radius:10px;border:2px solid #ddd;" class="form-control expiryDate" placeholder="Enter name on card">
                     </div>
                     <div style="width:100%;padding: 0 3px;"><label>CVV</label>
-                      <input type="number" maxlength="3" minlength="3" value="<?php echo $accountDetails['card_cvv'];?>" style="width:100%;padding:10px 10px;border:none;border-radius:10px;border:2px solid #ddd;" class="form-control cvv" placeholder="CVV">
+                      <input type="number" maxlength="3" minlength="3" value="<?php echo $accountDetails['card_cvv']??'';?>" style="width:100%;padding:10px 10px;border:none;border-radius:10px;border:2px solid #ddd;" class="form-control cvv" placeholder="CVV">
                     </div>
                 </div>
                 <div class="errorTagDisplay" hidden></div>

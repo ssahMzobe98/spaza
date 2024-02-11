@@ -12,9 +12,9 @@ class spazaPdo
     }
     public function getSpazaInformation(?int $spazaId):array
     {
-        $sql = "select * from spaza_details where id=?";
+        $sql = "SELECT * from spaza_details where id=?";
         $row=$this->mmshightech->getAllDataSafely($sql,'s',[$spazaId])[0]??[];
-        $sql="select u.card_number,
+        $sql="SELECT u.card_number,
                     u.card_expiry_date,
                     u.card_name,
                     u.card_type,
@@ -24,8 +24,21 @@ class spazaPdo
         $row['card_details']=$this->mmshightech->getAllDataSafely($sql,'s',[$row['spaza_owner_id']])[0]??[];
         return $row??[];
     }
-    public function getSpazaInformationForOrderProcessing(?int $spazaId):array{
-        $sql = "select 
+    public function spazaDetailsForThisOrder(?int $orderId=null):array{
+        if(empty($orderId)){
+            return ['response'=>'F','data'=>'Please provide order no.'];
+        }
+        $sql='SELECT spaza_id from orders where id=?';
+        $row=$this->mmshightech->getAllDataSafely($sql,'s',[$orderId])[0]??[];
+        if(empty($row['spaza_id'])){
+            return ['response'=>'F','data'=>'cannot process request with NO spaza ID'];
+        }
+        $spaza_id = $row['spaza_id']??null;
+        // print_r($spaza_id);
+        return $this->getSpazaInformationForOrderProcessing($spaza_id);
+    }
+    public function getSpazaInformationForOrderProcessing(?int $spazaId=null):array{
+        $sql = "SELECT 
                     sd.id as spaza_id, 
                     sd.spaza_name as spaza_name,
                     concat(sd.rep_name,' ',sd.rep_surname) as rep_name,
@@ -52,7 +65,7 @@ class spazaPdo
     }
     public function getSpazaInfoAll():array
     {
-        $sql = "select 
+        $sql = "SELECT 
                     sd.id as spaza_id, 
                     sd.spaza_name as spaza_name,
                     concat(sd.rep_name,' ',sd.rep_surname) as rep_name,
@@ -76,16 +89,16 @@ class spazaPdo
         return $this->mmshightech->getAllDataSafely($sql)??[];
     }
 
-    public function getOtherSpazas(?int $exclude):array
+    public function getOtherSpazas(?int $spaza_owner_id):array
     {
-        $sql = "select spaza_name, id as spaza_id from spaza_details where id!=? and status='A'";
-        return $this->mmshightech->getAllDataSafely($sql,'s',[$exclude])??[];
+        $sql = "SELECT spaza_name, id as spaza_id from spaza_details where spaza_owner_id=? and status='A'";
+        return $this->mmshightech->getAllDataSafely($sql,'s',[$spaza_owner_id])??[];
 
     }
 
     public function get_A_Details(?int $spazaID):array
     {
-        $sql = "select  permit_number, 
+        $sql = "SELECT  permit_number, 
                         visa_number,
                         origin_address,
                         spaza_address,
@@ -100,7 +113,7 @@ class spazaPdo
         return $this->mmshightech->getAllDataSafely($sql,'s',[$spazaID])[0]??[];
     }
     public function getSpazaPaymentDetails(?int $spazaId):array{
-        $sql = "select  id as owner_id,card_number,card_cvv,card_token,card_expiry_date,card_type,card_name,name,surname,usermail as email, phone_number as phone ,dob,gender,nationality,sa_residing_address
+        $sql = "SELECT  id as owner_id,card_number,card_cvv,card_token,card_expiry_date,card_type,card_name,name,surname,usermail as email, phone_number as phone ,dob,gender,nationality,sa_residing_address
                 from users where current_spaza = ? and status='A'";
         return $this->mmshightech->getAllDataSafely($sql,'s',[$spazaId])[0]??[];
     }
