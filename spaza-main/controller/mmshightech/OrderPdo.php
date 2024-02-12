@@ -48,11 +48,11 @@ class OrderPdo{
         return $this->createOrder($getProducts,$vat,$total,$subTotal,$deliveryFee,$user_id);
     }
     public function isUserHasActiveOrder(?int $user_id):array{
-    	$sql="select id as order_id from orders where user_id=? and process_status in (1,2,3,4,5,6,8,9,10,11,12)";
+    	$sql="SELECT id as order_id from orders where user_id=? and process_status in (1,2,3,4,5,6,8,9,10,11,12)";
     	return $this->mmshightech->getAllDataSafely($sql,'s',[$user_id])[0]??[];
     }
     public function isActiveOrder(?int $order_id):bool{
-    	$sql="select id as order_id from orders where id=? and process_status in (1,2,3,4,5,6,8,9,10,11,12)";
+    	$sql="SELECT id as order_id from orders where id=? and process_status in (1,2,3,4,5,6,8,9,10,11,12)";
     	$response=$this->mmshightech->getAllDataSafely($sql,'s',[$order_id])[0]??[];
     	return (empty($response)?false:($response['order_id']==$order_id))?true:false;
     }
@@ -68,7 +68,7 @@ class OrderPdo{
     	return $this->createNewOrderDetails($getProducts,$createNewOrder['data']);
     }
     protected function createNewOrder(string|int|array|null $getProducts=null,?string $vat,?string $total,?string $subTotal,?string $deliveryFee,?string $user_id):array{
-    	$sql="insert into orders(user_id,created_datetime,process_status,total,sub_total,vat,delivery_fee,order_json)values(?,NOW(),1,?,?,?,?,?)";
+    	$sql="INSERT into orders(user_id,created_datetime,process_status,total,sub_total,vat,delivery_fee,order_json)values(?,NOW(),1,?,?,?,?,?)";
     	$params = [$user_id,$total,$subTotal,$vat,$deliveryFee,json_encode($getProducts)];
     	$response = $this->mmshightech->postDataSafely($sql,'ssssss',$params);
     	if(is_numeric($response)){
@@ -82,7 +82,7 @@ class OrderPdo{
     	if(!isset($orderNo)){
     		return ['response'=>'F','data'=>'Order placement process failed to retrieve order ID'];
     	}
-    	$sql="insert into order_details(order_id,product_id,label,product_unit_size,price,quantity,is_instock,comments,is_promo,promo_price,time_added)values(?,?,?,?,?,?,?,?,?,?,NOW())";
+    	$sql="INSERT into order_details(order_id,product_id,label,product_unit_size,price,quantity,is_instock,comments,is_promo,promo_price,time_added)values(?,?,?,?,?,?,?,?,?,?,NOW())";
     	$response=[];
     	foreach($getProducts as $product){
     		$params=[$orderNo,$product['id'],$product['product_description'],$product['product_weight'],$product['price_usd'],$product['quantity'],$product['is_instock'],'No Comment',$product['product_discountable'],$product['promo_price']];
@@ -101,11 +101,11 @@ class OrderPdo{
     	if(!isset($order_id)){
     		return ['response'=>'F','data'=>'Order placement process failed to retrieve order ID'];
     	}
-    	$sql="select total from orders where id=?";
+    	$sql="SELECT total from orders where id=?";
     	return $this->mmshightech->getAllDataSafely($sql,'s',[$order_id])[0]??[];
     }
     public function getAllactiveOrder(int $min=0,int $limit=10):array{
-    	$sql="select 
+    	$sql="SELECT 
     		s.status as order_status,
     		o.id as order_id,
     		o.user_id,
@@ -132,7 +132,7 @@ class OrderPdo{
     	return $this->mmshightech->getAllDataSafely($sql,'ss',[$min,$limit])??[];
     }
     public function searchOrderWithId(?int $searchOrderNumber=0):array{
-    	$sql="select 
+    	$sql="SELECT 
     		s.status as order_status,
     		o.id as order_id,
     		o.user_id,
@@ -165,6 +165,37 @@ class OrderPdo{
     public function getAllStatusCount(int $id1=0,int $id2=0):int{
     	$sql="select id from orders where process_status in (?,?)";
     	return $this->mmshightech->numRows($sql,'ss',[$id1,$id2])??0;
+    }
+    public function getHistoryOrdersOfThisUserCount(int $user_id=0):int{
+        $sql="select id from orders where user_id = ?";
+        return $this->mmshightech->numRows($sql,'s',[$user_id])??0;
+    }
+    public function getHistoryOrdersOfThisUser(int $user_id=0,int $min=0,int $limit=10):array{
+        $sql="SELECT 
+            s.status as order_status,
+            o.id as order_id,
+            o.user_id,
+            o.spaza_id,
+            o.is_invoiced,
+            o.total,
+            u.name,
+            u.surname,
+            sd.spaza_name,
+            o.payment_status,
+            sd.rep_name,
+            date(o.created_datetime) as created_date,
+            time(o.created_datetime) as created_time,
+            sd.rep_surname,
+            sd.phone_number,
+            sd.email_address,
+            sd.spaza_address,
+            o.driver_id
+        from orders as o
+            left join statuses as s on s.id=o.process_status
+            left join users as u on u.id=o.user_id
+            left join spaza_details as sd on sd.id=o.spaza_id
+        where o.user_id =? order by o.id desc limit ?,?";
+        return $this->mmshightech->getAllDataSafely($sql,'sss',[$user_id,$min,$limit])??[];
     }
 	public function getAllStatusOrder(int $id1=0,int $id2,$min,$limit):array{
 		$sql="SELECT 
@@ -236,7 +267,9 @@ class OrderPdo{
                 od.quantity,
                 od.is_instock,
                 od.is_picked,
+                o.payment_status,
                 o.total AS order_total,
+                s.status as process_status,
                 (CASE WHEN o.payment_status='NOT PAID' THEN 'N' ELSE 'Y' END) AS is_paid,
                 (CASE WHEN o.accepted_datetime IS NULL THEN 'N' ELSE 'Y' END) AS is_accepted,
                 o.is_invoiced,
@@ -245,6 +278,7 @@ class OrderPdo{
                 order_details AS od
             LEFT JOIN 
                 orders AS o ON o.id = od.order_id 
+            left join statuses as s on s.id=o.process_status
             WHERE 
                 od.order_id = ? AND od.status = 'A'
 		";

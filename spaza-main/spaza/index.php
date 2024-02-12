@@ -108,8 +108,8 @@ h3{
   text-align: center
 }
 .largeModal{
-  width:1350px;
-  margin-left: -85%;
+  width:1300px;
+  margin-left: -80%;
 }
 .sidebar .logo-details .logo_name{
   color: #000;
@@ -760,7 +760,7 @@ select{
         }
         if($cur_user_row['user_type']===Constants::USER_TYPE_APP){ ?>
         <li>
-          <a onclick='loadAfterQuery(".makhanyile","../model/orderHistory.php")'>
+          <a onclick='loadAfterQuery(".makhanyile","../model/orderHistory.php?min=0&limit=10")'>
             <i class='bx bx-pie-chart-alt-2' ></i>
             <span class="links_name">Order History</span>
           </a>

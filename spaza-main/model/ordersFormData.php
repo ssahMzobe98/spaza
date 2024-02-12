@@ -1,20 +1,26 @@
 <?php
 include("../vendor/autoload.php");
 use Controller\mmshightech;
-use Controller\mmshightech\OrderPdo;
 use Classes\constants\Constants;
+use Classes\factory\PDOFactoryOOPClass;
 if(session_status() !== PHP_SESSION_ACTIVE){
   session_start();
 }
 if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
   // require_once("../controller/mmshightech.php");
   $mmshightech=new mmshightech();
-  $OrderPdo = new OrderPdo($mmshightech);
+  $OrderPdo = PDOFactoryOOPClass::make(Constants::ORDER,[$mmshightech]);
+  $spazaPdo = PDOFactoryOOPClass::make(Constants::SPAZA,[$mmshightech]);
   $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
   $userDirect=$cur_user_row['user_type'];
   if($cur_user_row['user_type']==Constants::USER_TYPE_ADMIN && isset($_POST['request'])){
     $orderData=$OrderPdo->orderSummary($_POST['request']);
+    $spazaDetails=$spazaPdo->spazaDetailsForThisOrder($orderData[0]['order_id']);
     date_default_timezone_set('Africa/Johannesburg');
+    $paidBg=($orderData[0]['payment_status']===Constants::PAYMENT_STATUS_PAID)?'badge-success':'badge-danger';
+    $OrderStatusBg=($orderData[0]['process_status']===Constants::ORDER_PROSESS_STATUS_WFP)?'badge-danger':'badge-primary';
+    $onclickCheckout = 'loadAfterQuery(".makhanyile","../model/checkout.php?order_id='.$orderData[0]['order_id'].'");';
+    $paymentString=($orderData[0]['payment_status']===Constants::PAYMENT_STATUS_PAID)?'':"<hr><div style='color:white;background:navy;padding:4px 4px;text-align:center;cursor:pointer;' onclick='{$onclickCheckout}' >MAKE PAYMENT</div>";
  	?>
   <style>
     .button a{
@@ -34,12 +40,114 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         <h4 class="modal-title" style="text-align: center;<?php if($cur_user_row['background']==1){echo'color:black;';}else{echo'color:white;';} ?>">ORDER <?php echo $_POST['request'];?></h4>
       </div>
  			<div class="headerTech" style="display:flex;width: 100%;">
-        <div style="padding:10px 10px;width:30%;">
+        <div style="padding:10px 10px;width:25%;">
             <div style="padding: 5px 5px; border-radius:10px;border:2px solid #ddd;">
                <center><h3 style="text-align:center;text-decoration-line: underline;text-decoration-color: #dddddd;text-decoration-style: solid;text-decoration-thickness: 2px;">Order Details</h3></center>
+               <div style="padding:0 10px;width: 100%;border:2px solid #ddd;">
+                   <span><h6 style="font-weight:bolder;">ORDER NO: <?php echo $orderData[0]['order_id'];?></h6></span>
+                   <div style="text-align:center;border-bottom: 2px solid #ddd;width:100%;">STATUSES</div>
+                   <div style="display:flex;">
+                       <div style="border-right: 1px solid #ddd;padding:3px 3px;text-align: center;width:40%;">
+                           <div><span>Payment</span></div>
+                           <div><span class="badge <?php echo $paidBg;?> text-white text-center"><?php echo $orderData[0]['payment_status'];?></span></div>
+                       </div>
+                       <div style="border-left: 1px solid #ddd;padding:3px 3px;text-align: center;">
+                           <div><span>Order</span></div>
+                           <div><span class="badge <?php echo $OrderStatusBg;?> text-white text-center"><?php echo $orderData[0]['process_status'];?></span><?php echo $paymentString?></div>
+                           <!-- <div >Total: R<span class="priceDisplay"></span></div> -->
+                       </div>
+                   </div>
+               </div>
+               <br>
+               <div style="width:100%;border:2px solid #ddd;">
+                   <h6 style="text-align:center;text-decoration-line:underline;text-decoration-color:#dddddd;text-decoration-style:solid;text-decoration-thickness:2px;">SPAZA DETAILS-<?php echo empty($spazaDetails['spaza_name'])?'NOT FOUND':$spazaDetails['spaza_name'];?></h6>
+                   <style>
+                       th{
+                        padding: 5px 5px;
+                        border-bottom: 2px solid #ddd;
+                       }
+                   </style>
+                   <?php 
+                    if(empty($spazaDetails['spaza_name'])){
+                        echo"<span style='color:red;text-align:center;'>SPAZA NOT PROVIDED</span>";
+                    }
+                    else{
+                        ?>
+                        <table>
+                           <tr>
+                                <th>Sales Rep</th>
+                                <th><?php echo ": ".$spazaDetails['rep_name'];?></th>
+                            </tr>
+                            <tr>
+                                <th>Phone</th>
+                                <th><?php echo ": ".$spazaDetails['phone'];?></th>
+                            </tr>
+                            <tr>
+                                <th>Email</th>
+                                <th><?php echo ": ".$spazaDetails['email'];?></th>
+                            </tr>
+                            <tr>
+                                <th>Nationality</th>
+                                <th><?php echo ": ".$spazaDetails['nationality'];?></th>
+                            </tr>
+                            <tr>
+                                <th>Delivery Address</th>
+                                <th><?php echo ": ".$spazaDetails['delivery_address'];?></th>
+                            </tr>
+                       </table>
+
+                        <?php
+                    }
+                   ?>
+               </div>
+               <br>
+               <div style="width:100%;border:2px solid #ddd;">
+                   <h6 style="text-align:center;text-decoration-line:underline;text-decoration-color:#dddddd;text-decoration-style:solid;text-decoration-thickness:2px;">SPAZA OWNER DETAILS</h6>
+                   <style>
+                       th{
+                        padding: 5px 5px;
+                        border-bottom: 2px solid #ddd;
+                       }
+                   </style>
+                   <table>
+                       <tr>
+                            <th>Name & Surname</th>
+                            <th><?php echo ": ".$cur_user_row['name']." ".$cur_user_row['name'];?></th>
+                        </tr>
+                        <tr>
+                            <th>DOB</th>
+                            <th><?php echo ": ".$cur_user_row['dob'];?></th>
+                        </tr>
+                        <tr>
+                            <th>Gender</th>
+                            <th><?php echo ": ".$cur_user_row['gender'];?></th>
+                        </tr>
+                        <tr>
+                            <th>Nationality</th>
+                            <th><?php echo ": ".$cur_user_row['nationality'];?></th>
+                        </tr>
+                        <tr>
+                            <th>Nationality Addr</th>
+                            <th><?php echo ": ".$cur_user_row['country_of_origin_address'];?></th>
+                        </tr>
+                        <tr>
+                            <th>SA Residing Addr</th>
+                            <th><?php echo ": ".$cur_user_row['sa_residing_address'];?></th>
+                        </tr>
+                        <tr>
+                            <th>Email Address</th>
+                            <th><?php echo ": ".$cur_user_row['usermail'];?></th>
+                        </tr>
+                        <tr>
+                            <th>Phone Number</th>
+                            <th><?php echo ": ".$cur_user_row['phone_number'];?></th>
+                        </tr>
+                   </table>
+
+               </div>
             </div>
         </div>
- 				<div style="padding:10px 10px;width:70%;">
+ 				<div style="padding:10px 10px;width:75%;">
               <div style="padding: 5px 5px; border-radius:10px;border:2px solid #ddd;">
                  <center><h3 style="text-align:center;text-decoration-line: underline;text-decoration-color: #dddddd;text-decoration-style: solid;text-decoration-thickness: 2px;">Order Summary</h3></center>
                  <div style="padding:0 10px;width: 100%;">
