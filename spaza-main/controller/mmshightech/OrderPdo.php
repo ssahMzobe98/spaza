@@ -170,6 +170,33 @@ class OrderPdo{
         $sql="select id from orders where user_id = ?";
         return $this->mmshightech->numRows($sql,'s',[$user_id])??0;
     }
+    public function getHistoryOrdersOfThisUserSearch(int $user_id=null,int $search=null):array{
+        $sql="SELECT 
+            s.status as order_status,
+            o.id as order_id,
+            o.user_id,
+            o.spaza_id,
+            o.is_invoiced,
+            o.total,
+            u.name,
+            u.surname,
+            sd.spaza_name,
+            o.payment_status,
+            sd.rep_name,
+            date(o.created_datetime) as created_date,
+            time(o.created_datetime) as created_time,
+            sd.rep_surname,
+            sd.phone_number,
+            sd.email_address,
+            sd.spaza_address,
+            o.driver_id
+        from orders as o
+            left join statuses as s on s.id=o.process_status
+            left join users as u on u.id=o.user_id
+            left join spaza_details as sd on sd.id=o.spaza_id
+        where o.user_id =? and o.id like ? order by o.id desc ";
+        return $this->mmshightech->getAllDataSafely($sql,'ss',[$user_id,"%".$search."%"])??[];
+    }
     public function getHistoryOrdersOfThisUser(int $user_id=0,int $min=0,int $limit=10):array{
         $sql="SELECT 
             s.status as order_status,

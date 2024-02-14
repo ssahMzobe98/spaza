@@ -30,7 +30,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
       <div class="orderDataSet">
         <div class="orderDataSetHeader">
             <div class="maKhathiOrdersSearch" style="padding:10px 10px;">
-                <input type="search" id="FindSpazaSearch" class="maKhathiOrdersSearchInput" placeholder="Find Order...">
+                <input type="search" id="FindOrder" class="FindOrder" oninput="FindOrderSearch()" placeholder="Find Order...">
             </div>
             <div class="processing" hidden></div>
         </div>
