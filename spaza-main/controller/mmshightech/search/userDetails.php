@@ -1,29 +1,24 @@
 <?php
-include("../vendor/autoload.php");
+
+require_once("../../../vendor/autoload.php");
 use Controller\mmshightech;
+use Controller\mmshightech\processorNewPdo;
 use Controller\mmshightech\usersPdo;
-use Classes\constants\Constants;
 if(session_status() !== PHP_SESSION_ACTIVE){
-    session_start();
+  session_start();
 }
+//use controller\mmshightech\processorDao;
 if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
-    $mmshightech=new mmshightech();
-    $user=new usersPdo($mmshightech);
-    $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
-    $userDirect=$cur_user_row['user_type'];
-    if($cur_user_row['user_type']==Constants::USER_TYPE_ADMIN){
-        date_default_timezone_set('Africa/Johannesburg');
-        $getUsersInfo= $user->getUsersInfoAll();
-        // print_r($getUsersInfo);
-        ?>
-        <div class="orderDataSet">
-            <div class="orderDataSetHeader">
-                <div class="maKhathiOrdersSearch" style="padding:10px 10px;">
-                    <input type="search" id="FindUserSearch" class="findUserSearch" oninput="FindUserSearch()" placeholder="Find user...">
-                </div>
-            </div>
-            <div class="userDisplay">
-                <table class="table table-striped">
+    $e="UKNOWN REQUEST!!";
+
+    $processorNewDao = new processorNewPdo(new mmshightech());
+    $userPdo = new usersPdo(new mmshightech());
+    $cur_user_row = $processorNewDao->userInfo($_SESSION['user_agent']);
+
+    if(isset($_POST['FindUserSearch'])){
+      $getUsersInfo = $userPdo->getUsersInfoSearchAll($processorNewDao->mmshightech->OMO($_POST['FindUserSearch']));
+      ?>
+         <table class="table table-striped">
                     <thead>
                     <tr>
                         <th>id #</th>
@@ -93,28 +88,20 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                     </tr>
                     </tfoot>
                 </table>
-            </div>
-                
-
-        </div>
-        <?php
+      <?php
     }
     else{
-        session_destroy();
-        ?>
-        <script>
-            window.location=("../");
-        </script>
-        <?php
+      echo"UKNOWN REQUEST!!.";;
     }
 }
 else{
-    session_destroy();
-    ?>
-    <script>
-        window.location=("../");
-    </script>
+  session_destroy();
+  ?>
+  <script>
+    window.location=("../../../");
+  </script>
 
-    <?php
+  <?php
 }
+
 ?>

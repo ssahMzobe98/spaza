@@ -674,7 +674,7 @@ select{
   <div class="sidebar ">
     <div class="logo-details">
       <i class='bx bxl-c-plus-plus'></i>
-      <span class="logo_name">SPAZA</span>
+      <span class="logo_name">iSPAZA</span>
     </div>
       <ul class="nav-links">
         <!-- <li>
@@ -1120,10 +1120,10 @@ select{
           </div>
         </div>
         <div class="twinsPack">
-          <div class="inputVals">
+          <!-- <div class="inputVals">
             <label>Permit Number</label>
             <input type="text" required class="form-control permitNumber" placeholder="Permit/visa number">
-          </div>
+          </div> -->
           <div class="inputVals">
             <label>Country of origin address</label>
             <input type="text" required class="form-control coutryOfOriginAddress" placeholder="Country of origin address">
@@ -1408,6 +1408,32 @@ function ProductSearchByDescription(searchProductTableColumn){
   const ProductSearchByDescription=$(".ProductSearchByDescription").val();
   searchProduct(searchProductTableColumn,ProductSearchByDescription);
 }
+function FindUserSearch(){
+  const FindUserSearch=$('.findUserSearch').val();
+  url = "../controller/mmshightech/search/userDetails.php";
+  dataArray={'FindUserSearch':FindUserSearch};
+  $.ajax({
+    url:url,
+    type:'post',
+    data:dataArray,
+    success:function(e){
+      $(".userDisplay").html(e);
+    }
+  });
+}
+function maKhathiOrdersSearchInput(){
+  const searchSpazaBynameOrOwner=$('.searchSpazaBynameOrOwner').val();
+    url = "../controller/mmshightech/search/searchSpaza.php";
+    dataArray={'searchSpazaBynameOrOwner':searchSpazaBynameOrOwner};
+    $.ajax({
+      url:url,
+      type:'post',
+      data:dataArray,
+      success:function(e){
+        $(".spazaDisplay").html(e);
+      }
+    });
+}
 function ProductSearchByBarcode(searchProductTableColumn){
   const ProductSearchByBarcode=$(".ProductSearchByBarcode").val();
   searchProduct(searchProductTableColumn,ProductSearchByBarcode);
@@ -1645,6 +1671,45 @@ function createNewUser(){
       });
     }
 }
+function deliverOrder(deliverOrder_order_id){
+  $(".displayResponseOrder").removeAttr('hidden').attr("style","color:green;").html("Delivering Order, please wait...");
+  $.ajax({
+      url:'../controller/mmshightech/processor.php',
+      type:'post',
+      data:{deliverOrder_order_id:deliverOrder_order_id},
+      success:function(e){
+          console.log(e);
+          response=JSON.parse(e);
+          if(response['response']!=='S'){
+              $(".displayResponseOrder").attr("style","padding:5px 5px;color:red;text-align:center;").html(response['data']);
+          }
+          else{
+              $(".displayResponseOrder").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html("Order Delivered.");
+              getOrderInfo(deliverOrder_order_id);
+              
+          }
+      }
+  });
+}
+function CancelOrder(CancelOrder_order_id){
+  $(".displayResponseOrder").removeAttr('hidden').attr("style","color:green;").html("Cancelling Order, please wait...");
+  $.ajax({
+      url:'../controller/mmshightech/processor.php',
+      type:'post',
+      data:{CancelOrder_order_id:CancelOrder_order_id},
+      success:function(e){
+          response=JSON.parse(e);
+          if(response['response']!=='S'){
+              $(".displayResponseOrder").attr("style","padding:5px 5px;color:red;text-align:center;").html(response['data']);
+          }
+          else{
+              $(".displayResponseOrder").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html("Order Cancelled.");
+              getOrderInfo(CancelOrder_order_id);
+              
+          }
+      }
+  });
+}
 function removeThisProductFromOrder(removeThisProductFromOrder_order_id,removeThisProductFromOrder_product_id){
   $(".removeThisProductFromOrder").html("Removing Product-"+removeThisProductFromOrder_product_id+" please wait...");
   $.ajax({
@@ -1845,6 +1910,7 @@ function removeSpazaPermanetly(spaza_id_toBeRemoved){
         }
     });
 }
+
 function removeProductToCart(productIdToActionOnCart,actionType){
     console.log(actionType);
     $.ajax({

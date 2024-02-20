@@ -46,8 +46,8 @@ class spazaPdo
                     concat(u.name,' ',u.surname) as owner_name,
                     u.usermail as owner_email,
                     u.phone_number as owner_phone,
-                    (select count(id) from orders where process_status <12) as active_orders,
-                    (select count(id) from orders where process_status =16) as pending_orders,          
+                    (select count(id) from orders where process_status in (2,3,4,5,6,7,8,9,10,11,12)) as active_orders,
+                    (select count(id) from orders where process_status =1) as pending_orders,          
                     (select count(id) from orders where process_status = 13) as delivered_orders,
                     sd.status as spaza_status,
                     sd.id_passport_number as rep_passp_id,
@@ -73,8 +73,33 @@ class spazaPdo
                     concat(u.name,' ',u.surname) as owner_name,
                     u.usermail as owner_email,
                     u.phone_number as owner_phone,
-                    (select count(id) from orders where process_status <12) as active_orders,
-                    (select count(id) from orders where process_status =16) as pending_orders,          
+                    (select count(id) from orders where process_status in (2,3,4,5,6,7,8,9,10,11,12)) as active_orders,
+                    (select count(id) from orders where process_status = 1 ) as pending_orders,          
+                    (select count(id) from orders where process_status = 13) as delivered_orders,
+                    sd.id_passport_number as rep_passp_id,
+                    sd.country_of_origin as nationality,
+                    sd.email_address as email,
+                    sd.status as spaza_status,
+                    sd.phone_number as phone,
+                    sd.spaza_address as delivery_address
+                from spaza_details as sd 
+                    left join users as u on u.id=sd.spaza_owner_id
+                where sd.status='A' order by sd.spaza_name asc
+               ";
+        return $this->mmshightech->getAllDataSafely($sql)??[];
+    }
+    public function getSpazaInfoSearchAll(string $search=''):array
+    {
+        $sql = "SELECT 
+                    sd.id as spaza_id, 
+                    sd.spaza_name as spaza_name,
+                    concat(sd.rep_name,' ',sd.rep_surname) as rep_name,
+                    sd.spaza_owner_id as owner_id,  
+                    concat(u.name,' ',u.surname) as owner_name,
+                    u.usermail as owner_email,
+                    u.phone_number as owner_phone,
+                    (select count(id) from orders where process_status  in (2,3,4,5,6,7,8,9,10,11,12)) as active_orders,
+                    (select count(id) from orders where process_status =1) as pending_orders,          
                     (select count(id) from orders where process_status = 13) as delivered_orders,
                     sd.status as spaza_status,
                     sd.id_passport_number as rep_passp_id,
@@ -84,9 +109,9 @@ class spazaPdo
                     sd.spaza_address as delivery_address
                 from spaza_details as sd 
                     left join users as u on u.id=sd.spaza_owner_id
-                where sd.status='A' order by sd.spaza_name asc
+                where sd.status='A' and (sd.spaza_name like ? or u.name like ? or u.surname like ?) order by sd.spaza_name asc
                ";
-        return $this->mmshightech->getAllDataSafely($sql)??[];
+        return $this->mmshightech->getAllDataSafely($sql,'sss',['%'.$search.'%','%'.$search.'%','%'.$search.'%'])??[];
     }
 
     public function getOtherSpazas(?int $spaza_owner_id):array

@@ -9,5 +9,6 @@ class Constants{
 	public const ORDER ='OrderPdo'; 
 	public const PAYMENT_STATUS_PAID = 'PAID';
 	public const ORDER_PROSESS_STATUS_WFP = 'WAITING FOR PAYMENT';
+	public const PROCESS_STATUS_FAILED = 'ORDER FAILED';
 }
 ?> 

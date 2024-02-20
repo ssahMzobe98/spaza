@@ -126,14 +126,14 @@ class mmshightech
     }
     public function login(string $email=null,string $pass=null):array{
         $pass = $this->lockPassWord($pass);
-        // echo $pass." | ".$email;
+        //echo $pass." | ".$email;
         $response = $this->Verification($email,$pass);
         if($response==1){
             return ['response'=>'S','data'=>'Success'];
         }
         return ['response'=>'F','data'=>'Email|Password incorrect'];
     }
-    public function login2App(string $email=null, string $pass=null,string $app="app"){
+    public function login2App(string $email=null, string $pass=null,string $app="APP"){
         $pass = $this->lockPassWord($pass);
         $response = $this->VerificationApp($email,$pass,$app);
         if($response==1){
@@ -142,6 +142,7 @@ class mmshightech
         return ['response'=>'F','data'=>'Email|Password incorrect'];
     }
     private function Verification($email,$pass):int{
+        //echo"here";
         $sql = "select usermail,security from users where usermail=? and security=?";
         return $this->numRows($sql,"ss",[$email,$pass])??0;
     }

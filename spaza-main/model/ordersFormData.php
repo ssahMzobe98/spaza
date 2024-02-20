@@ -53,7 +53,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                        </div>
                        <div style="border-left: 1px solid #ddd;padding:3px 3px;text-align: center;">
                            <div><span>Order</span></div>
-                           <div><span class="badge <?php echo $OrderStatusBg;?> text-white text-center"><?php echo $orderData[0]['process_status'];?></span><?php echo $paymentString?></div>
+                           <div><span class="badge <?php echo $OrderStatusBg;?> text-white text-center"><?php echo $orderData[0]['process_status'];?></span><?php if($orderData[0]['process_status']!==Constants::PROCESS_STATUS_FAILED){ echo $paymentString;}?></div>
                            <!-- <div >Total: R<span class="priceDisplay"></span></div> -->
                        </div>
                    </div>
@@ -171,18 +171,24 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                         $is_accepted=$orderData[0]['is_accepted'];
                         $is_invoiced=$orderData[0]['is_invoiced'];
                         $btn = '<a style="color:white;" class="invoiceOrder" onclick="invoiceOrder('.$_POST['request'].')">INVOICE ORDER</a>';
-                        if($is_paid==='N'){
-                          $btn = '<a style="color:white;" class="invoiceOrder">WAITING FOR PAYMENT</a>';
+                        // echo $orderData[0]['payment_status'].' lflsdjflsdfjsdlf';
+                        if($orderData[0]['process_status']===Constants::PROCESS_STATUS_FAILED){
+                            $btn = '<a style="color:white;" class="invoiceOrder">'.$orderData[0]['process_status'].'</a>';
                         }
                         else{
-                          if($is_accepted==='N'){
-                            $btn = '<a style="color:white;" class="invoiceOrder" onclick="acceptOrder('.$_POST['request'].')">ACCEPT ORDER</a>';
-                          }
-                          else{
-                            if($is_invoiced==='Y'){
-                              $btn = '<a style="color:white;" class="invoiceOrder">ORDER INVOICED</a>';
+                            if($is_paid==='N'){
+                              $btn = '<a style="color:white;" class="invoiceOrder">WAITING FOR PAYMENT</a>';
                             }
-                          }
+                            else{
+                              if($is_accepted==='N'){
+                                $btn = '<a style="color:white;" class="invoiceOrder" onclick="acceptOrder('.$_POST['request'].')">ACCEPT ORDER</a>';
+                              }
+                              else{
+                                if($is_invoiced==='Y'){
+                                  $btn = '<a style="color:white;" class="invoiceOrder">'.$orderData[0]['process_status'].'</a>';
+                                }
+                              }
+                            }
                         }
                         //echo"<pre>";print_r($orderData);echo"</pre>";
                         foreach($orderData as $summary){
@@ -235,9 +241,19 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                                   <?php echo $btn;?>
                                 </div>
                             </th>
-                            <th></th>
-                            <th><div class="invoiceOrderErrorCatch" hidden></div></th>
-                            <th></th>
+                            <th>
+                                <div class='button' title="Mark order as CANCELLED">
+                                  <a style="color:white;background: red;" class="deliverOrder" onclick="CancelOrder(<?php echo $_POST['request'];?>)"><i class="fa fa-trash-o"></i></a>
+                                </div>
+                            </th>
+                            <th title="Mark order as delivered!">
+                                <div class='button' style="">
+                                  <a style="color:white;background: seagreen;" class="CancelOrder" onclick="deliverOrder(<?php echo $_POST['request'];?>)"><i class="fa fa-truck"></i></a>
+                                </div>
+                            </th>
+                            <th>
+                                <div hidden class="displayResponseOrder"></div>
+                            </th>
                             <th></th>
                             <th></th>
                             <th><!-- <div class='button subtitutions' hidden>

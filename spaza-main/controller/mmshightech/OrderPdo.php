@@ -319,6 +319,14 @@ class OrderPdo{
         }
         return ['response'=>'S','data'=>'Success'];
     }
+    // public function markOrderAsDelivered(?int $deliverOrder_order_id =null,?int $adminUserId=null):array{
+    //     $sql="UPDATE orders set process_status = ,processed_by=? where id=?";
+    //     $response =$this->mmshightech->postDataSafely($sql,'ss',[$adminUserId,$deliverOrder_order_id]);
+    //     if(!is_numeric($response)){
+    //         return ['response'=>'F','data'=>$response];
+    //     }
+    //     return ['response'=>'S','data'=>'Success'];
+    // }
 	public function removeProductFromOrder(int $removeThisProductFromOrder_order_id=0,int $removeThisProductFromOrder_product_id=0,int $removed_by):array{
 		$sql="UPDATE order_details set status='D', removed_by=? where order_id=? and product_id=?";
 		$response = $this->mmshightech->postDataSafely($sql,'sss',[$removed_by,$removeThisProductFromOrder_order_id,$removeThisProductFromOrder_product_id]);
@@ -387,6 +395,18 @@ class OrderPdo{
             return ['response'=>'F','data'=>$response];
         }
         return ['response'=>'S','data'=>'Success'];
+    }
+    public function getOrderInfo(?int $order_id=null):array{
+        $sql="SELECT * from orders where id=?";
+        return $this->mmshightech->getAllDataSafely($sql,'s',[$order_id])[0]??[];
+    }
+    public function refundToWallet(?int $order_id=null):array{
+        $orderDetails = $this->getOrderInfo($order_id);
+        if($orderDetails['payment_status']!=='PAID'){
+            return ['response'=>'S','data'=>'Order cancelled.'];
+        }
+        
+        return $walletPdo->refundToWallet($order_id,$orderDetails['total'],$orderDetails['user_id']);
     }
 }
 

@@ -397,6 +397,28 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         $acceptOrderId=$processorNewDao->mmshightech->OMO($_POST['acceptOrderId']);
         $e=$orderPdo->acceptOrder($acceptOrderId,$cur_user_row['id']);
     }
+    elseif(isset($_POST['deliverOrder_order_id'])){
+        $deliverOrder_order_id=$processorNewDao->mmshightech->OMO($_POST['deliverOrder_order_id']);
+        $e=$orderPdo->updateOrderProcessStatus(13,$deliverOrder_order_id);
+    }
+    elseif(isset($_POST['CancelOrder_order_id'])){
+        $CancelOrder_order_id=$processorNewDao->mmshightech->OMO($_POST['CancelOrder_order_id']);
+        $orderDetails=$orderPdo->getOrderInfo($CancelOrder_order_id);
+
+        if($orderDetails['process_status']>3){
+            $e=['response'=>'F','data'=>'Sorry, Order is INVOICED, Cannot Cancel Order.'];
+        }
+        else{
+            $response=$orderPdo->updateOrderProcessStatus(14,$CancelOrder_order_id);
+            if($response['response']==='F'){
+                $e=$response;
+            }
+            else{
+                $e=$orderPdo->refundToWallet($CancelOrder_order_id);
+            }
+        }
+            
+    }
     echo json_encode($e);
 }
 else{

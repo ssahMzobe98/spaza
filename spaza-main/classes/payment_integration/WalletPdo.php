@@ -54,5 +54,12 @@ class WalletPdo
         return ['response'=>'F','data'=>$response];
 
     }
+    public function refundToWallet(?int $order_id=null,string $totalAmount=null,?int $user_id=null,?string $payment_status=''):array{
+        $response=$this->setWalletHistory(null,$order_id,null,null,null,$totalAmount,$totalAmount,null,'WALLET_REFUND',$user_id);
+        if($response['response']==='F'){
+            return ['response'=>'F','data'=>'failed to set wallet due to '.json_encode($response['data'])];
+        }
+        return $this->setWallet($user_id,$totalAmount);
+    }
 }
 ?>
