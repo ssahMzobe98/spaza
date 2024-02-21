@@ -37,6 +37,18 @@ class spazaPdo
         // print_r($spaza_id);
         return $this->getSpazaInformationForOrderProcessing($spaza_id);
     }
+    public function getSpazaInfoForThisUser(int $userId=null):array{
+        $sql = "SELECT id as spaza_id from spaza_details where spaza_owner_id=?";
+        $data = $this->mmshightech->getAllDataSafely($sql,'s',[$userId])??[];
+        if(empty($data)){
+            return [];
+        }
+        $dataToReturn=[];
+        foreach($data as $da){
+            $dataToReturn[]=$this->getSpazaInformationForOrderProcessing($da['spaza_id']);
+        }
+        return $dataToReturn;
+    }
     public function getSpazaInformationForOrderProcessing(?int $spazaId=null):array{
         $sql = "SELECT 
                     sd.id as spaza_id, 

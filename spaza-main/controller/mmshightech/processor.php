@@ -4,6 +4,8 @@ use Controller\mmshightech;
 use Controller\mmshightech\processorNewPdo;
 use Classes\payment_integration\paymentPdo;
 use Controller\mmshightech\OrderPdo;
+use Classes\factory\PDOFactoryOOPClass;
+use Classes\constants\Constants;
 if(session_status() !== PHP_SESSION_ACTIVE){
   session_start();
 }
@@ -12,6 +14,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     $processorNewDao = new processorNewPdo(new mmshightech());
     $paymentPdo = new paymentPdo(new mmshightech());
     $orderPdo = new OrderPdo(new mmshightech());
+    $userPdo = PDOFactoryOOPClass::make(Constants::USER,[new mmshightech()]);
     $cur_user_row = $processorNewDao->userInfo($_SESSION['user_agent']);
     if(isset($_POST['dome'])){
         $dome = $processorNewDao->processBackgroundDisplay($_POST['dome'],$cur_user_row['id']);
@@ -418,6 +421,10 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             }
         }
             
+    }
+    elseif(isset($_POST['remove_this_user_id'])){
+        $remove_this_user_id = $processorNewDao->mmshightech->OMO($_POST['remove_this_user_id']);
+        $e=$userPdo->removeThisUser($remove_this_user_id,$cur_user_row['id']);
     }
     echo json_encode($e);
 }

@@ -1729,6 +1729,26 @@ function removeThisProductFromOrder(removeThisProductFromOrder_order_id,removeTh
       }
   });
 }
+function removeUser(remove_this_user_id){
+    $(".remove_this_user_id_response_error"+remove_this_user_id).removeAttr('hidden').html("Removing user-"+remove_this_user_id+", please wait...");
+  $.ajax({
+      url:'../controller/mmshightech/processor.php',
+      type:'post',
+      data:{remove_this_user_id:remove_this_user_id},
+      success:function(e){
+        // console.log(e);
+          response=JSON.parse(e);
+          if(response['response']!=='S'){
+              $(".remove_this_user_id_response_error"+remove_this_user_id).attr("style","padding:5px 5px;color:red;text-align:center;").html(e);
+          }
+          else{
+              $(".remove_this_user_id_response_error"+remove_this_user_id).attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html("user Removed.");
+              $(".removeUser"+remove_this_user_id).attr('hidden','true');
+              
+          }
+      }
+  });
+}
 function acceptOrder(acceptOrderId){
   $(".invoiceOrderErrorCatch").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html('Processing Invoice...');
   $.ajax({

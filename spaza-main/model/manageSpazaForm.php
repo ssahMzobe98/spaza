@@ -40,13 +40,15 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                     <tr>
                         <th>id #</th>
                         <th>Spaza</th>
+                        <th>nationality</th>
+                        <th>delivery address</th>
+                        <th>phone number</th>
+                        <th>email address</th>
                         <th>Active Orders</th>
                         <th>Pending Orders</th>
                         <th>Delivered Orders</th>
                         <th>Status</th>
                         <th>Owner</th>
-
-
                     </tr>
                     </thead>
                     <tbody>
@@ -56,6 +58,10 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                         <tr  class="removeSpaza'<?php echo $spazaDetails['spaza_id'];?>'">
                             <td onclick="getSpazaInfo('<?php echo $spazaDetails['spaza_id'];?>')" style="color:#000000;cursor: pointer;"><?php echo $spazaDetails['spaza_id'];?></td>
                             <td onclick="getSpazaInfo('<?php echo $spazaDetails['spaza_id'];?>')" style="color:#000000;cursor: pointer;"><?php echo $spazaDetails['spaza_name'];?></td>
+                            <td style="color:#000000;"><?php echo $spazaDetails['nationality'];?></td>
+                            <td style="color:#000000;"><?php echo $spazaDetails['delivery_address'];?></td>
+                            <td style="color:#000000;"><?php echo $spazaDetails['phone'];?></td>
+                            <td style="color:#000000;"><?php echo $spazaDetails['email'];?></td>
                             <td style="color:#000000;"><span class="badge badge-primary text-white text-center"><?php echo $spazaDetails['active_orders'];?></span></td>
                             <td style="color:#000000;"><span class="badge badge-warning text-white text-center"><?php echo $spazaDetails['pending_orders'];?></span></td>
                             <td style="color:#000000;"><span class="badge badge-success text-white text-center"><?php echo $spazaDetails['delivered_orders'];?></span></td>
@@ -78,9 +84,12 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                             </div>
                         </th>
                         <th></th>
-
+                        <th></th>
+                        <th></th>
                         <th></th>
                         <th style="font-size:9px;">Displaying 3 to 30 of 500</th>
+                        <th></th>
+                        <th></th>
                         <th></th>
                         <th></th>
                         <th></th>

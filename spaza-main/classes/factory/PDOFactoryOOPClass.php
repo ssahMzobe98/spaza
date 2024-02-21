@@ -7,6 +7,7 @@ use Classes\payment_integration\InvoicePdo;
 use Classes\iclass\IPDOFactoryOOPClass;
 use Controller\mmshightech\OrderPdo;
 use Controller\mmshightech\spazaPdo;
+use Controller\mmshightech\usersPdo;
 
 class PDOFactoryOOPClass implements IPDOFactoryOOPClass
 {
@@ -14,7 +15,8 @@ class PDOFactoryOOPClass implements IPDOFactoryOOPClass
         Constants::INVOICE => InvoicePdo::class,
         Constants::WALLET => WalletPdo::class,
         Constants::ORDER =>OrderPdo::class,
-        Constants::SPAZA =>spazaPdo::class
+        Constants::SPAZA =>spazaPdo::class,
+        Constants::USER=>usersPdo::class
     ];
 
     public static function make(?string $classDao = null, array $array = [])

@@ -109,7 +109,15 @@ class productsPdo
         if(!$this->productExists($productUid)){
             return ['error'=>$productUid." Not found."];
         }
-        $sql="select*from products where id=?";
+        $sql="SELECT p.*,
+                    mci.menu as category
+        from products as p 
+            left join menu_category_ids as mci on mci.id=p.menu_catalogue_id
+        where p.id=?";
         return $this->mmshightech->getAllDataSafely($sql,'s',[$productUid])[0]??[];
+    }
+    public function getCategory(int $menu_id=0):array{
+        $sql = "select id,menu from menu_category_ids where id != ?";
+        return $this->mmshightech->getAllDataSafely($sql,'s',[$menu_id])??[];
     }
 }
