@@ -783,7 +783,7 @@ select{
         <li class="log_out">
           <a onclick="logout()">
             <i class='bx bx-log-out'></i>
-            <span class="links_name">Log out</span>
+            <span class="links_name logout">Log out</span>
           </a>
         </li>
       </ul>
@@ -1395,6 +1395,20 @@ function sendAjaxToPHP(url,dataArray,processorClass,successResponse){
           }
       }
     });
+}
+function logout(){
+  $('.logout').removeAttr("hidden").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html('Logging you out..');
+  url = "../controller/mmshightech/processor.php";
+  $.ajax({
+    url:url,
+    type:'post',
+    data:{'LOGOUT':'logout'},
+    success:function(e){
+      $('.logout').removeAttr("hidden").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html('Good bye');
+      window.location=("../");
+  
+    }
+  });
 }
 function ProductSearchByName(searchProductTableColumn){
   const ProductSearchByName=$(".ProductSearchByName").val();

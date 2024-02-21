@@ -426,6 +426,11 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         $remove_this_user_id = $processorNewDao->mmshightech->OMO($_POST['remove_this_user_id']);
         $e=$userPdo->removeThisUser($remove_this_user_id,$cur_user_row['id']);
     }
+    elseif(isset($_POST['LOGOUT'])){
+        unset($_SESSION['user_agent'],$_SESSION['var_agent']);
+        session_destroy();
+        $e=1;
+    }
     echo json_encode($e);
 }
 else{
