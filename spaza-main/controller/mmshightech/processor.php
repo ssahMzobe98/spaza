@@ -113,16 +113,12 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             $e=$response['data'];
         }
     }
-    elseif (isset($_POST['spazaShopsDisplay'],$_POST['spazaShopsDisplayClientId'])){
+    elseif (isset($_POST['spazaShopsDisplay'],$_POST['spazaShopsDisplayClientId'],$_POST['orderTomakeUpdateOn'])){
         $spazaShopsDisplay = $processorNewDao->mmshightech->OMO($_POST['spazaShopsDisplay']);
         $spazaShopsDisplayClientId = $processorNewDao->mmshightech->OMO($_POST['spazaShopsDisplayClientId']);
-        $response = $processorNewDao->spazaUpdater($spazaShopsDisplay,$spazaShopsDisplayClientId);
-        if($response['response']=="S"){
-            $e=1;
-        }
-        else{
-            $e=$response['data'];
-        }
+        $orderTomakeUpdateOn=$processorNewDao->mmshightech->OMO($_POST['orderTomakeUpdateOn']);
+        $e = $processorNewDao->spazaUpdater($spazaShopsDisplay,$spazaShopsDisplayClientId,$orderTomakeUpdateOn);
+        
     }
     elseif(isset($_POST['spazaOwnerId'],$_POST['userEmailAddress'],
         $_POST['userPhoneNo'],

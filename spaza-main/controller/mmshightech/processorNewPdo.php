@@ -185,14 +185,19 @@ class processorNewPdo
         return['response'=>'F','data'=>$response->error];
     }
 
-    public function spazaUpdater(?int $spazaShopsDisplay,?int $id):array
+    public function spazaUpdater(?int $spazaShopsDisplay,?int $id,?int $orderId):array
     {
-        $sql="update users set current_spaza=? where id=?";
+        $sql="UPDATE users set current_spaza=? where id=?";
         $response = $this->mmshightech->postDataSafely($sql,'ss',[$spazaShopsDisplay,$id]);
         if(is_numeric($response)){
-            return['response'=>'S','data'=>$response];
+            $sql="UPDATE orders set spaza_id=? where id=?";
+            $response = $this->mmshightech->postDataSafely($sql,'ss',[$spazaShopsDisplay,$orderId]);
+            if(is_numeric($response)){
+                 return ['response'=>'S','data'=>$response];
+            }
+           return ['response'=>'F','data'=> $response];
         }
-        return['response'=>'F','data'=>$response];
+        return ['response'=>'F','data'=> $response];
     }
 
     public function addNewSpazaDetails(?int $spazaOwnerId,

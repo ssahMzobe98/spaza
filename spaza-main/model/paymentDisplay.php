@@ -32,7 +32,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             }
             else{ 
 
-              $accountDetails = $spazaPdo->getSpazaPaymentDetails($_GET['spazaId']);
+              $accountDetails = $spazaPdo->getSpazaPaymentDetails($_GET['order_id']);
               $sub_total = $orderPdo->getOrderTotal($_GET['order_id']);
               $terminate = false;
               $error='';

@@ -132,7 +132,14 @@ class spazaPdo
         return $this->mmshightech->getAllDataSafely($sql,'s',[$spaza_owner_id])??[];
 
     }
-
+    public function getSpazaByOrderId(?int $orderId=null):string{
+        $sql="SELECT if(o.spaza_id=0,u.current_spaza,o.spaza_id) as current_spaza
+              from users as u 
+              left join orders as o on o.id=?
+              where u.id = o.user_id";
+        $response = $this->mmshightech->getAllDataSafely($sql,'s',[$orderId])[0]??[];
+        return intval($response['current_spaza']??0);
+    }
     public function get_A_Details(?int $spazaID):array
     {
         $sql = "SELECT  permit_number, 
@@ -149,9 +156,28 @@ class spazaPdo
                 from spaza_details where id = ? and status='A'";
         return $this->mmshightech->getAllDataSafely($sql,'s',[$spazaID])[0]??[];
     }
-    public function getSpazaPaymentDetails(?int $spazaId):array{
-        $sql = "SELECT  id as owner_id,card_number,card_cvv,card_token,card_expiry_date,card_type,card_name,name,surname,usermail as email, phone_number as phone ,dob,gender,nationality,sa_residing_address
-                from users where current_spaza = ? and status='A'";
-        return $this->mmshightech->getAllDataSafely($sql,'s',[$spazaId])[0]??[];
+    public function getSpazaPaymentDetails(?int $orderId=null):array{
+        if(!isset($orderId)){
+            return [];
+        }
+        $sql = "SELECT  u.id as owner_id,
+                        u.card_number,
+                        u.card_cvv,
+                        u.card_token,
+                        u.card_expiry_date,
+                        u.card_type,
+                        u.card_name,
+                        u.name,
+                        u.surname,
+                        u.usermail as email, 
+                        u.phone_number as phone ,
+                        u.dob,
+                        u.gender,
+                        u.nationality,
+                        u.sa_residing_address
+                from users as u 
+                    left join orders as o on o.id=?
+                where u.id=o.user_id and status='A'";
+        return $this->mmshightech->getAllDataSafely($sql,'s',[$orderId])[0]??[];
     }
 }

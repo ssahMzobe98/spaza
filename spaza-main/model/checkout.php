@@ -59,10 +59,11 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                             <h6>Shipping Details</h6>
                             <div class="shippingDetailsReal">
                                 <div style="" class="divSpaz">
+                                    <input type="hidden" class="orderTomakeUpdateOn" value="<?php echo $_GET['order_id'];?>">
                                     <select class="spazaShopsDisplay">
                                         <option value="">-- Select Spaza --</option>
                                         <?php
-                                        $defaultSpaza= $getOtherSpazas[0]['spaza_id']??null;
+                                        $defaultSpaza= $spazaPdo->getSpazaByOrderId($_GET['order_id']);
                                         if(!empty($getOtherSpazas)){
                                             foreach ($getOtherSpazas as $spaza){
 
@@ -83,7 +84,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                     </div>
                     <div style="width: 50%;">
                         <div class="paymentDetails">
-                            <h6>Payment Details</h6>
+                            <h6>Payment Details for ORDER: <?php echo $_GET['order_id'];?> </h6>
                             <div class="paymentDetailsReal">
 
                             </div>

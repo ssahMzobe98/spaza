@@ -279,7 +279,7 @@ class OrderPdo{
                 orders AS o ON o.id = od.order_id
             left join statuses as s on s.id=o.process_status
             WHERE 
-                o.user_id = ? and o.process_status in (1,2,3,4,5,6,8,9,10,11,12,13,14,15)
+                o.user_id = ? and o.process_status in (1,2,3,4,5,6,8,9,10,11,12,13,14,15) order by o.id desc limit 1
         ";
         return $this->mmshightech->getAllDataSafely($sql,'s',[$userId])??[];
 

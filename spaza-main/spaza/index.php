@@ -768,15 +768,15 @@ select{
 
       <?php 
         }
-        if($cur_user_row['user_type']===Constants::USER_TYPE_APP){ ?>
-        <li>
+        //if($cur_user_row['user_type']===Constants::USER_TYPE_APP){ ?>
+        <!-- <li>
           <a onclick='loadAfterQuery(".makhanyile","../model/user_settings.php")'>
             <i class='bx bx-pie-chart-alt-2' ></i>
             <span class="links_name">Settings</span>
           </a>
-        </li>
+        </li> -->
         <?php
-        }
+        //}
        ?>
         
         
@@ -1295,15 +1295,17 @@ $(document).ready(function(){
 $(document).on("change",".spazaShopsDisplay",function(){
     const spazaShopsDisplay = $('.spazaShopsDisplay').val();
     const spazaShopsDisplayClientId = $('.spazaShopsDisplayClientId').val();
+    const orderTomakeUpdateOn = $(".orderTomakeUpdateOn").val();
     // console.log(spazaShopsDisplayClientId);
     $.ajax({
         url:'../controller/mmshightech/processor.php',
         type:'post',
-        data:{spazaShopsDisplay:spazaShopsDisplay,spazaShopsDisplayClientId:spazaShopsDisplayClientId},
+        data:{spazaShopsDisplay:spazaShopsDisplay,spazaShopsDisplayClientId:spazaShopsDisplayClientId,orderTomakeUpdateOn:orderTomakeUpdateOn},
         success:function(e){
-            console.log(e);
-            if(e.length===1){
-                loadAfterQuery('.spazaAddressDetails','../model/spazaDisplay.php?spazaId='+spazaShopsDisplay);
+            response = JSON.parse(e);
+            console.log(response['response']);
+            if(response['response']==='S'){
+                loadAfterQuery(".makhanyile","../model/checkout.php?order_id="+orderTomakeUpdateOn);
             }
             else{
                 $(".errorDisplaysetter").attr("style","padding:5px 5px;color:red;text-align:center;border:1px solid red;").html(e);

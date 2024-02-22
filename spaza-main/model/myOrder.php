@@ -24,6 +24,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         $OrderStatusBg=($orderData[0]['process_status']===Constants::ORDER_PROSESS_STATUS_WFP)?'badge-danger':'badge-primary';
         $onclickCheckout = 'loadAfterQuery(".makhanyile","../model/checkout.php?order_id='.$orderData[0]['order_id'].'");';
         $paymentString=($orderData[0]['payment_status']===Constants::PAYMENT_STATUS_PAID)?'':"<hr><div style='color:white;background:navy;padding:4px 4px;text-align:center;cursor:pointer;' onclick='{$onclickCheckout}' >MAKE PAYMENT</div>";
+
         ?>
         <style>
             .button a{
@@ -54,7 +55,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                                </div>
                                <div style="border-left: 1px solid #ddd;padding:3px 3px;text-align: center;">
                                    <div><span>Order</span></div>
-                                   <div><span class="badge <?php echo $OrderStatusBg;?> text-white text-center"><?php echo $orderData[0]['process_status'];?></span><?php echo $paymentString?></div>
+                                   <div><span class="badge <?php echo $OrderStatusBg;?> text-white text-center"><?php echo $orderData[0]['process_status'];?></span><?php if($orderData[0]['process_status']!==Constants::PROCESS_STATUS_FAILED){echo $paymentString;} ?></div>
                                    <!-- <div >Total: R<span class="priceDisplay"></span></div> -->
                                </div>
                            </div>
