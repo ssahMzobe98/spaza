@@ -3,6 +3,7 @@
 namespace controller\mmshightech;
 
 use Controller\mmshightech;
+use Classes\constants\Constants;
 
 class productsPdo
 {
@@ -119,5 +120,13 @@ class productsPdo
     public function getCategory(int $menu_id=0):array{
         $sql = "select id,menu from menu_category_ids where id != ?";
         return $this->mmshightech->getAllDataSafely($sql,'s',[$menu_id])??[];
+    }
+    public function productPicked(?int $order_id=null,?int $product_id=null):bool{
+        $sql = "SELECT is_picked from order_details where order_id=? and product_id=?";
+        $results = $this->mmshightech->getAllDataSafely($sql,'ss',[$order_id,$product_id])[0]??[];
+        if(empty($results['is_picked'])){
+            return false;
+        }
+        return ($results['is_picked']===Constants::SUCCESS_YES);
     }
 }

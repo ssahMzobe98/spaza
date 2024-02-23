@@ -1766,7 +1766,7 @@ function removeUser(remove_this_user_id){
   });
 }
 function acceptOrder(acceptOrderId){
-  $(".invoiceOrderErrorCatch").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html('Processing Invoice...');
+  $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html('Accepting Order...');
   $.ajax({
       url:'../controller/mmshightech/processor.php',
       type:'post',
@@ -1774,29 +1774,39 @@ function acceptOrder(acceptOrderId){
       success:function(e){
           response=JSON.parse(e);
           if(response['response']==="S"){
-            $(".invoiceOrderErrorCatch").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html('Order Accepted.');
+            $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html('Order Accepted.');
             $(".invoiceOrder").removeAttr("onclick").html("ORDER ACCEPTED");
             getOrderInfo(acceptOrderId);
           }
           else{
-            $(".invoiceOrderErrorCatch").removeAttr('hidden').attr("style","padding:5px 5px;color:red;text-align:center;").html(response['data']);
+            $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:red;text-align:center;").html(response['data']);
           }
       }
   });
 }
 function markDownPicker(markDownPicker_order_id,markDownPicker_product_id){
+  $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html('Picking Item...');
   $.ajax({
       url:'../controller/mmshightech/processor.php',
       type:'post',
       data:{markDownPicker_order_id:markDownPicker_order_id,markDownPicker_product_id:markDownPicker_product_id},
       success:function(e){
+        // console.log(e);
           response=JSON.parse(e);
-          console.log(response['data']);
+          // console.log(e);
+          if(response['responseStatus']==="S"){
+            $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html(markDownPicker_product_id+' Product Picked');
+            $(".invoiceOrder").removeAttr("onclick").html("ORDER ACCEPTED");
+            getOrderInfo(markDownPicker_order_id);
+          }
+          else{
+            $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:red;text-align:center;").html(response['data']);
+          }
       }
   });
 }
 function invoiceOrder(invoiceOrder_orderNo){
-  $(".invoiceOrderErrorCatch").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html('Processing Invoice...');
+  $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html('Processing Invoice...');
   $.ajax({
       url:'../controller/mmshightech/processor.php',
       type:'post',
@@ -1804,11 +1814,12 @@ function invoiceOrder(invoiceOrder_orderNo){
       success:function(e){
           response=JSON.parse(e);
           if(response['response']==="S"){
-            $(".invoiceOrderErrorCatch").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html('Order Invoiced.');
+            $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html('Order Invoiced.');
             $(".invoiceOrder").removeAttr("onclick").html("ORDER INVOICED");
+            getOrderInfo(invoiceOrder_orderNo);
           }
           else{
-            $(".invoiceOrderErrorCatch").removeAttr('hidden').attr("style","padding:5px 5px;color:red;text-align:center;").html(response['data']);
+            $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:red;text-align:center;").html(response['data']);
           }
       }
   });

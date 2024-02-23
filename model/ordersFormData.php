@@ -20,7 +20,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     $paidBg=($orderData[0]['payment_status']===Constants::PAYMENT_STATUS_PAID)?'badge-success':'badge-danger';
     $OrderStatusBg=($orderData[0]['process_status']===Constants::ORDER_PROSESS_STATUS_WFP)?'badge-danger':'badge-primary';
     $onclickCheckout = 'loadAfterQuery(".makhanyile","../model/checkout.php?order_id='.$orderData[0]['order_id'].'");';
-    $paymentString=($orderData[0]['payment_status']===Constants::PAYMENT_STATUS_PAID)?'':"<hr><div style='color:white;background:navy;padding:4px 4px;text-align:center;cursor:pointer;' onclick='{$onclickCheckout}' >MAKE PAYMENT</div>";
+    //$paymentString=($orderData[0]['payment_status']===Constants::PAYMENT_STATUS_PAID)?'':"<hr><div style='color:white;background:navy;padding:4px 4px;text-align:center;cursor:pointer;' onclick='{$onclickCheckout}' >MAKE PAYMENT</div>";
  	?>
   <style>
     .button a{
@@ -53,7 +53,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                        </div>
                        <div style="border-left: 1px solid #ddd;padding:3px 3px;text-align: center;">
                            <div><span>Order</span></div>
-                           <div><span class="badge <?php echo $OrderStatusBg;?> text-white text-center"><?php echo $orderData[0]['process_status'];?></span><?php if($orderData[0]['process_status']!==Constants::PROCESS_STATUS_FAILED){ echo $paymentString;}?></div>
+                           <div><span class="badge <?php echo $OrderStatusBg;?> text-white text-center"><?php echo $orderData[0]['process_status'];?></span><?php //if($orderData[0]['process_status']!==Constants::PROCESS_STATUS_FAILED){ echo $paymentString;}?></div>
                            <!-- <div >Total: R<span class="priceDisplay"></span></div> -->
                        </div>
                    </div>
@@ -175,6 +175,9 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                         if($orderData[0]['process_status']===Constants::PROCESS_STATUS_FAILED){
                             $btn = '<a style="color:white;" class="invoiceOrder">'.$orderData[0]['process_status'].'</a>';
                         }
+                        elseif($orderData[0]['process_status']===Constants::PROCESS_STATUS_DELIVERED){
+                            $btn = '<a style="color:white;" class="invoiceOrder">'.$orderData[0]['process_status'].'</a>';
+                        }
                         else{
                             if($is_paid==='N'){
                               $btn = '<a style="color:white;" class="invoiceOrder">WAITING FOR PAYMENT</a>';
@@ -214,7 +217,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                                     </div>
                                     <span class="removeThisProductFromOrder" style="color:red;font-size: x-small;cursor: pointer;" onclick="removeThisProductFromOrder('.$order_id.','.$product.')">Remove Product</span>
                                 </td>
-                                <td><input type="radio" oninput="markDownPicker('.$order_id.','.$product.')" '.$is_picked.' style="padding:20px 20px;"></td>
+                                <td><input type="radio" onclick="markDownPicker('.$order_id.','.$product.')" '.$is_picked.' style="padding:20px 20px;"></td>
                                 <td><input type="number" class="OOS_val_'.$product.'" style="padding:2px 2px;width:90px;border-radius:10px;"></td>
 
                             </tr>
@@ -224,6 +227,8 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                         $deliveryFee = 20.50;
                         $invoiceTotal=$orderInvoiceTotal+$vat+$deliveryFee;
                         $refundTotal = $orderTotal-$invoiceTotal;
+                        $cancelOrder = ($orderData[0]['order_status']<4)?'onclick="CancelOrder('.$_POST['request'].')"':'title="ORDER CAN`T BE CANCELLED"';
+                        $deliverOrder = ($is_paid===Constants::SUCCESS_YES & $is_accepted===Constants::SUCCESS_YES & $is_invoiced===Constants::SUCCESS_YES)? 'onclick="deliverOrder('.$_POST['request'].')"':"title='ORDER CANNOT BE DELIVERED YET'";
                         ?>
                         </tfoot>
                         <tfoot>
@@ -243,12 +248,12 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                             </th>
                             <th>
                                 <div class='button' title="Mark order as CANCELLED">
-                                  <a style="color:white;background: red;" class="deliverOrder" onclick="CancelOrder(<?php echo $_POST['request'];?>)"><i class="fa fa-trash-o"></i></a>
+                                  <a style="color:white;background: red;" class="CancelOrder" <?php echo $cancelOrder;?>><i class="fa fa-trash-o"></i></a>
                                 </div>
                             </th>
                             <th title="Mark order as delivered!">
                                 <div class='button' style="">
-                                  <a style="color:white;background: seagreen;" class="CancelOrder" onclick="deliverOrder(<?php echo $_POST['request'];?>)"><i class="fa fa-truck"></i></a>
+                                  <a style="color:white;background: seagreen;" class="deliverOrder" <?php echo $deliverOrder;?>><i class="fa fa-truck"></i></a>
                                 </div>
                             </th>
                             <th>

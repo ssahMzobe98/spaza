@@ -387,6 +387,9 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         $markDownPicker_order_id=$processorNewDao->mmshightech->OMO($_POST['markDownPicker_order_id']);
         $markDownPicker_product_id=$processorNewDao->mmshightech->OMO($_POST['markDownPicker_product_id']);
         $e=$orderPdo->pickProduct($markDownPicker_order_id,$markDownPicker_product_id);
+        // if($response->responseStatus===Constants::RESPONSE_SUCCESS){
+
+        // }
     }
     elseif(isset($_POST['invoiceOrder_orderNo'])){
         $invoiceOrder_orderNo=$processorNewDao->mmshightech->OMO($_POST['invoiceOrder_orderNo']);

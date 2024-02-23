@@ -1,7 +1,7 @@
 <?php
 
 namespace Controller;
-
+use Classes\response\Response;
 class mmshightech
 {
     public $connection;
@@ -52,6 +52,18 @@ class mmshightech
             return $stmt->insert_id;
         }
         return ['error'=>$stmt->error,'Error_list'=>$stmt->error_list];
+    }
+    public function newPostDataSafely($query, $paramType, $paramArray):Response{
+        $response = new Response();
+        $stmt = $this->connection->prepare($query);
+        $this->bindQueryParams($stmt, $paramType, $paramArray);
+        $stmt->execute();
+        $response->failureSetter()->messagerSetter("Failed to process due to : ".$stmt->error)->messagerArraySetter(['error'=>$stmt->error,'Error_list'=>$stmt->error_list]);
+        if($stmt->errno==0){
+            $response = new Response();
+            $response->successSetter()->messagerSetter($stmt->insert_id)->setObjectReturn();
+        }
+        return $response;
     }
     public function execute($query, $paramType="", $paramArray=array()){
         $stmt = $this->connection->prepare($query);

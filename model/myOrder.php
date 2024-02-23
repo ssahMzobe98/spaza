@@ -18,6 +18,14 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     if($cur_user_row['user_type']==Constants::USER_TYPE_APP){
         date_default_timezone_set('Africa/Johannesburg');
         $orderData = $OrderPdo->getMyOrderDetailsByUser($cur_user_row['id']);
+        if(empty($orderData)){
+            ?>
+                <script>
+                    loadAfterQuery(".makhanyile","../model/createOrder.php");getCartUpdate();
+                </script>
+            <?php
+
+        }
         $spazaDetails=$spazaPdo->spazaDetailsForThisOrder($orderData[0]['order_id']);
         // print_r($spazaDetails);
         $paidBg=($orderData[0]['payment_status']===Constants::PAYMENT_STATUS_PAID)?'badge-success':'badge-danger';
