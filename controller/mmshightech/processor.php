@@ -308,7 +308,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         $userEmailAddressNewUser=$processorNewDao->mmshightech->OMO($_POST['userEmailAddressNewUser']);
         $userPasswordNewUser=$processorNewDao->mmshightech->OMO($_POST['userPasswordNewUser']);
         if(empty($_FILES['passport_id_certifiedcopyNewUser']) || empty($_FILES['countryOfOriginProofOfAddressNewUser']) || empty($_FILES['facialImageNewUser']) || empty($_FILES['sproofOfResidingAddressNewUser'])){
-            $e="File missing!!";
+            $e = $processorNewDao->createNewUser($fnameNewUser,$lnameNewUser,$phoneNumberNewUser,$nationalityNewUser,$Passport_idNewUser,$genderNewUser,$userDOBNewUser,$permitNumberNewUser,$coutryOfOriginAddressNewUser,$saResidingAddressNewUser,$userEmailAddressNewUser,$userPasswordNewUser,[],$cur_user_row['id']);
         }
         else{
             $newFilesNames= [];
@@ -338,8 +338,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             }
             else{
                 if(count($newFilesNames)===4){
-                    $response = $processorNewDao->createNewUser($fnameNewUser,$lnameNewUser,$phoneNumberNewUser,$nationalityNewUser,$Passport_idNewUser,$genderNewUser,$userDOBNewUser,$permitNumberNewUser,$coutryOfOriginAddressNewUser,$saResidingAddressNewUser,$userEmailAddressNewUser,$userPasswordNewUser,$newFilesNames,$cur_user_row['id']);
-                    $e=$response['response'];
+                    $e = $processorNewDao->createNewUser($fnameNewUser,$lnameNewUser,$phoneNumberNewUser,$nationalityNewUser,$Passport_idNewUser,$genderNewUser,$userDOBNewUser,$permitNumberNewUser,$coutryOfOriginAddressNewUser,$saResidingAddressNewUser,$userEmailAddressNewUser,$userPasswordNewUser,$newFilesNames,$cur_user_row['id']);
                 }
                 else{
                     $e=['response'=>'F','data'=>"Files require un-matching. please check if you added all required files."];

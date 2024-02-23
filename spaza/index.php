@@ -1582,7 +1582,7 @@ function createNewUser(){
     const facialImage = document.getElementById('facialImage').files;
     const saproofOfResidingAddress = document.getElementById('SAproofOfResidingAddress').files;
 
-    $(".createUserErrorLog").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("<img style='width:10%;' src='../img/loader.gif'><h5 style='color:green;'>Processing Request..</h5>");
+    $(".createUserErrorLog").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("<img style='width:5%;' src='../img/loader.gif'><h5 style='color:green;'>Processing Request..</h5>");
     if(fname.length==0){
       $(".fname").attr("style","border:1px solid red");
       $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
@@ -1611,10 +1611,10 @@ function createNewUser(){
       $(".userDOB").attr("style","border:1px solid red");
       $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
     }
-    else if(permitNumber.length==0){
-      $(".permitNumber").attr("style","border:1px solid red");
-      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
-    }
+    // else if(permitNumber.length==0){
+    //   $(".permitNumber").attr("style","border:1px solid red");
+    //   $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    // }
     else if(coutryOfOriginAddress.length==0){
       $(".coutryOfOriginAddress").attr("style","border:1px solid red");
       $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
@@ -1631,23 +1631,24 @@ function createNewUser(){
       $(".userPassword").attr("style","border:1px solid red");
       $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
     }
-    else if(passport_id_certifiedcopy.length==0){
-      $(".passport_id_certifiedcopy").attr("style","border:1px solid red");
-      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
-    }
-    else if(countryOfOriginProofOfAddress.length==0){
-      $(".countryOfOriginProofOfAddress").attr("style","border:1px solid red");
-      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
-    }
-    else if(facialImage.length==0){
-      $(".facialImage").attr("style","border:1px solid red");
-      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
-    }
-    else if(saproofOfResidingAddress.length==0){
-      $(".saproofOfResidingAddress").attr("style","border:1px solid red");
-      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
-    }
+    // else if(passport_id_certifiedcopy.length==0){
+    //   $(".passport_id_certifiedcopy").attr("style","border:1px solid red");
+    //   $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    // }
+    // else if(countryOfOriginProofOfAddress.length==0){
+    //   $(".countryOfOriginProofOfAddress").attr("style","border:1px solid red");
+    //   $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    // }
+    // else if(facialImage.length==0){
+    //   $(".facialImage").attr("style","border:1px solid red");
+    //   $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    // }
+    // else if(saproofOfResidingAddress.length==0){
+    //   $(".saproofOfResidingAddress").attr("style","border:1px solid red");
+    //   $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    // }
     else{
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("<img style='width:5%;' src='../img/loader.gif'><h5 style='color:green;'>Verifying Request..</h5>");
       var form_data = new FormData();
       form_data.append("fnameNewUser",fname);
       form_data.append("lnameNewUser",lname);
@@ -1666,7 +1667,7 @@ function createNewUser(){
       form_data.append("facialImageNewUser",facialImage[0]);
       form_data.append("sproofOfResidingAddressNewUser",saproofOfResidingAddress[0]);
       const url="../controller/mmshightech/processor.php";
-      $(".createUserErrorLog").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("<img style='width:10%;' src='../img/loader.gif'><h5 style='color:green;'>Processing Request..</h5>");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("<img style='width:5%;' src='../img/loader.gif'><h5 style='color:green;'>Submitting Request..</h5>");
       $.ajax({
         url:url,
         processData: false,
@@ -1676,6 +1677,7 @@ function createNewUser(){
         cache:false,
         enctype: 'multipart/form-data',
         success:function(e){
+          console.log(e);
           data=JSON.parse(e);
           if(data['response']==='S'){
             $(".createUserErrorLog").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("New user added.");

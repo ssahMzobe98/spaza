@@ -336,6 +336,11 @@ class processorNewPdo
         if($this->mmshightech->isUserExists($userEmailAddressNewUser)){
             return ['response'=>'F','data'=>'user with this email already exist.'];
         }
+        if(empty($newFilesNames)){
+            $newFilesNames=[
+                0=>'',1=>'',2=>'',3=>''
+            ];
+        }
         $userPasswordNewUser = $this->mmshightech->lockPassWord($userPasswordNewUser);
         $params = [$userEmailAddressNewUser,$userPasswordNewUser,$fnameNewUser,$lnameNewUser,$phoneNumberNewUser,$userDOBNewUser,$genderNewUser,$nationalityNewUser,$Passport_idNewUser,$permitNumberNewUser,$coutryOfOriginAddressNewUser,$saResidingAddressNewUser,$newFilesNames[0],$newFilesNames[1],$newFilesNames[2],$newFilesNames[3],$id];
         $sql = "insert into users(usermail,
