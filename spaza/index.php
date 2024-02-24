@@ -1511,7 +1511,7 @@ function makePayment(order_number_toPay,client_id2Pay,amountToPayInTotal){
       type:'post',
       data:data,
       success:function(e){
-        console.log(e);
+        // console.log(e);
         data = JSON.parse(e);
         $(".errorTagDisplay").removeAttr("hidden").html("Contacting the bank..");
           if(data['response']==="S"){
