@@ -248,11 +248,18 @@ class processorNewPdo
                                         )values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?,?,?)";
         $response = $this->mmshightech->postDataSafely($sql,'sssssssssssssssssssssss',$params);
         if(is_numeric($response)){
-            return['response'=>'S','data'=>$response];
+            return $this->updateUserSpazaId($spazaOwnerId,$response);
         }
         return['response'=>'F','data'=>$response];
     }
-
+    public function updateUserSpazaId(?int $user_id=null,?int $spaza_id=null):array{
+        $sql="update users set current_spaza=? where id=?";
+        $response = $this->mmshightech->postDataSafely($sql,'ss',[$spaza_id,$user_id]);
+        if(is_numeric($response)){
+            return['response'=>'S','data'=>$spaza_id];
+        }
+        return['response'=>'F','data'=>$response];
+    }
     public function spazaIdToBeRemoved(?int $spaza_id_toBeRemoved):array
     {
         $sql="update spaza_details set status='D' where id=?";
