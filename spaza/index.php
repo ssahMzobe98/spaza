@@ -1511,6 +1511,7 @@ function makePayment(order_number_toPay,client_id2Pay,amountToPayInTotal){
       type:'post',
       data:data,
       success:function(e){
+        console.log(e);
         data = JSON.parse(e);
         $(".errorTagDisplay").removeAttr("hidden").html("Contacting the bank..");
           if(data['response']==="S"){
@@ -1550,7 +1551,7 @@ function makePayment(order_number_toPay,client_id2Pay,amountToPayInTotal){
             }); 
           }
           else{
-              $(".processorClass").removeAttr("hidden").attr("style","padding:5px 5px;color:red;text-align:center;border:1px solid red;").html(data['data']);
+              $(".errorTagDisplay").removeAttr("hidden").attr("style","padding:5px 5px;color:red;text-align:center;border:1px solid red;").html(data['data']);
               return true;
           }
       }

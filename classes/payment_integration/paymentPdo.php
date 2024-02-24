@@ -5,18 +5,18 @@ namespace Classes\payment_integration;
 use Controller\mmshightech;
 use Controller\mmshightech\usersPdo;
 class paymentPdo{
-	private mmshightech $mmshightech;
+    private mmshightech $mmshightech;
     private usersPdo $usersPdo;
     public function __construct(mmshightech $mmshightech){
         $this->mmshightech=$mmshightech;
         $this->usersPdo = new usersPdo($mmshightech);
     }
-	public function paymentGateway(?int $clientId=0,?float $amount=0.00,?int $order_number_toPay):array{
+    public function paymentGateway(?int $clientId=0,?float $amount=0.00,?int $order_number_toPay):array{
         $user_details = $this->usersPdo->getUserDetailsForUser($clientId);
-		$passPhrase = 'msiziMzobe98';
+        $passPhrase = 'msiziMzobe98';
         $amount_net=$amount-4.60;
         $data = array(
-            'merchant_id' => $clientId,
+            'merchant_id' => 18152361,
             'merchant_key' => '2ammma77nrah4',
             'return_url' => 'https://netchatsa.com/?apply',
             'cancel_url' => 'https://netchatsa.com/cancel.php',
@@ -50,7 +50,7 @@ class paymentPdo{
             return $data;
         }
         return ['response'=>"F","data"=>"Failed to generate Payment Identifier - {$identifier}"];
-	}
+    }
     public function generateSignature($data, $passPhrase = null):string {
         // Create parameter string
         $pfOutput = '';
@@ -81,7 +81,7 @@ class paymentPdo{
         // Use cURL (if available)
         if( in_array( 'curl', get_loaded_extensions(), true ) ) {
             // Variable initialization
-            $url = 'https://sandbox.payfast.co.za/onsite/process';//'https://www.payfast.co.za/onsite/process';
+            $url = 'https://www.payfast.co.za/onsite/process';
 
             // Create default cURL object
             $ch = curl_init();
