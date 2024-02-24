@@ -3,7 +3,7 @@ include("../vendor/autoload.php");
 use Controller\mmshightech;
 use Controller\mmshightech\spazaPdo;
 use Controller\mmshightech\usersPdo;
-use Controller\mmshightech\orderPdo;
+use Controller\mmshightech\OrderPdo;
 use Classes\constants\Constants;
 if(session_status() !== PHP_SESSION_ACTIVE){
     session_start();
@@ -16,7 +16,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     $mmshightech=new mmshightech();
     $spazaPdo = new spazaPdo($mmshightech);
     $products = new usersPdo($mmshightech);
-    $orderPdo = new orderPdo($mmshightech);
+    $orderPdo = new OrderPdo($mmshightech);
     $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
     $userDirect=$cur_user_row['user_type'];
     date_default_timezone_set('Africa/Johannesburg');
