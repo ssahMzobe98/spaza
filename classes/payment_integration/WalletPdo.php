@@ -61,5 +61,19 @@ class WalletPdo
         }
         return $this->setWallet($user_id,$totalAmount);
     }
+    public function getMyWalletInfo(?int $user_id=null):array{
+        $sql="SELECT wallet_amount from wallet where user_id=? and status='A'";
+        $results = $this->mmshightech->getAllDataSafely($sql,'s',[$user_id])[0]??[];
+        if(empty($results)){
+            return [];
+        }
+
+        $results['wallet_history']=$this->getmyWalletHistory($user_id);
+        return $results;
+    }
+    public function getmyWalletHistory(?int $user_id=null):array{
+        $sql="SELECT invoice_id ,order_id,invoice_total,order_total,refund_total,action_2_wallet,date(time_added) as date_added,time(time_added) as time_added from wallet_history where user_id=? order by id Desc";
+        return $this->mmshightech->getAllDataSafely($sql,'s',[$user_id])??[];
+    }
 }
 ?>

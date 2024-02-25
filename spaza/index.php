@@ -768,6 +768,16 @@ select{
 
       <?php 
         }
+        if($cur_user_row['user_type']===Constants::USER_TYPE_APP){ ?>
+        <li>
+          <a onclick='loadAfterQuery(".makhanyile","../model/wallet.php?min=0&limit=10")'>
+            <i class='bx bx-pie-chart-alt-2' ></i>
+            <span class="links_name">My Wallet</span>
+          </a>
+        </li>
+
+      <?php 
+        }
         //if($cur_user_row['user_type']===Constants::USER_TYPE_APP){ ?>
         <!-- <li>
           <a onclick='loadAfterQuery(".makhanyile","../model/user_settings.php")'>

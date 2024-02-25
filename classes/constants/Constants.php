@@ -8,6 +8,8 @@ class Constants{
 	public const SPAZA='spazaPdo';
 	public const ORDER ='OrderPdo'; 
 	public const USER = 'usersPdo';
+	public const PRODUCT='usersPdo';
+	public const MMSHIGHTECH = 'mmshightech';
 	public const PAYMENT_STATUS_PAID = 'PAID';
 	public const ORDER_PROSESS_STATUS_WFP = 'WAITING FOR PAYMENT';
 	public const PROCESS_STATUS_FAILED = 'ORDER FAILED';

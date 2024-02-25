@@ -1,6 +1,6 @@
 <?php
 
-namespace controller\mmshightech;
+namespace Controller\mmshightech;
 
 use Controller\mmshightech;
 use Classes\constants\Constants;
