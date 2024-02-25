@@ -55,7 +55,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                                 <td style="color:#000000;"><?php echo $user['sa_residing_address']?></td>
                                 <td>
                                     <a onclick="addNewSpaza(<?php echo $user['id']?>)" class="badge badge-primary text-white text-center" style="font-size: medium;"><i style="font-size: 12px;color: white;" class="fa fa-plus" aria-hidden="true"></i></a>
-                                    <a onclick="addNewSpaza(<?php echo $user['id']?>)" class="badge badge-success text-white text-center" style="font-size: medium;"><i style="font-size: 12px;color: white;" class="fa fa-eye" aria-hidden="true"></i></a>
+                                    <!-- <a onclick="addNewSpaza(<?php //echo $user['id']?>)" class="badge badge-success text-white text-center" style="font-size: medium;"><i style="font-size: 12px;color: white;" class="fa fa-eye" aria-hidden="true"></i></a> -->
                                     <a onclick="viewAllMySpazas(<?php echo $user['id']?>)" class="badge badge-danger text-white text-center"> <i style="font-size: 20px;color: white;" class="fa fa-trash-o" aria-hidden="true"></i></a>
 
                                 </td>
