@@ -78,7 +78,7 @@ class WalletPdo
         $sql="INSERT into wallet(user_id,wallet_amount,added_on,status)values(?,0,NOW(),'A')";
         $response = $this->mmshightech->postDataSafely($sql,'s',[$user_id]);
         if(is_numeric($response)){
-            return ['response'=>'S','data'=>$response];
+            return ['response'=>'S','data'=>$user_id];
         }
         return ['response'=>'F','data'=>$response];
     }
