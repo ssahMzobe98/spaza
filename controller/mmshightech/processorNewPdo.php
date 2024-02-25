@@ -3,7 +3,7 @@ namespace controller\mmshightech;
 use Controller\mmshightech;
 use Controller\mmshightech\csvProcessor;
 use Classes\factory\PDOFactoryOOPClass;
-use Controller\mmshightech\Constants
+use Classes\constants\Constants;
 class processorNewPdo
 {
     public mmshightech $mmshightech;
@@ -14,7 +14,7 @@ class processorNewPdo
         //include_once ("../mmshightech.php");
         $this->mmshightech = $mmshightech;
         $this->csvProcessor = new csvProcessor();
-        $this->$wallet = PDOFactoryOOPClass::make(Constants::WALLET,[$mmshightech,PDOFactoryOOPClass::make(Constants::PRODUCT,[$mmshightech])]);
+        $this->wallet = PDOFactoryOOPClass::make(Constants::WALLET,[$mmshightech,PDOFactoryOOPClass::make(Constants::PRODUCT,[$mmshightech])]);
 
     }
     public function userInfo(string $userMail=null):array{
