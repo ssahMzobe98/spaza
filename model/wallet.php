@@ -17,7 +17,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         }
         else{
         	?>
-	        <div class="orderDataSet" style="border:2px solid #dddddd;padding:5px 5px;border-radius: 10px;">
+	        <div class="orderDataSet">
 	            <div class="orderDataSetHeader">
 	                <div class="maKhathiOrdersSearch" style="padding:10px 10px;">
 	                    <input type="search" id="searchByOrderNumber" class="searchByOrderNumber" oninput="searchByOrderNumber()" placeholder="Find with Order Number...">
@@ -29,7 +29,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
 	                    <span style="font-weight:bolder;color:#000000;">Wallet Amount: R<?php echo number_format($wallet['wallet_amount'],2);?></span>
 	                </div>
 	            </div>
-	            <div class="userDisplay" style="border:2px solid #dddddd;padding:5px 5px;border-radius: 10px;">
+	            <div class="userDisplay">
 	                <table class="table table-striped">
 	                    <thead>
 	                    <tr>
