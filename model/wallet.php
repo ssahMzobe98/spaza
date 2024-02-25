@@ -73,7 +73,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
 	                        <th></th>
 	                        <th style="font-size:9px;">Displaying 3 to 30 of 500</th>
 	                        <th></th>
-	                        <th></th>
+	                        
 	                        <th></th>
 	                        <th><div class='button'>
 	                                <a onclick="loadAfterQuery('.dynamicalLoad1','./model/loadMasomaneSchools.php?start=10&limit=10');">next</a>
