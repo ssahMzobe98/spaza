@@ -53,9 +53,9 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
 	                                <td style="color:#000000;"><?php echo $wallet['order_id'];?></td>
 	                                <td style="color:#000000;"><?php echo $wallet['invoice_id'];?></td>
 	                                <td style="color:#000000;"><?php echo $wallet['action_2_wallet'];?></td>
-	                                <td style="color:#000000;"><?php echo number_format($wallet['invoice_total'],2);?></td>
-	                                <td style="color:#000000;"><?php echo number_format($wallet['order_total'],2);?></td>
-	                                <td style="color:#000000;"><?php echo number_format($wallet['refund_total'],2);?></td>
+	                                <td style="color:#000000;">R<?php echo number_format($wallet['invoice_total'],2);?></td>
+	                                <td style="color:#000000;">R<?php echo number_format($wallet['order_total'],2);?></td>
+	                                <td style="color:#000000;">R<?php echo number_format($wallet['refund_total'],2);?></td>
 	                            </tr>
 	                            <?php
 	                        }
