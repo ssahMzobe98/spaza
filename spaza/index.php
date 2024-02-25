@@ -1335,7 +1335,7 @@ $(document).on("change",".filesUpload",function(){
   }
   form_data.append("filesUpload",1);
   const url="../controller/mmshightech/processor.php";
-  $(".displayResponse").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("<img style='width:10%;' src='../img/loader.gif'><h5 style='color:green;'>Processing Request..</h5>");
+  $(".displayResponse").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("<img style='width:5%;' src='../img/loader.gif'><h5 style='color:green;'>Processing Request..</h5>");
   $.ajax({
     url:url,
     processData: false,
@@ -1354,6 +1354,161 @@ $(document).on("change",".filesUpload",function(){
     }
   });
 });
+function amendProductDetails(amend_product_id){
+  const amend_label=$(".amend_label").val();
+  const amend_sub_label=$(".amend_sub_label").val();
+  const amend_description=$(".amend_description").val();
+  const amend_manufacture=$(".amend_manufacture").val();
+  const amend_brand=$(".amend_brand").val();
+  const amend_category=$(".amend_category").val();
+  const amend_seling_unit=$(".amend_seling_unit").val();
+  const amend_qantity=$(".amend_qantity").val();
+  const amend_content_uom=$(".amend_content_uom").val();
+  const amend_ean_code=$(".amend_ean_code").val();
+  const amend_alt_ean=$(".amend_alt_ean").val();
+  const amend_alt_ean2=$(".amend_alt_ean2").val();
+  const amend_code_single=$(".amend_code_single").val();
+  const amend_start_date=$(".amend_start_date").val();
+  const amend_end_date=$(".amend_end_date").val();
+  const amend_price=$(".amend_price").val();
+  const amend_label_promo_price=$(".amend_label_promo_price").val();
+  const amend_percentage_discount=$(".amend_percentage_discount").val();
+  const amend_discount_amount=$(".amend_discount_amount").val();
+  $(".amend_label").removeAttr("style");
+  $(".amend_sub_label").removeAttr("style");
+  $(".amend_description").removeAttr("style");
+  $(".amend_manufacture").removeAttr("style");
+  $(".amend_brand").removeAttr("style");
+  $(".amend_category").removeAttr("style");
+  $(".amend_seling_unit").removeAttr("style");
+  $(".amend_qantity").removeAttr("style");
+  $(".amend_content_uom").removeAttr("style");
+  $(".amend_ean_code").removeAttr("style");
+  $(".amend_alt_ean").removeAttr("style");
+  $(".amend_alt_ean2").removeAttr("style");
+  $(".amend_code_single").removeAttr("style");
+  $(".amend_start_date").removeAttr("style");
+  $(".amend_end_date").removeAttr("style");
+  $(".amend_price").removeAttr("style");
+  $(".amend_label_promo_price").removeAttr("style");
+  $(".amend_percentage_discount").removeAttr("style");
+  $(".amend_discount_amount").removeAttr("style");
+  $(".displayErrorMessage").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("<img style='width:5%;' src='../img/loader.gif'><h5 style='color:green;'>Processing Request..</h5>");
+  if(amend_label.length<1){
+    $(".amend_label").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  // else if(amend_sub_label.length<1){
+  //   $(".amend_sub_label").attr('style','border:1px solid red;');
+  //   $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  // }
+  else if(amend_description.length<1){
+    $(".amend_description").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  else if(amend_manufacture.length<1){
+    $(".amend_manufacture").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  else if(amend_brand.length<1){
+    $(".amend_brand").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  else if(amend_category.length<1){
+    $(".amend_category").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  else if(amend_seling_unit.length<1){
+    $(".amend_seling_unit").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  else if(amend_qantity.length<1){
+    $(".amend_qantity").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  // else if(amend_content_uom.length<1){
+  //   $(".amend_content_uom").attr('style','border:1px solid red;');
+  //   $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  // }
+  else if(amend_ean_code.length<1){
+    $(".amend_ean_code").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  // else if(amend_alt_ean.length<1){
+  //   $(".amend_alt_ean").attr('style','border:1px solid red;');
+  //   $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  // }
+  // else if(amend_alt_ean2.length<1){
+  //   $(".amend_alt_ean2").attr('style','border:1px solid red;');
+  //   $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  // }
+  // else if(amend_code_single.length<1){
+  //   $(".amend_code_single").attr('style','border:1px solid red;');
+  //   $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  // }
+  // else if(amend_start_date.length<1){
+  //   $(".amend_start_date").attr('style','border:1px solid red;');
+  //   $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  // }
+  // else if(amend_end_date.length<1){
+  //   $(".amend_end_date").attr('style','border:1px solid red;');
+  //   $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  // }
+  else if(amend_price.length<1){
+    $(".amend_price").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  else if(amend_label_promo_price.length<1){
+    $(".amend_label_promo_price").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  else if(amend_percentage_discount.length<1){
+    $(".amend_percentage_discount").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  else if(amend_discount_amount.length<1){
+    $(".amend_discount_amount").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  else{
+    url = "../controller/mmshightech/processor.php";
+    $.ajax({
+      url:url,
+      type:'post',
+      data:{amend_label:amend_label,
+            amend_sub_label:amend_sub_label,
+            amend_description:amend_description,
+            amend_manufacture:amend_manufacture,
+            amend_brand:amend_brand,
+            amend_category:amend_category,
+            amend_seling_unit:amend_seling_unit,
+            amend_qantity:amend_qantity,
+            amend_content_uom:amend_content_uom,
+            amend_ean_code:amend_ean_code,
+            amend_alt_ean:amend_alt_ean,
+            amend_alt_ean2:amend_alt_ean2,
+            amend_code_single:amend_code_single,
+            amend_start_date:amend_start_date,
+            amend_end_date:amend_end_date,
+            amend_price:amend_price,
+            amend_label_promo_price:amend_label_promo_price,
+            amend_percentage_discount:amend_percentage_discount,
+            amend_discount_amount:amend_discount_amount,amend_product_id:amend_product_id},
+      success:function(e){
+        console.log(e);
+        response = JSON.parse(e);
+        console.log(response);
+        if(response['responseStatus']){
+          $('.displayErrorMessage').removeAttr("hidden").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html('Data Updated Successfully');
+        }
+        else{
+          $('.displayErrorMessage').removeAttr("hidden").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html(response['responseMessage']);
+        }  
+      }
+    });
+  }
+}
+
 function saveCardDetailsFromPayment(client_id_toSave2){
   const NameOnCard = $(".NameOnCard").val();
   const cardNumber = $(".cardNumber").val();
@@ -1388,7 +1543,13 @@ function saveCardDetailsFromPayment(client_id_toSave2){
   }
 
 }
-
+function updateStatusProduct(productCodeToAttendToData,fieldToAttendTOData){
+  let action = "PROMO Flag ";
+  if(fieldToAttendTOData==='is_instock'){
+    action = "STOCK Data ";
+  }
+  sendAjaxToPHP('',{'productCodeToAttendToData':productCodeToAttendToData,'fieldToAttendTOData':fieldToAttendTOData},'.displayErrorMessage',action+" updated Successfully");
+}
 function sendAjaxToPHP(url,dataArray,processorClass,successResponse){
   url = (url==="")?"../controller/mmshightech/processor.php":url;
   // console.log(processorClass);

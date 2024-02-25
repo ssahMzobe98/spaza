@@ -15,6 +15,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     $paymentPdo = new paymentPdo(new mmshightech());
     $orderPdo = new OrderPdo(new mmshightech());
     $userPdo = PDOFactoryOOPClass::make(Constants::USER,[new mmshightech()]);
+    $products = PDOFactoryOOPClass::make(Constants::PRODUCT,[new mmshightech()]);
     $cur_user_row = $processorNewDao->userInfo($_SESSION['user_agent']);
     if(isset($_POST['dome'])){
         $dome = $processorNewDao->processBackgroundDisplay($_POST['dome'],$cur_user_row['id']);
@@ -428,6 +429,82 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         unset($_SESSION['user_agent'],$_SESSION['var_agent']);
         session_destroy();
         $e=1;
+    }
+    elseif(
+        isset($_POST['amend_label'],
+        $_POST['amend_sub_label'],
+        $_POST['amend_description'],
+        $_POST['amend_manufacture'],
+        $_POST['amend_brand'],
+        $_POST['amend_category'],
+        $_POST['amend_seling_unit'],
+        $_POST['amend_qantity'],
+        $_POST['amend_content_uom'],
+        $_POST['amend_ean_code'],
+        $_POST['amend_alt_ean'],
+        $_POST['amend_alt_ean2'],
+        $_POST['amend_code_single'],
+        $_POST['amend_start_date'],
+        $_POST['amend_end_date'],
+        $_POST['amend_price'],
+        $_POST['amend_label_promo_price'],
+        $_POST['amend_percentage_discount'],
+        $_POST['amend_discount_amount'])
+    ){
+        $amend_label=$processorNewDao->mmshightech->OMO($_POST['amend_label']);
+        $amend_sub_label=$processorNewDao->mmshightech->OMO($_POST['amend_sub_label']);
+        $amend_description=$processorNewDao->mmshightech->OMO($_POST['amend_description']);
+        $amend_manufacture=$processorNewDao->mmshightech->OMO($_POST['amend_manufacture']);
+        $amend_brand=$processorNewDao->mmshightech->OMO($_POST['amend_brand']);
+        $amend_category=$processorNewDao->mmshightech->OMO($_POST['amend_category']);
+        $amend_seling_unit=$processorNewDao->mmshightech->OMO($_POST['amend_seling_unit']);
+        $amend_qantity=$processorNewDao->mmshightech->OMO($_POST['amend_qantity']);
+        $amend_content_uom=$processorNewDao->mmshightech->OMO($_POST['amend_content_uom']);
+        $amend_ean_code=$processorNewDao->mmshightech->OMO($_POST['amend_ean_code']);
+        $amend_alt_ean=$processorNewDao->mmshightech->OMO($_POST['amend_alt_ean']);
+        $amend_alt_ean2=$processorNewDao->mmshightech->OMO($_POST['amend_alt_ean2']);
+        $amend_code_single=$processorNewDao->mmshightech->OMO($_POST['amend_code_single']);
+        $amend_start_date=$processorNewDao->mmshightech->OMO($_POST['amend_start_date']);
+        $amend_end_date=$processorNewDao->mmshightech->OMO($_POST['amend_end_date']);
+        $amend_price=$processorNewDao->mmshightech->OMO($_POST['amend_price']);
+
+        $amend_label_promo_price=$processorNewDao->mmshightech->OMO($_POST['amend_label_promo_price']);
+        $amend_percentage_discount=$processorNewDao->mmshightech->OMO($_POST['amend_percentage_discount']);
+        $amend_discount_amount=$processorNewDao->mmshightech->OMO($_POST['amend_discount_amount']);
+        $amend_product_id=$processorNewDao->mmshightech->OMO($_POST['amend_product_id']);
+        if($amend_percentage_discount>0){
+            $amend_label_promo_price = $amend_price*($amend_percentage_discount/100);
+        }
+        elseif($amend_percentage_discount>0){
+            $amend_label_promo_price = $amend_price-$amend_percentage_discount;
+        }
+        $e=$products->updateProductInfo(
+             $amend_label
+            ,$amend_sub_label
+            ,$amend_description
+            ,$amend_manufacture
+            ,$amend_brand
+            ,$amend_category
+            ,$amend_seling_unit
+            ,$amend_qantity
+            ,$amend_content_uom
+            ,$amend_ean_code
+            ,$amend_alt_ean
+            ,$amend_alt_ean2
+            ,$amend_code_single
+            ,$amend_start_date
+            ,$amend_end_date
+            ,$amend_price
+            ,$amend_label_promo_price
+            ,$amend_percentage_discount
+            ,$amend_discount_amount,$amend_product_id);
+
+    }
+
+    elseif(isset($_POST['productCodeToAttendToData'],$_POST['fieldToAttendTOData'])){
+        $productCodeToAttendToData = $processorNewDao->mmshightech->OMO($_POST['productCodeToAttendToData']);
+        $fieldToAttendTOData = $processorNewDao->mmshightech->OMO($_POST['fieldToAttendTOData']);
+        $e=$products->updatePromoStockIssue($productCodeToAttendToData,$fieldToAttendTOData);
     }
     echo json_encode($e);
 }

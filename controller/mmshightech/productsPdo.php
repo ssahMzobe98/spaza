@@ -4,12 +4,14 @@ namespace Controller\mmshightech;
 
 use Controller\mmshightech;
 use Classes\constants\Constants;
-
+use Classes\response\Response;
 class productsPdo
 {
     private mmshightech $mmshightech;
+    private $response;
     public function __construct(mmshightech $mmshightech){
         $this->mmshightech=$mmshightech;
+        $this->response=new Response();
     }
     public function getSpecialProducts(?int $min,?int $limit):array{
         $sql="select p.*, 
@@ -128,5 +130,81 @@ class productsPdo
             return false;
         }
         return ($results['is_picked']===Constants::SUCCESS_YES);
+    }
+    public function updateProductInfo(
+             int|string|array|float|null $amend_label=null
+            ,int|string|array|float|null $amend_sub_label=null
+            ,int|string|array|float|null $amend_description=null
+            ,int|string|array|float|null $amend_manufacture=null
+            ,int|string|array|float|null $amend_brand=null
+            ,int|string|array|float|null $amend_category=null
+            ,int|string|array|float|null $amend_seling_unit=null
+            ,int|string|array|float|null $amend_qantity=null
+            ,int|string|array|float|null $amend_content_uom=null
+            ,int|string|array|float|null $amend_ean_code=null
+            ,int|string|array|float|null $amend_alt_ean=null
+            ,int|string|array|float|null $amend_alt_ean2=null
+            ,int|string|array|float|null $amend_code_single=null
+            ,int|string|array|float|null $amend_start_date=null
+            ,int|string|array|float|null $amend_end_date=null
+            ,int|string|array|float|null $amend_price=null
+            ,int|string|array|float|null $amend_label_promo_price=null
+            ,int|string|array|float|null $amend_percentage_discount=null
+            ,int|string|array|float|null $amend_discount_amount=null
+            ,?int $product_id=null):Response{
+        $sql="UPDATE products set 
+                product_title=?,
+                product_subtitle=?,
+                product_description=?,
+                manufacture=?,
+                brand=?,
+                menu_catalogue_id=?,
+                product_weight=?,
+                available_quantiy=?,
+                uom=?,
+                variant_barcode=?,
+                variant_barcode_alt=?,
+                variant_barcode_alt2=?,
+                product_hs_code=?,
+                promo_start_date=?,
+                promo_end_date=?,
+                price_usd=?,
+                promo_price=?,
+                promo_percentage=?,
+                discount_amount=?
+        where id=?";
+        return $this->mmshightech->newPostDataSafely($sql,'ssssssssssssssssssss',[$amend_label,$amend_sub_label,$amend_description,$amend_manufacture,$amend_brand,$amend_category,$amend_seling_unit,$amend_qantity,$amend_content_uom,$amend_ean_code,$amend_alt_ean,$amend_alt_ean2,$amend_code_single,$amend_start_date,$amend_end_date,$amend_price,$amend_label_promo_price,$amend_percentage_discount,$amend_discount_amount,$product_id]);
+    }
+    public function updatePromoStockIssue(?int $productCodeToAttendToData=null,?string $fieldToAttendTOData=Constants::IS_INSTOCK_TABLE_COL):Response{
+        $setter=Constants::IS_PRODUCT_DISCOUNTABLE_TABLE_COL."=?";
+        
+        if($fieldToAttendTOData===Constants::IS_INSTOCK_TABLE_COL){
+            $setter = Constants::IS_INSTOCK_TABLE_COL."=?";
+        }
+        $value = $this->getValueOf($fieldToAttendTOData,$productCodeToAttendToData);
+        if(empty($value)){
+            return $this->response->failureSetter()->messagerSetter("Failed to process due to empty value")->messagerArraySetter(['error'=>"Failed to process due to empty value.",'Error_list'=>[]]);
+        }
+        if($value===Constants::SUCCESS_YES){
+            $value = Constants::SUCCESS_NO;
+        }
+        else{
+            $value=Constants::SUCCESS_YES;
+        }
+        $sql="UPDATE products set  {$setter} where id = ?";
+        return $this->mmshightech->newPostDataSafely($sql,'ss',[$value,$productCodeToAttendToData]);
+    }
+    public function getValueOf(?string $fieldToAttendTOData=Constants::IS_INSTOCK_TABLE_COL,?int $productCodeToAttendToData=null):string{
+        $sql="SELECT {$fieldToAttendTOData} from products where id=?";
+        $results = $this->mmshightech->getAllDataSafely($sql,'s',[$productCodeToAttendToData])[0]??[];
+        if(empty($results)){
+            return '';
+        }
+        $data=$results[Constants::IS_INSTOCK_TABLE_COL]??'';
+        if(empty($data)){
+            $data=$results[Constants::IS_PRODUCT_DISCOUNTABLE_TABLE_COL]??'';
+        }
+        return $data;
+
     }
 }
