@@ -2,15 +2,18 @@
 namespace controller\mmshightech;
 use Controller\mmshightech;
 use Controller\mmshightech\csvProcessor;
+
 class processorNewPdo
 {
     public mmshightech $mmshightech;
     public $csvProcessor;
+    private $wallet;
     public function __construct(mmshightech $mmshightech)
     {
         //include_once ("../mmshightech.php");
         $this->mmshightech = $mmshightech;
         $this->csvProcessor = new csvProcessor();
+        $this->$wallet = PDOFactoryOOPClass::make(Constants::WALLET,[$mmshightech,PDOFactoryOOPClass::make(Constants::PRODUCT,[$mmshightech])]);
 
     }
     public function userInfo(string $userMail=null):array{
@@ -374,7 +377,7 @@ class processorNewPdo
                                 added_by)values(?,?,?,1,?,'APP',1,'',?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?)";
         $response = $this->mmshightech->postDataSafely($sql,'sssssssssssssssss',$params);
         if(is_numeric($response)){
-            return['response'=>'S','data'=>$response];
+            return $this->wallet->createWallet($response);
         }
         return['response'=>'F','data'=>$response];
 

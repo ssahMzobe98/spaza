@@ -28,7 +28,7 @@ class WalletPdo
 
     }
     private function setWalletHistory(?int $invoice=null,?int $invoiceOrder_orderNo=null,int|string|null|float $vat=null,int|string|null|float $deliveryFee=null,int|string|null|float $invoiceTotal=null,int|string|null|float $orderTotal=null,int|float|string|null $refundTotal=null,int|string|float|null $invoicedBy=null,string $action2wallet='WALLET_PAYMENT',?int $user_id=null):array{
-        $sql="insert into wallet_history(invoice_id,order_id,user_id,vat,delivery_fee,invoice_total,order_total,refund_total,invoice_by,action_2_wallet,time_added)values(?,?,?,?,?,?,?,?,?,?,NOW())";
+        $sql="INSERT into wallet_history(invoice_id,order_id,user_id,vat,delivery_fee,invoice_total,order_total,refund_total,invoice_by,action_2_wallet,time_added)values(?,?,?,?,?,?,?,?,?,?,NOW())";
         $params=[$invoice,$invoiceOrder_orderNo,$user_id,$vat,$deliveryFee,$invoiceTotal,$orderTotal,$refundTotal,$invoicedBy,$action2wallet];
         $response = $this->mmshightech->postDataSafely($sql,'ssssssssss',$params);
         if(is_numeric($response)){
@@ -38,7 +38,7 @@ class WalletPdo
 
     }
     public function getWalletTotal(?int $user_id=null):array{
-        $sql="select wallet_amount from wallet where user_id=?";
+        $sql="SELECT wallet_amount from wallet where user_id=?";
         return $this->mmshightech->getAllDataSafely($sql,'s',[$user_id])[0]??[];
         
     }
@@ -46,7 +46,7 @@ class WalletPdo
         $amount_total = $this->getWalletTotal($user_id)??[];
         $amount_total=(empty($amount_total['wallet_amount'])?0:$amount_total['wallet_amount'])+$refundTotal;
         // echo $amount_total." + ".$refundTotal;
-        $sql="update wallet set wallet_amount=? where user_id=?";
+        $sql="UPDATE wallet set wallet_amount=? where user_id=?";
         $response = $this->mmshightech->postDataSafely($sql,'ss',[$amount_total,$user_id]);
         if(is_numeric($response)){
             return ['response'=>"S",'data'=>$response];
@@ -67,13 +67,20 @@ class WalletPdo
         if(empty($results)){
             return [];
         }
-
         $results['wallet_history']=$this->getmyWalletHistory($user_id);
         return $results;
     }
     public function getmyWalletHistory(?int $user_id=null):array{
         $sql="SELECT invoice_id ,order_id,invoice_total,order_total,refund_total,action_2_wallet,date(time_added) as date_added,time(time_added) as time_added from wallet_history where user_id=? order by id Desc";
         return $this->mmshightech->getAllDataSafely($sql,'s',[$user_id])??[];
+    }
+    public function createWallet(?int $user_id=null):array{
+        $sql="INSERT into wallet(user_id,wallet_amount,added_on,status)values(?,0,NOW(),'A')";
+        $response = $this->mmshightech->postDataSafely($sql,'s',[$user_id]);
+        if(is_numeric($response)){
+            return ['response'=>'S','data'=>$response];
+        }
+        return ['response'=>'F','data'=>$response];
     }
 }
 ?>
