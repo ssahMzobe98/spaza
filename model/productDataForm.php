@@ -117,34 +117,58 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
 		        		<h3 style="font-weight: bolder; text-align: left;"><?php //echo "available_quantiy : ".$getProductData['available_quantiy'];?></h3>
  -->
  						<div style="padding:2px 2px;width: 100%;display: flex;">
- 							<div class="subControl"><label>Product Label</label><textarea class="form-control " type="text" placeholder="Label"><?php echo $getProductData['product_title'];?></textarea></div>
- 							<div class="subControl"><label>Product Sub-Label</label><textarea class="form-control " type="text" placeholder="Sub Label"><?php echo $getProductData['product_subtitle'];?></textarea></div>
- 							<div class="subControl"><label>Product Description</label><textarea class="form-control " type="text" placeholder="Description"><?php echo $getProductData['product_description'];?></textarea></div>
+ 							<div class="subControl"><label>Product Label</label>
+ 								<textarea class="form-control " class="class_label" type="text" placeholder="Label"><?php echo $getProductData['product_title'];?></textarea>
+ 							</div>
+ 							<div class="subControl"><label>Product Sub-Label</label>
+ 								<textarea class="form-control " type="text" placeholder="Sub Label"><?php echo $getProductData['product_subtitle'];?></textarea>
+ 							</div>
+ 							<div class="subControl"><label>Product Description</label>
+ 								<textarea class="form-control " type="text" placeholder="Description"><?php echo $getProductData['product_description'];?></textarea>
+ 							</div>
  						</div>
  						<div style="padding:2px 2px;width: 100%;display: flex;">
- 							<div class="subControl"><label>Manufacture</label><input value="<?php echo $getProductData['manufacture'];?>" class="form-control " type="text" placeholder="Manufacture"></div>
- 							<div class="subControl"><label>Brand</label><input value="<?php echo $getProductData['brand'];?>" class="form-control " type="text" placeholder="Brand"></div>
+ 							<div class="subControl"><label>Manufacture</label>
+ 								<input value="<?php echo $getProductData['manufacture'];?>" class="form-control " type="text" placeholder="Manufacture">
+ 							</div>
+ 							<div class="subControl"><label>Brand</label>
+ 								<input value="<?php echo $getProductData['brand'];?>" class="form-control " type="text" placeholder="Brand">
+ 							</div>
  							<div class="subControl"><label>Category</label>
  								<select class="form-control" >
  									<option value="<?php echo $getProductData['menu_catalogue_id']??null;?>"><?php echo $getProductData['category']??'NONE';?></option>
  									<?php echo $categoryDrop;?>
  								</select>
  							</div>
- 							<div class="subControl"><label>Selling Unit</label><input value="<?php echo $getProductData['product_weight'];?>" class="form-control " type="text" placeholder="Selling Unit"></div>
- 							<div class="subControl"><label>Content Quantity</label><input value="<?php echo $getProductData['available_quantiy'];?>" class="form-control " type="number" placeholder="Content Quantity"></div>
+ 							<div class="subControl"><label>Selling Unit</label>
+ 								<input value="<?php echo $getProductData['product_weight'];?>" class="form-control " type="text" placeholder="Selling Unit">
+ 							</div>
+ 							<div class="subControl"><label>Content Quantity</label>
+ 								<input value="<?php echo $getProductData['available_quantiy'];?>" class="form-control " type="number" placeholder="Content Quantity">
+ 							</div>
  						</div>
  						<div style="padding:2px 2px;width: 100%;display: flex;">
- 							<div class="subControl"><label>Content UOM</label><select class="form-control">
- 								<option  value="<?php echo $getProductData['uom']??null;?>"><?php echo $getProductData['uom']??'NONE';?></option>
- 								<option value="UNIT">UNIT</option>
- 								<option value="ML">ML</option>
- 								<option value="KG">KG</option>
- 								<option value="L">L</option>
- 							</select></div>
- 							<div class="subControl"><label>EAN CODE</label><input  value="<?php echo $getProductData['variant_barcode'];?>" class="form-control " type="number" placeholder="EAN CODE"></div>
- 							<div class="subControl"><label>Alt EAN</label><input  value="<?php echo $getProductData['variant_barcode_alt'];?>" class="form-control " type="text" placeholder="ALT EAN"></div>
- 							<div class="subControl"><label>ALT EAN2</label><input  value="<?php echo $getProductData['variant_barcode_alt2'];?>" class="form-control " type="number" placeholder="ALT EAN2"></div>
- 							<div class="subControl"><label>EAN CODE SINGLE</label><input  value="<?php echo $getProductData['variant_barcode'];?>" class="form-control " type="number" placeholder="EAN CODE SINGLE"></div>
+ 							<div class="subControl"><label>Content UOM</label>
+ 								<select class="form-control">
+	 								<option  value="<?php echo $getProductData['uom']??null;?>"><?php echo $getProductData['uom']??'NONE';?></option>
+	 								<option value="UNIT">UNIT</option>
+	 								<option value="ML">ML</option>
+	 								<option value="KG">KG</option>
+	 								<option value="L">L</option>
+	 							</select>
+	 						</div>
+ 							<div class="subControl"><label>EAN CODE</label>
+ 								<input  value="<?php echo $getProductData['variant_barcode'];?>" class="form-control " type="number" placeholder="EAN CODE">
+ 							</div>
+ 							<div class="subControl"><label>Alt EAN</label>
+ 								<input  value="<?php echo $getProductData['variant_barcode_alt'];?>" class="form-control " type="text" placeholder="ALT EAN">
+ 							</div>
+ 							<div class="subControl"><label>ALT EAN2</label>
+ 								<input  value="<?php echo $getProductData['variant_barcode_alt2'];?>" class="form-control " type="number" placeholder="ALT EAN2">
+ 							</div>
+ 							<div class="subControl"><label>EAN CODE SINGLE</label>
+ 								<input  value="<?php echo $getProductData['variant_barcode'];?>" class="form-control " type="number" placeholder="EAN CODE SINGLE">
+ 							</div>
  						</div>
  						<div style="padding:2px 2px;width: 100%;display: flex;">
  							<div class="subControl"><label>is Promo</label>
@@ -153,21 +177,33 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
 								  <span class="sliderSlider round"></span>
 								</label>
  							</div>
- 							<div class="subControl"><label>Start date</label><input value="<?php echo $getProductData['promo_start_date'];?>" class="form-control " type="date" placeholder="Start Date"></div>
- 							<div class="subControl"><label>End Date</label><input value="<?php echo $getProductData['promo_end_date'];?>" class="form-control " type="date" placeholder="End Date"></div>
+ 							<div class="subControl"><label>Start date</label>
+ 								<input value="<?php echo $getProductData['promo_start_date'];?>" class="form-control " type="date" placeholder="Start Date">
+ 							</div>
+ 							<div class="subControl"><label>End Date</label>
+ 								<input value="<?php echo $getProductData['promo_end_date'];?>" class="form-control " type="date" placeholder="End Date">
+ 							</div>
  							<div class="subControl"><label>is InStock</label>
  								<label class="switch">
-								  <input type="checkbox" <?php if($getProductData['is_instock']===Constants::SUCCESS_YES){echo 'checked';} ?>>
+								  <input type="checkbox" class="instockToggle" <?php if($getProductData['is_instock']===Constants::SUCCESS_YES){echo 'checked';} ?>>
 								  <span class="sliderSlider round"></span>
 								</label>
  							</div>
  							
  						</div>
  						<div style="padding:2px 2px;width: 100%;display: flex;">
- 							<div class="subControl"><label>Product Price</label><input value="<?php echo  number_format($getProductData['price_usd'],2);?>" class="form-control " type="text" placeholder="Price"></div>
- 							<div class="subControl"><label>Promo Price</label><input value="<?php echo number_format($getProductData['promo_price'],2);?>" class="form-control " type="text" placeholder="Promo Price"></div>
- 							<div class="subControl"><label>% Discount</label><input value="<?php echo  number_format($getProductData['promo_percentage'],2);?>" class="form-control " type="text" placeholder="% Discount"></div>
- 							<div class="subControl"><label>Discount Amount</label><input value="<?php echo  number_format($getProductData['discount_amount'],2);?>" class="form-control " type="text" placeholder="Discount Amount"></div>
+ 							<div class="subControl"><label>Product Price</label>
+ 								<input value="<?php echo  number_format($getProductData['price_usd'],2);?>" class="form-control " type="text" placeholder="Price">
+ 							</div>
+ 							<div class="subControl"><label>Promo Price</label>
+ 								<input value="<?php echo number_format($getProductData['promo_price'],2);?>" class="form-control " type="text" placeholder="Promo Price">
+ 							</div>
+ 							<div class="subControl"><label>% Discount</label>
+ 								<input value="<?php echo  number_format($getProductData['promo_percentage'],2);?>" class="form-control " type="text" placeholder="% Discount">
+ 							</div>
+ 							<div class="subControl"><label>Discount Amount</label>
+ 								<input value="<?php echo  number_format($getProductData['discount_amount'],2);?>" class="form-control " type="text" placeholder="Discount Amount">
+ 							</div>
  							
  						</div>
  						<br>

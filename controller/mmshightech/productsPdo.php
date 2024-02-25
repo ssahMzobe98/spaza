@@ -17,7 +17,7 @@ class productsPdo
             if(now() > p.promo_start_date and now() < p.promo_end_date, p.promo_price,'') as promo_price_to_display
             from products as p
                 left join cart as c on c.product_id = p.id
-            where p.product_discountable = 'Y' and p.is_instock='Y' and p.product_status='A' limit ?,?";
+            where p.product_discountable = 'Y' and (now() > p.promo_start_date and now() < p.promo_end_date) and p.is_instock='Y' and p.product_status='A' limit ?,?";
         return $this->mmshightech->getAllDataSafely($sql,'ss',[$min, $limit])??[];
     }
     public function getProductTotalCount():int{

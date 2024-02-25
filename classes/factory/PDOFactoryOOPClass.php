@@ -23,11 +23,11 @@ class PDOFactoryOOPClass implements IPDOFactoryOOPClass
         Constants::PRODUCT=>productsPdo::class
     ];
 
-    public static function make(?string $classDao = null, array $array = [])
+    public static function make(?string $classPdo = null, array $array = [])
     {
         $class = self::$data[Constants::INVOICE];
-        if (!empty($classDao) && isset(self::$data[$classDao])) {
-            $class = self::$data[$classDao];
+        if (!empty($classPdo) && isset(self::$data[$classPdo])) {
+            $class = self::$data[$classPdo];
         }
         return new $class(...$array);
     }
