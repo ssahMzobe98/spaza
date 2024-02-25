@@ -17,7 +17,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         }
         else{
         	?>
-	        <div class="orderDataSet">
+	        <div class="orderDataSet" style="border:2px solid #dddddd;padding:5px 5px;border-radius: 10px;">
 	            <div class="orderDataSetHeader">
 	                <div class="maKhathiOrdersSearch" style="padding:10px 10px;">
 	                    <input type="search" id="searchByOrderNumber" class="searchByOrderNumber" oninput="searchByOrderNumber()" placeholder="Find with Order Number...">
@@ -29,7 +29,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
 	                    <span style="font-weight:bolder;color:#000000;">Wallet Amount: R<?php echo number_format($wallet['wallet_amount'],2);?></span>
 	                </div>
 	            </div>
-	            <div class="userDisplay">
+	            <div class="userDisplay" style="border:2px solid #dddddd;padding:5px 5px;border-radius: 10px;">
 	                <table class="table table-striped">
 	                    <thead>
 	                    <tr>
@@ -75,7 +75,8 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
 	                        <th></th>
 	                        
 	                        <th></th>
-	                        <th><div class='button'>
+	                        <th>
+	                        	<div class='button'>
 	                                <a onclick="loadAfterQuery('.dynamicalLoad1','./model/loadMasomaneSchools.php?start=10&limit=10');">next</a>
 	                            </div>
 	                        </th>
