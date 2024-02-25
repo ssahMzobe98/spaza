@@ -35,8 +35,6 @@ class mmshightech
             }
         }
         return $resultset;
-
-
     }
     public function isUserExists(string $userEmailAddressNewUser=""):bool{
         $sql="select usermail from users where usermail=?";
