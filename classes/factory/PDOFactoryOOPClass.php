@@ -10,6 +10,8 @@ use Controller\mmshightech\spazaPdo;
 use Controller\mmshightech\usersPdo;
 use Controller\mmshightech;
 use Controller\mmshightech\productsPdo;
+use Classes\response\Response;
+
 
 class PDOFactoryOOPClass implements IPDOFactoryOOPClass
 {
@@ -20,12 +22,13 @@ class PDOFactoryOOPClass implements IPDOFactoryOOPClass
         Constants::SPAZA =>spazaPdo::class,
         Constants::USER=>usersPdo::class,
         Constants::MMSHIGHTECH=>mmshightech::class,
-        Constants::PRODUCT=>productsPdo::class
+        Constants::PRODUCT=>productsPdo::class,
+        Constants::RESPONSE=>Response::class
     ];
 
     public static function make(?string $classPdo = null, array $array = [])
     {
-        $class = self::$data[Constants::INVOICE];
+        $class = self::$data[Constants::USER];
         if (!empty($classPdo) && isset(self::$data[$classPdo])) {
             $class = self::$data[$classPdo];
         }

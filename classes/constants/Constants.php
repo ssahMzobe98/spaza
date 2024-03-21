@@ -25,5 +25,6 @@ class Constants{
     public const SUCCESS_MESSAGE = "Success";
     public const IS_INSTOCK_TABLE_COL='product_discountable';
 	public const IS_PRODUCT_DISCOUNTABLE_TABLE_COL='is_instock';
+	public const RESPONSE = 'Response';
 }
 ?> 
