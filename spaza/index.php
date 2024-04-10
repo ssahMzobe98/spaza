@@ -731,6 +731,33 @@ select{
         }
         if($cur_user_row['user_type']===Constants::USER_TYPE_APP){ ?>
         <li>
+          <a onclick='loadAfterQuery(".makhanyile","../model/myStore.php")'>
+            <i class='bx bx-pie-chart-alt-2' ></i>
+            <span class="links_name">My Shop</span>
+          </a>
+        </li>
+        <?php
+        }
+        if($cur_user_row['user_type']===Constants::USER_TYPE_APP){ ?>
+        <li>
+          <a onclick='loadAfterQuery(".makhanyile","../model/myStore.php")'>
+            <i class='bx bx-pie-chart-alt-2' ></i>
+            <span class="links_name">Add My Shop Product</span>
+          </a>
+        </li>
+        <?php
+        }
+        if($cur_user_row['user_type']===Constants::USER_TYPE_APP){ ?>
+        <li>
+          <a onclick='loadAfterQuery(".makhanyile","../model/myStore.php")'>
+            <i class='bx bx-pie-chart-alt-2' ></i>
+            <span class="links_name">My Shop Products</span>
+          </a>
+        </li>
+        <?php
+        }
+        if($cur_user_row['user_type']===Constants::USER_TYPE_APP){ ?>
+        <li>
           <a onclick='loadAfterQuery(".makhanyile","../model/createOrder.php");getCartUpdate();'>
               <i class='bx bx-pie-chart-alt-2' ></i>
               <span class="links_name">Create Order </span>
@@ -739,6 +766,7 @@ select{
         </li>
         <?php
         }
+         
         if($cur_user_row['user_type']===Constants::USER_TYPE_APP){ ?>
         <li>
           <a onclick='loadAfterQuery(".makhanyile","../model/myOrder.php")'>
@@ -766,7 +794,7 @@ select{
           </a>
         </li>
 
-      <?php 
+         <?php 
         }
         if($cur_user_row['user_type']===Constants::USER_TYPE_APP){ ?>
         <li>

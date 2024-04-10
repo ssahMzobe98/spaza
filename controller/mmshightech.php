@@ -10,12 +10,12 @@ class mmshightech
         $this->dbConn();
     }
     public function dbConn(){
-        $user='u405316555_ispaza';
-        $pass='iSpaza2024';
-        $dbnam='u405316555_ispaza';
-        // $user='root';
-        // $pass='';
-        // $dbnam='spaza';
+        // $user='u405316555_ispaza';
+        // $pass='iSpaza2024';
+        // $dbnam='u405316555_ispaza';
+        $user='root';
+        $pass='';
+        $dbnam='spaza';
         $this->connection=mysqli_connect('localhost',$user,$pass,$dbnam)or die("Connection was not established!!");
     }
     public function getAllDataSafely($query, $paramType="", $paramArray=[]):array{
