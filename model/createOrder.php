@@ -2,6 +2,7 @@
 include("../vendor/autoload.php");
 use Controller\mmshightech;
 use Controller\mmshightech\productsPdo;
+use Controller\mmshightech\SuppliersDao;
 use Classes\constants\Constants;
 use Controller\mmshightech\OrderPdo;
 if(session_status() !== PHP_SESSION_ACTIVE){
@@ -11,7 +12,9 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     // require_once("../controller/mmshightech.php");
     $mmshightech=new mmshightech();
     $productsDao = new productsPdo($mmshightech);
+    // $SuppliersDao = new SuppliersDao($mmshightech);
     $OrderPdo = new OrderPdo($mmshightech);
+    $SuppliersDao = new SuppliersDao($mmshightech);
     $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
     $userDirect=$cur_user_row['user_type'];
     date_default_timezone_set('Africa/Johannesburg');
@@ -79,10 +82,33 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                 <div class="maKhathiSpazaSearch" >
                     <input type="search" class="productSearchCart" placeholder="Search Product...">
                 </div>
+                <div class="maKhathiSpazaSearch suppliers" >
+                    <select class="updateSupplier" style="color: black;">
+                        <?php $suppliers = $SuppliersDao->getSuppliers();
+                        $data = "-- Select Supplier Store --";
+                        $value = '';
+                        if(empty($suppliers)){
+                            $data= 'No Suppliers Available';
+                        }
+                        else{
+                            if($cur_user_row['supplier_id']===null || empty($cur_user_row['supplier_id'])){
+                                $dataArr= $SuppliersDao->getThisSupplier($cur_user_row['supplier_id']);
+                                $data = $dataArr['store_name'];
+                                $value = $dataArr['id'];
+                            }
+                        }
+                        
+                        echo"<option value='{$value}'>{$data}</option>";
+                        foreach($suppliers as $supplier){
+                            echo "<option value='{$supplier['id']}'>{$supplier['store_name']}</option>"; 
+                        }
+                        ?>
+                    </select>
+                </div>
                 <div onclick="loadAfterQuery('.flexible-loader','../model/cart.php')" class="cart-icon" style="display: flex;color: red;"><i  style="font-size: large;cursor:pointer;" class="fa fa-cart-plus"></i><sup><span style="font-size: smaller;" class="cartDisplay">0</span></sup></div>
                 <div class="categoryList">
                     <div class="boxInCategory">
-                        <span class="badge badge-dark text-center text-white" onclick="loadAfterQuery('.flexible-loader','../model/loadHomeContent.php')"><i style="font-size: large;cursor:pointer;" class="fa fa-home"></i></span>
+                        <span class="badge badge-dark text-center text-white" onclick="loadAfterQuery('.flexible-loader','../model/loadHomeContent.php?supplier=<?php echo $cur_user_row['supplier_id']??'';?>')"><i style="font-size: large;cursor:pointer;" class="fa fa-home"></i></span>
                     </div>
                     <?php
                     foreach($productCategories as $cartegory){
@@ -101,7 +127,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             <div class="flexible-loader"></div>
         </div>
         <script>
-            loadAfterQuery('.flexible-loader','../model/loadHomeContent.php');
+            loadAfterQuery('.flexible-loader','../model/loadHomeContent.php?supplier=<?php echo $cur_user_row['supplier_id']??'';?>');
             getCartUpdate();
         </script>
 

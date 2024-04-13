@@ -207,4 +207,26 @@ class productsPdo
         return $data;
 
     }
+    public function getProductFromSpaza(?int $current_spaza=null):array{
+        $sql="SELECT 
+                    sp.product_quantity as in_stock,
+                    sp.spaza_id as spaza,
+                    sp.out_of_stock as is_in_stock,
+                    sp.id as spaza_product_id,
+                    mci.menu as menu,
+                    p.product_title as title,
+                    p.product_description as description,
+                    p.product_thumbnail as img,
+                    p.product_weight as weight,
+                    p.product_hs_code as hs_code,
+                    p.variant_barcode as barcode,
+                    sp.selling_price as price
+                from 
+                spaza_product as sp 
+                left join products as p on p.id=sp.product_id
+                left join menu_category_ids as mci on mci.id=p.menu_catalogue_id
+                where sp.spaza_id=? and sp.status='A'
+             ";
+        return $this->mmshightech->getAllDataSafely($sql,'s',[$current_spaza])??[];
+    }
 }
