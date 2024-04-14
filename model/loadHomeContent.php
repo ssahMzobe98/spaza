@@ -22,9 +22,15 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                 </center>";
                 exit();
             }  
-            $getProducts=$products->getProducts(0,100);
-            $getSpecialProducts=$products->getSpecialProducts(0,50);
-
+            $store = $_GET['supplier'];
+            $getProducts=$products->getProducts($store,0,100);
+            $getSpecialProducts=$products->getSpecialProducts($store,0,50);
+            if(empty($getProducts)&&empty($getSpecialProducts)){
+                echo"<br><center>
+                    <h2 style='color:navy;'>No product found from Supplier store.</h2>
+                </center>";
+                exit();
+            }
             ?>
             <style>
                 .specialsDisplay{
@@ -101,9 +107,9 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                             $id=$dataRow['id'];
                             $cartQuantity = $dataRow['cart_quantity']??0;
                             $add ='"add"';
-                            $addProductToCart=($dataRow['is_instock']=='N')?"":"onclick='addProductToCart({$id},{$add})'";
+                            $addProductToCart=($dataRow['is_instock']=='N')?"":"onclick='addProductToCart({$id},{$add},{$store})'";
                             $remove ='"remove"';
-                            $removeProductToCart="onclick='removeProductToCart({$id},{$remove})'";
+                            $removeProductToCart="onclick='removeProductToCart({$id},{$remove},{$store})'";
                             $promo_price_to_display = empty($dataRow['promo_price_to_display'])?'':number_format($dataRow['promo_price_to_display'],2);
                             $displayFormater = empty($promo_price_to_display)?"R".$price:"<span style='color:red;text-decoration: line-through;font-size:8px;'>R{$price}</span> <span style='font-size:8px;'>R{$promo_price_to_display}</span>";
                             $img = $dataRow['product_thumbnail']??'';
@@ -165,10 +171,10 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                                                 ';
                             $id=$dataRow['id'];
                             $add ='"add"';
-                            $addProductToCart=($dataRow['is_instock']=='N')?"":"onclick='addProductToCart({$id},{$add})'";
+                            $addProductToCart=($dataRow['is_instock']=='N')?"":"onclick='addProductToCart({$id},{$add},{$store})'";
                             $remove ='"remove"';
                             $cartQuantity = $dataRow['cart_quantity']??0;
-                            $removeProductToCart="onclick='removeProductToCart({$id},{$remove})'";
+                            $removeProductToCart="onclick='removeProductToCart({$id},{$remove},{$store})'";
                             $promo = ($dataRow['product_discountable']=='Y')?'<div style="width:20%;" title="promo item">
                                                     <i class="fa fa-star" style="font-size: small;color:blue;" aria-hidden="true"></i>
                                                 </div>':'';

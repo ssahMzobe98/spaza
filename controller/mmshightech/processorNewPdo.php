@@ -4,33 +4,31 @@ use Controller\mmshightech;
 use Controller\mmshightech\csvProcessor;
 use Classes\factory\PDOFactoryOOPClass;
 use Classes\constants\Constants;
+use Classes\response\Response;
 class processorNewPdo
 {
     public mmshightech $mmshightech;
     public $csvProcessor;
     private $wallet;
+    private $Response;
+    // RESPONSE_SUCCESS
+    // RESPONSE_FAILED 
     public function __construct(mmshightech $mmshightech)
     {
-        //include_once ("../mmshightech.php");
         $this->mmshightech = $mmshightech;
         $this->csvProcessor = new csvProcessor();
         $this->wallet = PDOFactoryOOPClass::make(Constants::WALLET,[$mmshightech,PDOFactoryOOPClass::make(Constants::PRODUCT,[$mmshightech])]);
+        $this->Response = new Response();
 
     }
     public function userInfo(string $userMail=null):array{
         return $this->mmshightech->userInfo($userMail)??[];
     }
-    public function processCSVfileSave(string $filename = '',int $adminId=0):array{
+    public function processCSVfileSave(string $filename = '',int $adminId=0):Response{
         $sql = "insert into csv_uploads_for_product_creation(csv,time_uploaded,uploaded_by)values(?,NOW(),?)";
-        $response = $this->mmshightech->postDataSafely($sql,'ss',[$filename,$adminId]);
-        if(is_numeric($response)){
-            return ['response'=>"S",'data'=>"Success"];
-        }
-        else{
-            return ['response'=>"F",'data'=>$response];
-        }
+        return $this->mmshightech->postDataSafely($sql,'ss',[$filename,$adminId]);
     }
-    public function uploadCSVData(string $header = "",array $data=[],int $adminId=0):array{
+    public function uploadCSVData(string $header = "",array $data=[],int $adminId=0):Response{
         $sql = "insert into products (product_handle,
                                       product_title,
                                       product_subtitle,
@@ -73,135 +71,122 @@ class processorNewPdo
         foreach ($data as $d){
             $params = $d;
             $params[]=$adminId;
-            $response = $this->mmshightech->postDataSafely($sql,$strParams,$params);
+            $this->Response = $this->mmshightech->postDataSafely($sql,$strParams,$params);
             if(!is_numeric($response)){
                 $isProcessed=false;
-                $error[]=$response;
                 break;
             }
         }
-        if($isProcessed){
-            return ['response'=>"S",'data'=>"Success"];
-        }
-        return ['response'=>"F",'data'=>$error];
+        return  $this->Response;
     }
 
-    public function processBackgroundDisplay(int $dome=null,int $user_id=null):array
+    public function processBackgroundDisplay(int $dome=null,int $user_id=null):Response
     {
         $dome = $this->mmshightech->OMO($dome);
         $sql = "update users set background =? where id =?";
-        $response = $this->mmshightech->postDataSafely($sql,'ss',[$dome,$user_id]);;
-        if(is_numeric($response)){
-            return ['response'=>'S','data'=>'Success'];
-        }
-        return ['response'=>'F','data'=>$response];
+        return $this->mmshightech->postDataSafely($sql,'ss',[$dome,$user_id]);;
     }
-    public function getProductQuantityOnCart(?int $id,?int $productIdToActionOnCart):int{
-        $quantity=$this->mmshightech->getAllDataSafely('select  quantity 
+    public function getProductQuantityOnCart(?int $id,?int $productIdToActionOnCart,?int $supplier_store_id=null):int{
+        $response = $this->mmshightech->getAllDataSafely('select  quantity 
                                                         from cart 
-                                                        where user_id=? 
+                                                        where user_id=?
+                                                        and store_id=? 
                                                         and product_id=?',
-                                                        'ss',
-                                                        [$id,$productIdToActionOnCart])[0]??[];
-        return $quantity['quantity']??0;
-
+                                                        'sss',
+                                                        [$id,$supplier_store_id,$productIdToActionOnCart,])[0]??[];
+        return $response['quantity']??0;
     }
-    public function cartProcessor(?int $productIdToActionOnCart, ?string $actionType, ?int $id):array
+    public function cartProcessor(?int $productIdToActionOnCart, ?string $actionType, ?int $id,?int $supplier_store_id=null):Response
     {
-        $currentQuantity = $this->getProductQuantityOnCart($id, $productIdToActionOnCart) ?? 0;
+        $currentQuantity = $this->getProductQuantityOnCart($id, $productIdToActionOnCart,$supplier_store_id) ?? 0;
 
         if (strtolower($actionType) == 'add') {
             if ($currentQuantity == 0) {
-                $response = $this->addToCart($id, $productIdToActionOnCart);
+                $this->Response = $this->addToCart($id, $productIdToActionOnCart,$supplier_store_id);
             } else {
                 $currentQuantity++;
-                $response = $this->updateItemOnCart($id, $productIdToActionOnCart, $currentQuantity);
+                $this->Response = $this->updateItemOnCart($id, $productIdToActionOnCart, $currentQuantity,$supplier_store_id);
             }
         } else {
             $currentQuantity--;
             if ($currentQuantity < 1) {
-                $response = $this->removeFromCart($id, $productIdToActionOnCart);
+                $this->Response = $this->removeFromCart($id, $productIdToActionOnCart,$supplier_store_id);
             } else {
-                $response = $this->updateItemOnCart($id, $productIdToActionOnCart, $currentQuantity);
+                $this->Response = $this->updateItemOnCart($id, $productIdToActionOnCart, $currentQuantity,$supplier_store_id);
             }
         }
-
-        return $response ?? ['response' => 'F', 'data' => 'Failed to run ' . __FUNCTION__ . ' on line ' . __LINE__];
-    }
-
-    private function addToCart(?int $id, ?int $productIdToActionOnCart):array
-    {
-        $sql = "insert into cart(product_id,user_id,store_id,quantity,time_added)values(?,?,1,1,now())";
-        $response = $this->mmshightech->postDataSafely($sql,'ss',[$productIdToActionOnCart,$id]);
-        if(is_numeric($response)){
-            return['response'=>'S','data'=>1];
+        if($this->Response->responseStatus===Constants::RESPONSE_SUCCESS){
+            $this->Response->responseMessage = $this->getProductQuantityOnCart($id, $productIdToActionOnCart,$supplier_store_id)??0;
         }
-        return['response'=>'F','data'=>$response];
+
+        return  $this->Response;
     }
 
-    private function updateItemOnCart(?int $id, ?int $productIdToActionOnCart, int $currentQuantity):array
+    private function addToCart(?int $id, ?int $productIdToActionOnCart,?int $supplier_store_id=null):Response
     {
-        $sql = "update cart set quantity=?,time_added=NOW() where product_id=? and user_id=?";
-        $response = $this->mmshightech->postDataSafely($sql,'sss',[$currentQuantity,$productIdToActionOnCart,$id]);
-        if(is_numeric($response)){
-            return['response'=>'S','data'=>$currentQuantity];
-        }
-        return['response'=>'F','data'=>$response];
+        $sql = "insert into cart(product_id,user_id,store_id,quantity,time_added)values(?,?,?,1,now())";
+        return $this->mmshightech->postDataSafely($sql,'sss',[$productIdToActionOnCart,$id,$supplier_store_id]);
     }
 
-    private function removeFromCart(?int $id, ?int $productIdToActionOnCart):array
+    private function updateItemOnCart(?int $id, ?int $productIdToActionOnCart, int $currentQuantity,?int $supplier_store_id=null):Response
     {
-        $sql = "delete from cart where product_id={$productIdToActionOnCart} and user_id={$id}";
-        $response = $this->mmshightech->connection->query($sql);
-        if($response){
-            return['response'=>'S','data'=>0];
-        }
-        return['response'=>'F','data'=>$response->error];
+        $sql = "update cart set quantity=?,time_added=NOW() where product_id=? and user_id=? and store_id=?";
+        return $this->mmshightech->postDataSafely($sql,'ssss',[$currentQuantity,$productIdToActionOnCart,$id,$supplier_store_id]);
     }
 
-    public function getCartUpdates(?int $id):int
+    private function removeFromCart(?int $id, ?int $productIdToActionOnCart,?int $supplier_store_id=null):Response
+    {
+        $sql = "delete from cart where product_id={$productIdToActionOnCart} and user_id={$id} and store_id={$supplier_store_id}";
+        return $this->mmshightech->connection->query($sql);
+    }
+
+    public function getCartUpdates(?int $id,?int $supplier_store_id=null):int
     {
         $response=$this->mmshightech->getAllDataSafely(
-            'select sum(quantity) as total from cart where user_id=?',
-            's',
-            [$id]
+            'select sum(quantity) as total from cart where user_id=? and store_id=?',
+            'ss',
+            [$id,$supplier_store_id]
         )[0]??[];
         return $response['total']??0;
     }
 
-    public function emptyCart(?int $id):array
+    public function emptyCart(?int $id,?int $supplier_store_id=null):Response
     {
-        $sql = "delete from cart where user_id={$id}";
-        $response = $this->mmshightech->connection->query($sql);
-        if($response){
-            return['response'=>'S','data'=>0];
+        $sql="";
+        if($supplier_store_id!==null){
+            $sql=" and store_id={$supplier_store_id}";
         }
-        return['response'=>'F','data'=>$response->error];
+        $sql = "delete from cart where user_id={$id} ".$sql;
+        $response = $this->mmshightech->connection->query($sql);
+         $this->Response->responseStatus=Constants::RESPONSE_FAILED;
+        if($response){
+            $this->Response->responseStatus=Constants::RESPONSE_SUCCESS;
+        }
+        $this->Response->responseMessage=$response;
+        return $this->Response;
     }
 
-    public function removeProductFromCart(?int $cartIdToRemove, ?int $id):array
+    public function removeProductFromCart(?int $cartIdToRemove, ?int $id,?int $supplier_store_id=null):Response
     {
-        $sql = "delete from cart where id={$cartIdToRemove} and user_id={$id}";
+        $sql = "delete from cart where id={$cartIdToRemove} and user_id={$id} and store_id={$supplier_store_id}";
         $response = $this->mmshightech->connection->query($sql);
+        $this->Response->responseStatus=Constants::RESPONSE_FAILED;
         if($response){
-            return['response'=>'S','data'=>0];
+            $this->Response->responseStatus=Constants::RESPONSE_SUCCESS;
         }
-        return['response'=>'F','data'=>$response->error];
+        $this->Response->responseMessage=$response;
+        return $this->Response;
     }
 
-    public function spazaUpdater(?int $spazaShopsDisplay,?int $id,?int $orderId):array
+    public function spazaUpdater(?int $spazaShopsDisplay,?int $id,?int $orderId):Response
     {
         $sql="UPDATE users set current_spaza=? where id=?";
-        $response = $this->mmshightech->postDataSafely($sql,'ss',[$spazaShopsDisplay,$id]);
-        if(is_numeric($response)){
+        $this->Response = $this->mmshightech->postDataSafely($sql,'ss',[$spazaShopsDisplay,$id]);
+        if($this->Response->responseStatus===Constants::RESPONSE_SUCCESS){
             $sql="UPDATE orders set spaza_id=? where id=?";
-            $response = $this->mmshightech->postDataSafely($sql,'ss',[$spazaShopsDisplay,$orderId]);
-            if(is_numeric($response)){
-                 return ['response'=>'S','data'=>$response];
-            }
-           return ['response'=>'F','data'=> $response];
+            $this->Response = $this->mmshightech->postDataSafely($sql,'ss',[$spazaShopsDisplay,$orderId]);
         }
-        return ['response'=>'F','data'=> $response];
+        return $this->Response;
     }
 
     public function addNewSpazaDetails(?int $spazaOwnerId,
@@ -214,7 +199,7 @@ class processorNewPdo
                                        ?string $fname,
                                        ?string $spaza,
                                        ?string $userEmailAddress,
-                                       ?string $id):array
+                                       ?string $id):Response
     {
         $params=[$spazaOwnerId,$spaza,$fname,
             $lname, $userPhoneNo,
@@ -250,84 +235,55 @@ class processorNewPdo
                                             added_by,
                                             verified_by	
                                         )values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?,?,?)";
-        $response = $this->mmshightech->postDataSafely($sql,'sssssssssssssssssssssss',$params);
-        if(is_numeric($response)){
-            return $this->updateUserSpazaId($spazaOwnerId,$response);
-        }
-        return['response'=>'F','data'=>$response];
+        return $this->mmshightech->postDataSafely($sql,'sssssssssssssssssssssss',$params);
     }
-    public function updateUserSpazaId(?int $user_id=null,?int $spaza_id=null):array{
+    public function updateUserSpazaId(?int $user_id=null,?int $spaza_id=null):Response{
         $sql="update users set current_spaza=? where id=?";
-        $response = $this->mmshightech->postDataSafely($sql,'ss',[$spaza_id,$user_id]);
-        if(is_numeric($response)){
-            return['response'=>'S','data'=>$spaza_id];
-        }
-        return['response'=>'F','data'=>$response];
+        return $this->mmshightech->postDataSafely($sql,'ss',[$spaza_id,$user_id]);
     }
-    public function spazaIdToBeRemoved(?int $spaza_id_toBeRemoved):array
+    public function spazaIdToBeRemoved(?int $spaza_id_toBeRemoved):Response
     {
         $sql="update spaza_details set status='D' where id=?";
-        $response = $this->mmshightech->postDataSafely($sql,'s',[$spaza_id_toBeRemoved]);
-        if(is_numeric($response)){
-            return['response'=>'S','data'=>$response];
-        }
-        return['response'=>'F','data'=>$response];
-
+        return $this->mmshightech->postDataSafely($sql,'s',[$spaza_id_toBeRemoved]);
     }
 
-    public function addAddress(?string $countryOfOriginAddress, ?string $map_dir, ?int $spaza_id_to_add_address):array
+    public function addAddress(?string $countryOfOriginAddress, ?string $map_dir, ?int $spaza_id_to_add_address):Response
     {
         $column = 'origin_address';
         if($map_dir=='d'){
             $column = 'spaza_address';
         }
         $sql="update spaza_details set {$column} = ? where id=?";
-        $response = $this->mmshightech->postDataSafely($sql,'ss',[$countryOfOriginAddress,$spaza_id_to_add_address]);
-        if(is_numeric($response)){
-            return['response'=>'S','data'=>$response];
-        }
-        return['response'=>'F','data'=>$response];
+        return $this->mmshightech->postDataSafely($sql,'ss',[$countryOfOriginAddress,$spaza_id_to_add_address]);
     }
 
-    public function saveProcessedDocuments(?int $spazaVisaDetailsId,?array $newNames,?array $tmp):array
+    public function saveProcessedDocuments(?int $spazaVisaDetailsId,?array $newNames,?array $tmp):Response
     {
         $visa_number=$tmp[0];
         $permit_number=$tmp[1];
         $visa_passport_number_doc= $newNames[0];
         $permit_number_doc= $newNames[1];
         $sql="update spaza_details set permit_number=?,visa_number=?,copy_of_permit=?,passport_id_copy=? where id =?";
-        $response = $this->mmshightech->postDataSafely($sql,'sssss',[$permit_number,$visa_number,$permit_number_doc,$visa_passport_number_doc,$spazaVisaDetailsId]);
-        if(is_numeric($response)){
-            return['response'=>'S','data'=>$response];
-        }
-        return['response'=>'F','data'=>$response];
+        return $this->mmshightech->postDataSafely($sql,'sssss',[$permit_number,$visa_number,$permit_number_doc,$visa_passport_number_doc,$spazaVisaDetailsId]);
     }
 
-    public function saveProcessedLegalDocuments(?int $spazaLegalDocumentId,?array $newNames):array
+    public function saveProcessedLegalDocuments(?int $spazaLegalDocumentId,?array $newNames):Response
     {
         $photo=$newNames[0];
         $spazaAddress=$newNames[1];
         $residentalAddress=$newNames[2];
         $countryOfOriginAddress=$newNames[3];
         $sql="update spaza_details set proof_of_origin_address=?,proof_of_residental_adress=?,proof_of_spaza_address=?,rep_facial_img=? where id =?";
-        $response = $this->mmshightech->postDataSafely($sql,'sssss',[$countryOfOriginAddress,$residentalAddress,$spazaAddress,$photo,$spazaLegalDocumentId]);
-        if(is_numeric($response)){
-            return['response'=>'S','data'=>$response];
-        }
-        return['response'=>'F','data'=>$response];
+        return $this->mmshightech->postDataSafely($sql,'sssss',[$countryOfOriginAddress,$residentalAddress,$spazaAddress,$photo,$spazaLegalDocumentId]);
     }
 
-    public function removeCardDetailsFromUser(int $clientIdFromRemoveCardDetails):array
+    public function removeCardDetailsFromUser(int $clientIdFromRemoveCardDetails):Response
     {
         $sql="update users set card_number='',card_expiry_date='',card_name='',card_type='',card_cvv='',card_token='' where id=?";
-        $response = $this->mmshightech->postDataSafely($sql,'s',[$clientIdFromRemoveCardDetails]);
-        if(is_numeric($response)){
-            return['response'=>'S','data'=>$response];
-        }
-        return['response'=>'F','data'=>$response];
+        return $this->mmshightech->postDataSafely($sql,'s',[$clientIdFromRemoveCardDetails]);
     }
 
-    public function updateCardDetailsFromUser(int $clientIdToAddBankDetailsTo=null, string $cname=null, int $ccnum=null, string $expmonth=null, string $expyear=null, int $cvv=null,bool $remove=false):array
+    public function updateCardDetailsFromUser(int $clientIdToAddBankDetailsTo=null, string $cname=null, int $ccnum=null, string $expmonth=null, string $expyear=null, int $cvv=null,bool $remove=false):Response
     {
         if($remove){
             return $this->removeCardDetailsFromUser($clientIdToAddBankDetailsTo);
@@ -335,17 +291,15 @@ class processorNewPdo
         else{
             $expiry=$expmonth.'/'.$expyear;
             $sql="update users set card_number=?,card_expiry_date=?,card_name=?,card_cvv=? where id=?";
-            $response = $this->mmshightech->postDataSafely($sql,'sssss',[$ccnum,$expiry,$cname,$cvv,$clientIdToAddBankDetailsTo]);
-            if(is_numeric($response)){
-                return['response'=>'S','data'=>$response];
-            }
-            return['response'=>'F','data'=>$response];
+            return $this->mmshightech->postDataSafely($sql,'sssss',[$ccnum,$expiry,$cname,$cvv,$clientIdToAddBankDetailsTo]);
         }
 
     }
-    public function createNewUser($fnameNewUser,$lnameNewUser,$phoneNumberNewUser,$nationalityNewUser,$Passport_idNewUser,$genderNewUser,$userDOBNewUser,$permitNumberNewUser,$coutryOfOriginAddressNewUser,$saResidingAddressNewUser,$userEmailAddressNewUser,$userPasswordNewUser,array $newFilesNames=[],int $id=0):array{
+    public function createNewUser($fnameNewUser,$lnameNewUser,$phoneNumberNewUser,$nationalityNewUser,$Passport_idNewUser,$genderNewUser,$userDOBNewUser,$permitNumberNewUser,$coutryOfOriginAddressNewUser,$saResidingAddressNewUser,$userEmailAddressNewUser,$userPasswordNewUser,array $newFilesNames=[],int $id=0,?int $storeSupplierId=null):Response{
         if($this->mmshightech->isUserExists($userEmailAddressNewUser)){
-            return ['response'=>'F','data'=>'user with this email already exist.'];
+            $this->Response->responseStatus='F';
+            $this->Response->responseMessage='user with this email already exist.';
+            return $this->Response;
         }
         if(empty($newFilesNames)){
             $newFilesNames=[
@@ -353,8 +307,12 @@ class processorNewPdo
             ];
         }
         $userPasswordNewUser = $this->mmshightech->lockPassWord($userPasswordNewUser);
-        $params = [$userEmailAddressNewUser,$userPasswordNewUser,$fnameNewUser,$lnameNewUser,$phoneNumberNewUser,$userDOBNewUser,$genderNewUser,$nationalityNewUser,$Passport_idNewUser,$permitNumberNewUser,$coutryOfOriginAddressNewUser,$saResidingAddressNewUser,$newFilesNames[0],$newFilesNames[1],$newFilesNames[2],$newFilesNames[3],$id];
-        $sql = "insert into users(usermail,
+        $params = [$storeSupplierId,$userEmailAddressNewUser,$userPasswordNewUser,$fnameNewUser,$lnameNewUser,$phoneNumberNewUser,$userDOBNewUser,$genderNewUser,$nationalityNewUser,$Passport_idNewUser,$permitNumberNewUser,$coutryOfOriginAddressNewUser,$saResidingAddressNewUser,$newFilesNames[0],$newFilesNames[1],$newFilesNames[2],$newFilesNames[3],$id];
+        $app="APP";
+        if($storeSupplierId!==null){
+            $app="SUPPLIER";
+        }
+        $sql = "insert into users(supplier_id,usermail,
                                 security,
                                 name,
                                 background,
@@ -375,21 +333,12 @@ class processorNewPdo
                                 facial_image,
                                 proof_of_residental_address_sa,
                                 time_added,
-                                added_by)values(?,?,?,1,?,'APP',1,'',?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?)";
-        $response = $this->mmshightech->postDataSafely($sql,'sssssssssssssssss',$params);
-        if(is_numeric($response)){
-            return $this->wallet->createWallet($response);
-        }
-        return['response'=>'F','data'=>$response];
-
+                                added_by)values(?,?,?,?,1,?,'{$app}',1,'',?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?)";
+        return $this->mmshightech->postDataSafely($sql,'ssssssssssssssssss',$params);
     }
     public function addaPaymentDetails(?string $NameOnCard,?string $cardNumber,?string $expiryDate,?string $cvv,?string $client_id_toSave2):array{
         $params=[$NameOnCard,$cardNumber,$expiryDate,$cvv,$client_id_toSave2];
         $sql = "update users set card_name=?,card_number=?,card_expiry_date=?,card_cvv=? where id=?";
-        $response = $this->mmshightech->postDataSafely($sql,'sssss',$params);
-        if(is_numeric($response)){
-            return['response'=>'S','data'=>$response];
-        }
-        return['response'=>'F','data'=>$response];
+        return $this->mmshightech->postDataSafely($sql,'sssss',$params);
     }
 }

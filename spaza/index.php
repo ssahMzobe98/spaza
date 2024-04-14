@@ -94,7 +94,7 @@ h3{
 .sidebar.active{
   width: 60px;
 }
-.sidebar .logo-details{
+.sidebar .logo-details{g
   height: 80px;
   display: flex;
   align-items: center;
@@ -768,7 +768,7 @@ select{
         }
         if($cur_user_row['user_type']===Constants::USER_TYPE_APP){ ?>
         <li>
-          <a onclick='loadAfterQuery(".makhanyile","../model/createOrder.php");getCartUpdate();'>
+          <a onclick='loadAfterQuery(".makhanyile","../model/createOrder.php");getCartUpdate(<?php echo $cur_user_row['supplier_id'];?>);'>
               <i class='bx bx-pie-chart-alt-2' ></i>
               <span class="links_name">Create Order </span>
               <span style="display: flex;color: #00eeff;"><i style="width:10%;font-size: medium;cursor:pointer;color: #00eeff" class="fa fa-cart-plus"></i><sup style="margin-left: -20px;margin-top: 15%;" class="cartDisplay">0</sup></span>
@@ -893,13 +893,13 @@ select{
           </div>
           <div class="inputVals">
             <label>Supplier's Store Address</label>
-            <input type="text" required class="form-control StoreAddress" placeholder="User Last Name">
+            <input type="text" required class="form-control storeAddress" placeholder="User Last Name">
           </div>
         </div>
         <div class="twinsPack">
           <div class="inputVals">
             <label>Nationality</label>
-            <select class="form-control store_nationality" required>
+            <select class="form-control storeNationality" required>
               <option value="">-- Nationality --</option>
               <option value="South Africa">South Africa</option>
               <option value="Afghanistan">Afghanistan</option>
@@ -1150,7 +1150,7 @@ select{
           </div>
           <div class="inputVals">
             <label>Province </label>
-            <select class="form-control SuppliersProvince" required>
+            <select class="form-control storeProvince" required>
               <option value="">-- Province --</option>
               <option value="KwaZulu-Natal">KwaZulu-Natal</option>
               <option value="Eastern Cape">Eastern Cape</option>
@@ -1166,46 +1166,56 @@ select{
         </div>
         <div class="twinsPack">
           <div class="inputVals">
-            <label>Supplier's Store Address</label>
-            <input type="text" required class="form-control userDOB" placeholder="Address">
+            <label>Supplier's Store Phone</label>
+            <input type="number" required class="form-control storePhone" placeholder="Phone Number">
           </div>
           <div class="inputVals">
             <label>Reg No</label>
-            <input type="date" required class="form-control userDOB" placeholder="Registration No">
+            <input type="text" required class="form-control storeRegNo" placeholder="Registration No">
           </div>
         </div>
         <div class="twinsPack">
           <div class="inputVals">
             <label>Supplier's Store Admin Name</label>
-            <input type="text" required class="form-control coutryOfOriginAddress" placeholder="Country of origin address">
+            <input type="text" required class="form-control storeAdminName" placeholder="Enter First Name">
           </div>
         </div>
         <div class="twinsPack">
           <div class="inputVals">
             <label>Supplier's Store Admin Surname</label>
-            <input type="text" required class="form-control saResidingAddress" placeholder="SA Residing address">
+            <input type="text" required class="form-control storeAdminSurname" placeholder="Enter Last Name">
           </div>
           <div class="inputVals">
             <label>Supplier's Store Admin ID No.</label>
-            <input type="email" required class="form-control userEmailAddress" placeholder="Email Address">
+            <input type="number" required class="form-control storeAdminIDNo" placeholder="ID Number">
             
           </div>
         </div>
         <div class="twinsPack">
           <div class="inputVals">
             <label>Supplier's Store Admin Employee Code</label>
-            <input type="file" required name="passport_id_certifiedcopy" accept=".pdf" class="form-control passport_id_certifiedcopy" id="passport_id_certifiedcopy" placeholder="certifies copy Passport or SA ID">
+            <input type="text" required class="form-control storeEmployeeCode" placeholder="Employee Code">
           </div>
           <div class="inputVals">
             <label>Supplier's Store logo</label>
-            <input type="file" name="SupplierLogo" accept=".image/*" class="form-control SupplierLogo" id="SupplierLogo">
+            <input type="file" name="storeLogo" class="form-control storeLogo" id="storeLogo">
+          </div>
+        </div>
+        <div class="twinsPack">
+          <div class="inputVals">
+            <label>Supplier's Store Admin Email</label>
+            <input type="email" required class="form-control storeAdminEmail" placeholder="Enter Email Address">
+          </div>
+          <div class="inputVals">
+            <label>Supplier's Store Admin Password</label>
+            <input type="password" name="password" class="form-control storePassword" placeholder="Enter Password">
           </div>
         </div>
         
         <br>
         <div class="inputVals">
           <center>
-            <span style="padding:10px 10px;border:1px solid #ddd;" class="addMasomaneNewSchool" onclick="createNewUser()"> Create New User <span style="padding:2px 2px;"><i style="padding:10px 10px;color:green;" class="fa fa-plus"></i></span></span>
+            <span style="padding:10px 10px;border:1px solid #ddd;" class="addMasomaneNewSchool" onclick="createNewStoreSupplier()"> Create New Supplier <span style="padding:2px 2px;"><i style="padding:10px 10px;color:green;" class="fa fa-plus"></i></span></span>
           </center>
         </div>
         <div class="createUserErrorLog" hidden></div>
@@ -1673,7 +1683,7 @@ $(document).ready(function(){
     else{
       loadAfterQuery(".makhanyile","../model/myShop.php");
     }
-    getCartUpdate();
+    getCartUpdate(<?php echo $cur_user_row['supplier_id'];?>);
   }
   else{
     loadAfterQuery(".makhanyile","../model/ordersForm.php");
@@ -1691,16 +1701,35 @@ $(document).on("change",".spazaShopsDisplay",function(){
         data:{spazaShopsDisplay:spazaShopsDisplay,spazaShopsDisplayClientId:spazaShopsDisplayClientId,orderTomakeUpdateOn:orderTomakeUpdateOn},
         success:function(e){
             response = JSON.parse(e);
-            console.log(response['response']);
-            if(response['response']==='S'){
+            // console.log(response['response']);
+            if(response['responseStatus']==='S'){
                 loadAfterQuery(".makhanyile","../model/checkout.php?order_id="+orderTomakeUpdateOn);
             }
             else{
-                $(".errorDisplaysetter").attr("style","padding:5px 5px;color:red;text-align:center;border:1px solid red;").html(e);
+                $(".errorDisplaysetter").attr("style","padding:5px 5px;color:red;text-align:center;border:1px solid red;").html(response['responseMessage']);
             }
         }
     });
-
+});
+$(document).on("change",".updateSupplier",function(){
+    const updateSupplierOnSpazaOner = $('.updateSupplier').val();
+    // const spaza_owner_user_id = $('.spaza_owner_user_id').val();
+    $.ajax({
+        url:'../controller/mmshightech/processor.php',
+        type:'post',
+        data:{updateSupplierOnSpazaOner:updateSupplierOnSpazaOner},
+        success:function(e){
+            response = JSON.parse(e);
+            // console.log(response['response']);
+            if(response['responseStatus']==='S'){
+              loadAfterQuery(".makhanyile","../model/createOrder.php")
+                //loadAfterQuery(".makhanyile","../model/checkout.php?order_id="+orderTomakeUpdateOn);
+            }
+            else{
+                $(".errorDisplaysetter").attr("style","padding:5px 5px;color:red;text-align:center;border:1px solid red;").html(response['responseMessage']);
+            }
+        }
+    });
 
 });
 
@@ -1723,11 +1752,12 @@ $(document).on("change",".filesUpload",function(){
     cache:false,
     enctype: 'multipart/form-data',
     success:function(e){
-      if(e.length==1){
+      response = JSON.parse(e);
+      if(response['responseStatus']==='S'){
         $(".displayResponse").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("Product list added!!");
       }
       else{
-        $(".displayResponse").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:red;border:2px solid red;border-radius:10px;").html(e);
+        $(".displayResponse").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:red;border:2px solid red;border-radius:10px;").html(response['responseMessage']);
       }
     }
   });
@@ -1936,8 +1966,9 @@ function sendAjaxToPHP(url,dataArray,processorClass,successResponse){
       type:'post',
       data:dataArray,
       success:function(e){
-          if(e.length>1){
-              $(processorClass).removeAttr("hidden").attr("style","padding:5px 5px;color:red;text-align:center;").html(e);
+          response = JSON.parse(e);
+          if(response['responseStatus']==='F'){
+              $(processorClass).removeAttr("hidden").attr("style","padding:5px 5px;color:red;text-align:center;").html($response['responseMessage']);
               return false;
           }
           else{
@@ -2041,12 +2072,13 @@ function validateNewOrder(order_total_amount,order_total_Vat,order_subTotal_amou
       success:function(e){
           // console.log(e);
           response=JSON.parse(e);
+          console.log(response);
           if(response['response']!=='S'){
-              $(".validateOrder").attr("style","padding:5px 5px;color:red;text-align:center;").html(response['data']);
+              $(".validateOrder").attr("style","padding:5px 5px;color:red;text-align:center;").html(response['responseMessage']);
           }
           else{
               $(".validateOrder").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html("ORDER OK!!");
-              loadAfterQuery('.makhanyile','../model/checkout.php?order_id='+response['data']);
+              loadAfterQuery('.makhanyile','../model/checkout.php?order_id='+response['responseMessage']);
           }
       }
   });
@@ -2063,7 +2095,7 @@ function makePayment(order_number_toPay,client_id2Pay,amountToPayInTotal){
         // console.log(e);
         data = JSON.parse(e);
         $(".errorTagDisplay").removeAttr("hidden").html("Contacting the bank..");
-          if(data['response']==="S"){
+          if(data['responseStatus']==="S"){
             window.payfast_do_onsite_payment({"uuid":data['identifier']}, function (result){
               if(result){
                 const client_id="";
@@ -2077,7 +2109,7 @@ function makePayment(order_number_toPay,client_id2Pay,amountToPayInTotal){
                 data:{client_id:client_id,amountToPay:amountToPay,pfData:pfData,pfParamString:pfParamString},
                 success:function(e){
                   data = JSON.parse(e);
-                    if(data['response']==="S"){
+                    if(data['responseStatus']==="S"){
                         $(".errorTagDisplay").attr("style","width:100%;padding:10px 10px;color:#45f3ff;background:green;border:2px solid white;text-align:center;font-size:14px;");
                         $(".errorTagDisplay").html("Payment Successful. please wait, redirecting you to your order.");
                         loadAfterQuery('.makhanyile','../model/myOrder.php?order_id='+order_number_toPay);
@@ -2085,7 +2117,7 @@ function makePayment(order_number_toPay,client_id2Pay,amountToPayInTotal){
                     }
                     else{
                         $(".errorTagDisplay").attr("style","width:100%;padding:10px 10px;color:#45f3ff;background:red;border:2px solid white;text-align:center;font-size:14px;");
-                        $(".errorTagDisplay").html(data['data']);
+                        $(".errorTagDisplay").html(data['responseMessage']);
                     }
 
                 }
@@ -2100,7 +2132,7 @@ function makePayment(order_number_toPay,client_id2Pay,amountToPayInTotal){
             }); 
           }
           else{
-              $(".errorTagDisplay").removeAttr("hidden").attr("style","padding:5px 5px;color:red;text-align:center;border:1px solid red;").html(data['data']);
+              $(".errorTagDisplay").removeAttr("hidden").attr("style","padding:5px 5px;color:red;text-align:center;border:1px solid red;").html(data['responseMessage']);
               return true;
           }
       }
@@ -2108,6 +2140,109 @@ function makePayment(order_number_toPay,client_id2Pay,amountToPayInTotal){
 }
 function productInfo(productId){
   domeSquareModal('productDataForm',productId);
+}
+function createNewStoreSupplier(){
+    const storeName  = $(".storeName").val();
+    const storeAddress  = $(".storeAddress").val();
+    const storeNationality  = $(".storeNationality").val();
+    const storeProvince  = $(".storeProvince").val();
+    const storePhone  = $(".storePhone").val();
+    const storeRegNo  = $(".storeRegNo").val();
+    const storeAdminName  = $(".storeAdminName").val();
+    const storeAdminSurname  = $(".storeAdminSurname").val();
+    const storeAdminIDNo  = $(".storeAdminIDNo").val();
+    const storeEmployeeCode  = $(".storeEmployeeCode").val();
+    const storeAdminEmail = $(".storeAdminEmail").val();
+    const storePassword  = $(".storePassword").val();
+    const storeLogo = document.getElementById('storeLogo').files;
+    $(".createUserErrorLog").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("<img style='width:5%;' src='../img/loader.gif'><h5 style='color:green;'>Processing Request..</h5>");
+    if(storeName.length==0){
+      $(".storeName").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(storePhone.length==0){
+      $(".storePhone").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(storeNationality.length==0){
+      $(".storeNationality").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(storeProvince.length==0){
+      $(".storeProvince").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(storeAddress.length==0){
+      $(".storeAddress").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(storeRegNo.length==0){
+      $(".storeRegNo").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(storeAdminName.length==0){
+      $(".storeAdminName").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(storeAdminSurname.length==0){
+      $(".storeAdminSurname").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(storeAdminIDNo.length==0){
+      $(".storeAdminIDNo").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(storeEmployeeCode.length==0){
+      $(".storeEmployeeCode").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(storeAdminEmail.length==0){
+      $(".storeAdminEmail").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Field required**");
+    }
+    else if(storePassword.length<5){
+      $(".storePassword").attr("style","border:1px solid red");
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:10px 10px;border-radius:10px;").html("Password too short**");
+    }
+    else{
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("<img style='width:5%;' src='../img/loader.gif'><h5 style='color:green;'>Verifying Request..</h5>");
+      var form_data = new FormData();
+      form_data.append("storeName",storeName);
+      form_data.append("storePhone",storePhone);
+      form_data.append("storeNationality",storeNationality);
+      form_data.append("storeProvince",storeProvince);
+      form_data.append("storeAddress",storeAddress);
+      form_data.append("storeRegNo",storeRegNo);
+      form_data.append("storeAdminName",storeAdminName);
+      form_data.append("storeAdminSurname",storeAdminSurname);
+      form_data.append("storeAdminIDNo",storeAdminIDNo);
+      form_data.append("storeEmployeeCode",storeEmployeeCode);
+      form_data.append("storeAdminEmail",storeAdminEmail);
+      form_data.append("storePassword",storePassword);
+      form_data.append("storeLogo",storeLogo[0]);
+      const url="../controller/mmshightech/processor.php";
+      $(".createUserErrorLog").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("<img style='width:5%;' src='../img/loader.gif'><h5 style='color:green;'>Submitting Request..</h5>");
+      $.ajax({
+        url:url,
+        processData: false,
+        contentType: false,
+        type:"POST",
+        data:form_data,
+        cache:false,
+        enctype: 'multipart/form-data',
+        success:function(e){
+          // 
+          data=JSON.parse(e);
+          console.log(data);
+          if(data['responseStatus']==='S'){
+            $(".createUserErrorLog").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("New Supplier added.");
+          }
+          else{
+            $(".createUserErrorLog").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:red;border:2px solid red;border-radius:10px;").html(data['responseMessage']);
+          }
+        }
+      });
+    }
 }
 function createNewUser(){
     const fname  = $(".fname").val();
@@ -2229,11 +2364,11 @@ function createNewUser(){
         success:function(e){
           console.log(e);
           data=JSON.parse(e);
-          if(data['response']==='S'){
+          if(data['responseStatus']==='S'){
             $(".createUserErrorLog").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("New user added.");
           }
           else{
-            $(".createUserErrorLog").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:red;border:2px solid red;border-radius:10px;").html(data['data']);
+            $(".createUserErrorLog").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:red;border:2px solid red;border-radius:10px;").html(data['responseMessage']);
           }
         }
       });
@@ -2248,8 +2383,8 @@ function deliverOrder(deliverOrder_order_id){
       success:function(e){
           console.log(e);
           response=JSON.parse(e);
-          if(response['response']!=='S'){
-              $(".displayResponseOrder").attr("style","padding:5px 5px;color:red;text-align:center;").html(response['data']);
+          if(response['responseStatus']!=='S'){
+              $(".displayResponseOrder").attr("style","padding:5px 5px;color:red;text-align:center;").html(response['responseMessage']);
           }
           else{
               $(".displayResponseOrder").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html("Order Delivered.");
@@ -2267,8 +2402,8 @@ function CancelOrder(CancelOrder_order_id){
       data:{CancelOrder_order_id:CancelOrder_order_id},
       success:function(e){
           response=JSON.parse(e);
-          if(response['response']!=='S'){
-              $(".displayResponseOrder").attr("style","padding:5px 5px;color:red;text-align:center;").html(response['data']);
+          if(response['responseStatus']!=='S'){
+              $(".displayResponseOrder").attr("style","padding:5px 5px;color:red;text-align:center;").html(response['responseMessage']);
           }
           else{
               $(".displayResponseOrder").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html("Order Cancelled.");
@@ -2286,7 +2421,7 @@ function removeThisProductFromOrder(removeThisProductFromOrder_order_id,removeTh
       data:{removeThisProductFromOrder_order_id:removeThisProductFromOrder_order_id,removeThisProductFromOrder_product_id:removeThisProductFromOrder_product_id},
       success:function(e){
           response=JSON.parse(e);
-          if(response['response']!=='S'){
+          if(response['responseStatus']!=='S'){
               $(".removeThisProductFromOrder").attr("style","padding:5px 5px;color:red;text-align:center;").html(e);
           }
           else{
@@ -2306,8 +2441,8 @@ function removeUser(remove_this_user_id){
       success:function(e){
         // console.log(e);
           response=JSON.parse(e);
-          if(response['response']!=='S'){
-              $(".remove_this_user_id_response_error"+remove_this_user_id).attr("style","padding:5px 5px;color:red;text-align:center;").html(e);
+          if(response['responseStatus']!=='S'){
+              $(".remove_this_user_id_response_error"+remove_this_user_id).attr("style","padding:5px 5px;color:red;text-align:center;").html(response['responseMessage']);
           }
           else{
               $(".remove_this_user_id_response_error"+remove_this_user_id).attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html("user Removed.");
@@ -2325,13 +2460,13 @@ function acceptOrder(acceptOrderId){
       data:{acceptOrderId:acceptOrderId},
       success:function(e){
           response=JSON.parse(e);
-          if(response['response']==="S"){
+          if(response['responseStatus']==="S"){
             $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html('Order Accepted.');
             $(".invoiceOrder").removeAttr("onclick").html("ORDER ACCEPTED");
             getOrderInfo(acceptOrderId);
           }
           else{
-            $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:red;text-align:center;").html(response['data']);
+            $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:red;text-align:center;").html(response['responseMessage']);
           }
       }
   });
@@ -2352,7 +2487,7 @@ function markDownPicker(markDownPicker_order_id,markDownPicker_product_id){
             getOrderInfo(markDownPicker_order_id);
           }
           else{
-            $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:red;text-align:center;").html(response['data']);
+            $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:red;text-align:center;").html(response['responseMessage']);
           }
       }
   });
@@ -2365,13 +2500,13 @@ function invoiceOrder(invoiceOrder_orderNo){
       data:{invoiceOrder_orderNo:invoiceOrder_orderNo},
       success:function(e){
           response=JSON.parse(e);
-          if(response['response']==="S"){
+          if(response['responseStatus']==="S"){
             $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html('Order Invoiced.');
             $(".invoiceOrder").removeAttr("onclick").html("ORDER INVOICED");
             getOrderInfo(invoiceOrder_orderNo);
           }
           else{
-            $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:red;text-align:center;").html(response['data']);
+            $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:red;text-align:center;").html(response['responseMessage']);
           }
       }
   });
@@ -2406,9 +2541,9 @@ function changeToggle(domea){
       type:'post',
       data:{dome:dome},
       success:function(e){
-          console.log(e);
-          if(e.length>1){
-              $(".processing").attr("style","padding:5px 5px;color:red;text-align:center;").html(e);
+          response = JSON.parse(e);
+          if(response['responseStatus']==='S'){
+              $(".processing").attr("style","padding:5px 5px;color:red;text-align:center;").html(response['responseMessage']);
           }
           else{
               $(".processing").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html("Signing onto to your account..");
@@ -2481,13 +2616,13 @@ function addNewSpazaDetails(spazaOwnerId){
                 spaza:spaza
             },
             success:function(e){
-                console.log(e);
-                if(e.length>10){
-                    $(".errorLogaddNewSpazaDetails").attr("style","padding:5px 5px;color:red;text-align:center;border:1px solid red;").html("Failed to add spaza due to: "+e);
+                response = JSON.parse(e);
+                if(response['responseStatus']==='S'){
+                    $(".errorLogaddNewSpazaDetails").attr("style","padding:5px 5px;color:red;text-align:center;border:1px solid red;").html("Failed to add spaza due to: "+response['responseMessage']);
                 }
                 else{
                     $(".errorLogaddNewSpazaDetails").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html("Spaza Added Successfully");
-                    getSpazaInfo(e);
+                    getSpazaInfo(response['responseMessage']);
                 }
             }
         });
@@ -2499,43 +2634,44 @@ function removeSpazaPermanetly(spaza_id_toBeRemoved){
         type:'post',
         data:{spaza_id_toBeRemoved:spaza_id_toBeRemoved},
         success:function(e){
-            console.log(e);
-            if(e.length===1){
+            response = JSON.parse(e);
+            if(response['responseStatus']==='S'){
                 $(".removeSpaza"+spaza_id_toBeRemoved).attr("hidden","true");
             }
             else{
-                $(".processing").attr("style","padding:5px 5px;color:red;text-align:center;border:1px solid red;").html(e).removeAttr("hidden");
+                $(".processing").attr("style","padding:5px 5px;color:red;text-align:center;border:1px solid red;").html(response['responseMessage']).removeAttr("hidden");
             }
         }
     });
 }
 
-function removeProductToCart(productIdToActionOnCart,actionType){
-    console.log(actionType);
+function removeProductToCart(productIdToActionOnCart,actionType,cartProcessor_supplier_store_id){
+    // console.log(actionType);
     $.ajax({
         url:'../controller/mmshightech/processor.php',
         type:'post',
-        data:{productIdToActionOnCart:productIdToActionOnCart,actionType:actionType},
+        data:{productIdToActionOnCart:productIdToActionOnCart,actionType:actionType,cartProcessor_supplier_store_id:cartProcessor_supplier_store_id},
         success:function(e){
-            console.log(e);
-            if(e.length<5){
-                $(".itemQuantity"+productIdToActionOnCart).html(e);
-                getCartUpdate();
+            response = JSON.parse(e);
+            console.log(response);
+            if(response['responseStatus']==='S'){
+                $(".itemQuantity"+productIdToActionOnCart).html(response['responseMessage']);
+                getCartUpdate(<?php echo $cur_user_row['supplier_id'];?>);
             }
             else{
-                $(".processing").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html("Signing onto to your account..");
+                $(".processing").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html(response['responseMessage']);
 
             }
         }
     });
 }
 
-function getCartUpdate(){
+function getCartUpdate(get_supplier_store_id){
     let getCartUpdates = 'getCartUpdates';
     $.ajax({
         url:'../controller/mmshightech/processor.php',
         type:'post',
-        data:{getCartUpdates:getCartUpdates},
+        data:{getCartUpdates:getCartUpdates,get_supplier_store_id:get_supplier_store_id},
         success:function(e){
             $(".cartDisplay").html(e);
         }
@@ -2555,11 +2691,12 @@ function setAddress(map_dir,spaza_id_to_add_address){
             data:{countryOfOriginAddress:countryOfOriginAddress,map_dir:map_dir,spaza_id_to_add_address:spaza_id_to_add_address},
             cache:false,
             success:function(e){
-                if(e.length===1){
+                response = JSON.parse(e);
+                if(response['responseStatus']==='S'){
                     $(".setAddress").html("Address set success.");
                 }
                 else{
-                    $(".setAddress").html(e);
+                    $(".setAddress").html(response['responseMessage']);
                 }
             }
         });
@@ -2607,11 +2744,12 @@ function saveVisaDetails(spazaVisaDetailsId){
             cache:false,
             enctype: 'multipart/form-data',
             success:function(e){
-                if(e.length===1){
+                response = JSON.parse(e);
+                if(response['responseStatus']==='S'){
                     $(".errorNotifier").removeAttr("hidden").attr("style","color:green;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html('Docs added successfully');
                 }
                 else{
-                    $(".errorNotifier").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(e);
+                    $(".errorNotifier").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(response['responseMessage']);
                 }
             }
         });
@@ -2654,44 +2792,47 @@ function saveLegalDocuments(spazaLegalDocumentId){
             cache:false,
             enctype: 'multipart/form-data',
             success:function(e){
-                if(e.length===1){
+                response = JSON.parse(e);
+                if(response['responseStatus']==='S'){
                     $(".errorNotifier").removeAttr("hidden").attr("style","color:green;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html('Docs added successfully');
                 }
                 else{
-                    $(".errorNotifier").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(e);
+                    $(".errorNotifier").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(response['responseMessage']);
                 }
             }
         });
     }
 
 }
-function emptyCart(){
+function emptyCart(empty_supplier_store_id){
     let emptyCart = 'emptyCart';
     $.ajax({
         url:'../controller/mmshightech/processor.php',
         type:'post',
-        data:{emptyCart:emptyCart},
+        data:{emptyCart:emptyCart,empty_supplier_store_id:empty_supplier_store_id},
         success:function(e){
-            if(e.length===1){
+            response = JSON.parse(e);
+            if(response['responseStatus']==='S'){
                 loadAfterQuery('.flexible-loader','../model/cart.php');
             }
             else{
-                $(".errorDisplay").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(e);
+                $(".errorDisplay").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(response['responseMessage']);
             }
         }
     });
 }
-function removeThisProduct(cartIdToRemove){
+function removeThisProduct(cartIdToRemove,remove_supplier_store_id){
     $.ajax({
         url:'../controller/mmshightech/processor.php',
         type:'post',
-        data:{cartIdToRemove:cartIdToRemove},
+        data:{cartIdToRemove:cartIdToRemove,remove_supplier_store_id:remove_supplier_store_id},
         success:function(e){
-            if(e.length===1){
+            response = JSON.parse(e);
+            if(response['responseStatus']==='S'){
                 loadAfterQuery('.flexible-loader','../model/cart.php');
             }
             else{
-                $(".errorDisplay").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(e);
+                $(".errorDisplay").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(response['responseMessage']);
             }
         }
     });
@@ -2728,11 +2869,12 @@ function saveCardDetails(clientIdToAddBankDetailsTo,spazaId){
             type:'post',
             data:{clientIdToAddBankDetailsTo:clientIdToAddBankDetailsTo,cname:cname,ccnum:ccnum,expmonth:expmonth,expyear:expyear,cvv:cvv},
             success:function(e){
-                if(e.length===1){
+                response = JSON.parse(e);
+                if(response['responseStatus']==='S'){
                     getSpazaInfo(spazaId);
                 }
                 else{
-                    $(".errorDisplay").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(e);
+                    $(".errorDisplay").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(response['responseMessage']);
                 }
             }
         });
@@ -2744,18 +2886,19 @@ function removeCardDetails(clientIdFromRemoveCardDetails,spazaId){
         type:'post',
         data:{clientIdFromRemoveCardDetails:clientIdFromRemoveCardDetails},
         success:function(e){
-            if(e.length===1){
+            response = JSON.parse(e);
+            if(response['responseStatus']==='S'){
                 getSpazaInfo(spazaId);
             }
             else{
-                $(".errorDisplay").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(e);
+                $(".errorDisplay").removeAttr("hidden").attr("style","color:red;border:1px solid red;padding:5px 5px;font-size:smaller;border-radius:10px;").html(response['responseMessage']);
             }
         }
     });
 }
-function addProductToCart(productIdToActionOnCart,actionType){
+function addProductToCart(productIdToActionOnCart,actionType,cartProcessor_supplier_store_id){
   // console.log(productIdToActionOnCart+" - "+actionType);
-    removeProductToCart(productIdToActionOnCart,actionType);
+    removeProductToCart(productIdToActionOnCart,actionType,cartProcessor_supplier_store_id);
 }
 function domeSmallModal(filename,request){
   $.ajax({

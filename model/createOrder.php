@@ -83,7 +83,8 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                     <input type="search" class="productSearchCart" placeholder="Search Product...">
                 </div>
                 <div class="maKhathiSpazaSearch suppliers" >
-                    <select class="updateSupplier" style="color: black;">
+                    <input type="hidden" class="spaza_owner_user_id" value="<?php echo $cur_user_row['id'];?>">
+                    <select class="updateSupplier"  style="color: black;">
                         <?php $suppliers = $SuppliersDao->getSuppliers();
                         $data = "-- Select Supplier Store --";
                         $value = '';
@@ -91,7 +92,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                             $data= 'No Suppliers Available';
                         }
                         else{
-                            if($cur_user_row['supplier_id']===null || empty($cur_user_row['supplier_id'])){
+                            if($cur_user_row['supplier_id']!==null && !empty($cur_user_row['supplier_id'])){
                                 $dataArr= $SuppliersDao->getThisSupplier($cur_user_row['supplier_id']);
                                 $data = $dataArr['store_name'];
                                 $value = $dataArr['id'];
@@ -128,7 +129,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         </div>
         <script>
             loadAfterQuery('.flexible-loader','../model/loadHomeContent.php?supplier=<?php echo $cur_user_row['supplier_id']??'';?>');
-            getCartUpdate();
+            getCartUpdate(<?php echo $cur_user_row['supplier_id'];?>);
         </script>
 
 

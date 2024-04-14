@@ -14,20 +14,28 @@ class OrderPdo{
 	private processorNewPdo $processorNewPdo;
     private WalletPdo $walletPdo;
     private InvoicePdo $invoice;
+    private $Response;
+     // RESPONSE_SUCCESS
+    // RESPONSE_FAILED 
     public function __construct(mmshightech $mmshightech){
         $this->mmshightech=$mmshightech;
         $this->products = new productsPdo($mmshightech);
         $this->processorNewPdo = new processorNewPdo($mmshightech);
         $this->invoicePdo=PDOFactoryOOPClass::make(Constants::INVOICE,[$mmshightech,$this->products]);
         $this->walletPdo=PDOFactoryOOPClass::make(Constants::WALLET,[$mmshightech,$this->products]);
+        $this->Response = new Response();
     }
-    public function validateOrder(?string $order_total_amount,?string $order_total_Vat,?string $order_subTotal_amount,?string $order_deliveryFee,?int $user_id):array{
+    public function validateOrder(?string $order_total_amount,?string $order_total_Vat,?string $order_subTotal_amount,?string $order_deliveryFee,?int $user_id):Response{
     	if(!isset($user_id)){
-    		return ['response'=>"F",'data'=>'fail to validate order, User ID not found'];
+    	   $this->Response->responseStatus = "F";
+           $this->Response->responseMessage = 'fail to validate order, User ID not found';
+           return $this->Response ;
     	}
     	$userHasOrder=$this->isUserHasActiveOrder($user_id);
     	if(isset($userHasOrder['order_id'])){
-    		return ['response'=>"F",'data'=>"You still have an active order-{$userHasOrder['order_id']}."];
+            $this->Response->responseStatus=Constants::RESPONSE_FAILED;
+            $this->Response->responseMessage= "You still have an active order-{$userHasOrder['order_id']}";
+            return $this->Response;
     	}
     	$getProducts=$this->products->getCartProducts($user_id);
     	$deliveryFee = 20.50;
@@ -57,46 +65,44 @@ class OrderPdo{
     	$response=$this->mmshightech->getAllDataSafely($sql,'s',[$order_id])[0]??[];
     	return (empty($response)?false:($response['order_id']==$order_id))?true:false;
     }
-    protected function createOrder(array|int|string|null $getProducts=null,?string $vat,?string $total,?string $subTotal,?string $deliveryFee,?string $user_id):array{
+    protected function createOrder(array|int|string|null $getProducts=null,?string $vat,?string $total,?string $subTotal,?string $deliveryFee,?string $user_id):Response{
     	if(!isset($user_id)){
-    		return ['response'=>"F",'data'=>'fail to create order, User ID not found'];
+    		$this->Response->responseStatus=Constants::RESPONSE_FAILED;
+            $this->Response->responseMessage= 'fail to create order, User ID not found';
+            return $this->Response;
     	}
-    	$createNewOrder=$this->createNewOrder($getProducts,$vat,$total,$subTotal,$deliveryFee,$user_id);
-    	if($createNewOrder['response']!=='S'){
-    		return $createNewOrder;
+    	$this->Response=$this->createNewOrder($getProducts,$vat,$total,$subTotal,$deliveryFee,$user_id);
+    	if($this->Response->responseStatus!=='S'){
+    		return $this->Response;
     	}
     	//createNewOrder['data'] is an order number
-    	return $this->createNewOrderDetails($getProducts,$createNewOrder['data']);
+    	return $this->createNewOrderDetails($getProducts,$this->Response->responseMessage);
     }
-    protected function createNewOrder(string|int|array|null $getProducts=null,?string $vat,?string $total,?string $subTotal,?string $deliveryFee,?string $user_id):array{
+    protected function createNewOrder(string|int|array|null $getProducts=null,?string $vat,?string $total,?string $subTotal,?string $deliveryFee,?string $user_id):Response{
     	$sql="INSERT into orders(user_id,created_datetime,process_status,total,sub_total,vat,delivery_fee,order_json)values(?,NOW(),1,?,?,?,?,?)";
     	$params = [$user_id,$total,$subTotal,$vat,$deliveryFee,json_encode($getProducts)];
-    	$response = $this->mmshightech->postDataSafely($sql,'ssssss',$params);
-    	if(is_numeric($response)){
-            return ['response'=>"S",'data'=>$response];
-        }
-        else{
-            return ['response'=>"F",'data'=>$response];
-        }
+    	return $this->mmshightech->postDataSafely($sql,'ssssss',$params);
+    	
     }
-    protected function createNewOrderDetails(array|int|string|null $getProducts=null,?int $orderNo):array{
+    protected function createNewOrderDetails(array|int|string|null $getProducts=null,?int $orderNo):Response{
     	if(!isset($orderNo)){
-    		return ['response'=>'F','data'=>'Order placement process failed to retrieve order ID'];
+            $this->Response->responseStatus=Constants::RESPONSE_FAILED;
+            $this->Response->responseMessage= 'Order placement process failed to retrieve order ID';
+            return $this->Response;
     	}
     	$sql="INSERT into order_details(order_id,product_id,label,product_unit_size,price,quantity,is_instock,comments,is_promo,promo_price,time_added)values(?,?,?,?,?,?,?,?,?,?,NOW())";
     	$response=[];
     	foreach($getProducts as $product){
     		$params=[$orderNo,$product['id'],$product['product_description'],$product['product_weight'],$product['price_usd'],$product['quantity'],$product['is_instock'],'No Comment',$product['product_discountable'],$product['promo_price']];
-    		$response = $this->mmshightech->postDataSafely($sql,'ssssssssss',$params);
-    		if(!is_numeric($response)){
-    			return ['response'=>'F','data'=>$response];
+    		$this->Response = $this->mmshightech->postDataSafely($sql,'ssssssssss',$params);
+    		if($this->Response->responseStatus===Constants::RESPONSE_FAILED){
+    			return $this->Response;
     		}
     	}
-    	if(!is_numeric($response)){
-			return ['response'=>'F','data'=>$response];
-		}
-		$this->processorNewPdo->emptyCart($product['user_id']);
-		return ['response'=>'S','data'=>$orderNo]; 
+    	if($this->Response->responseStatus===Constants::RESPONSE_FAILED){
+            return $this->Response;
+        }
+		return $this->processorNewPdo->emptyCart($product['user_id']);
     }
     public function getOrderTotal(?int $order_id){
     	if(!isset($order_id)){
@@ -297,44 +303,30 @@ class OrderPdo{
 		";
 		return $this->mmshightech->getAllDataSafely($sql,'s',[$order_id])??[];
 	}
-    public function acceptOrder(?int $acceptOrderId=null,?int $adminUserId=null):array{
+    public function acceptOrder(?int $acceptOrderId=null,?int $adminUserId=null):Response{
         $sql="UPDATE orders set process_status=3, accepted_datetime=NOW(),processed_by=? where id=?";
-        $response =$this->mmshightech->postDataSafely($sql,'ss',[$adminUserId,$acceptOrderId]);
-        if(!is_numeric($response)){
-            return ['response'=>'F','data'=>$response];
-        }
-        return ['response'=>'S','data'=>'Success'];
+        return $this->mmshightech->postDataSafely($sql,'ss',[$adminUserId,$acceptOrderId]);
+        
     }
-    // public function markOrderAsDelivered(?int $deliverOrder_order_id =null,?int $adminUserId=null):array{
-    //     $sql="UPDATE orders set process_status = ,processed_by=? where id=?";
-    //     $response =$this->mmshightech->postDataSafely($sql,'ss',[$adminUserId,$deliverOrder_order_id]);
-    //     if(!is_numeric($response)){
-    //         return ['response'=>'F','data'=>$response];
-    //     }
-    //     return ['response'=>'S','data'=>'Success'];
-    // }
-	public function removeProductFromOrder(int $removeThisProductFromOrder_order_id=0,int $removeThisProductFromOrder_product_id=0,int $removed_by):array{
+	public function removeProductFromOrder(int $removeThisProductFromOrder_order_id=0,int $removeThisProductFromOrder_product_id=0,int $removed_by):Response{
 		$sql="UPDATE order_details set status='D', removed_by=? where order_id=? and product_id=?";
-		$response = $this->mmshightech->postDataSafely($sql,'sss',[$removed_by,$removeThisProductFromOrder_order_id,$removeThisProductFromOrder_product_id]);
-		if(!is_numeric($response)){
-			return ['response'=>'F','data'=>$response];
-		}
-		return ['response'=>'S','data'=>'Success'];
-
+		return $this->mmshightech->postDataSafely($sql,'sss',[$removed_by,$removeThisProductFromOrder_order_id,$removeThisProductFromOrder_product_id]);
 	}
 
 	public function pickProduct(int $order_id=0,int $product_id=0):Response{
         if($this->products->productPicked($order_id,$product_id)){
             $sql="UPDATE order_details set is_picked='N', time_picked=NOW() where order_id=? and product_id=?";
-            return $this->mmshightech->newpostDataSafely($sql,'ss',[$order_id,$product_id]);
+            return $this->mmshightech->postDataSafely($sql,'ss',[$order_id,$product_id]);
         }
 		$sql="UPDATE order_details set is_picked='Y', time_picked=NOW() where order_id=? and product_id=?";
-		return $this->mmshightech->newPostDataSafely($sql,'ss',[$order_id,$product_id]);
+		return $this->mmshightech->postDataSafely($sql,'ss',[$order_id,$product_id]);
 	}
-	public function invoiceOrder(?int $invoiceOrder_orderNo=0,$invoicedBy):array{
+	public function invoiceOrder(?int $invoiceOrder_orderNo=0,$invoicedBy):Response{
         if(!isset($invoiceOrder_orderNo)){
-    		return ['response'=>'F','data'=>'Order Invoicing process failed to retrieve order ID'];
-    	}
+            $this->Response->responseStatus=Constants::RESPONSE_FAILED;
+            $this->Response->responseMessage= 'Order Invoicing process failed to retrieve order ID';
+            return $this->Response;
+        }
     	$orderSummary=$this->orderSummary($invoiceOrder_orderNo);
     	$orderInvoiceTotal=0;
         $user_id=$orderSummary[0]['user_id'];
@@ -343,41 +335,39 @@ class OrderPdo{
             $total_price = $summary['price']*$summary['quantity'];
             $orderInvoiceTotal+=$total_price;
             if($summary['is_picked']==="N"){
-            	return ['response'=>"F",'data'=>$summary['product_id']." is not PICKED. please pick the the item or remove it from list."];
+                $this->Response->responseStatus=Constants::RESPONSE_FAILED;
+                $this->Response->responseMessage= $summary['product_id']." is not PICKED. please pick the the item or remove it from list.";
+                return $this->Response;
             } 
         }
         $vat=$orderInvoiceTotal*0.15;
         $deliveryFee = 20.50;
         $invoiceTotal=$orderInvoiceTotal+$vat+$deliveryFee;
         $refundTotal = $orderTotal-$invoiceTotal;
-        $response = $this->invoicePdo->finaliseInvoice($invoiceOrder_orderNo,$vat,$deliveryFee,$invoiceTotal,$orderTotal,$refundTotal,$invoicedBy);
-        if($response['response']==="F"){
-        	return ['response'=>'F','data'=>$response['data']]; 
+        $this->Response = $this->invoicePdo->finaliseInvoice($invoiceOrder_orderNo,$vat,$deliveryFee,$invoiceTotal,$orderTotal,$refundTotal,$invoicedBy);
+        if($this->Response->responseStatus==="F"){
+        	return $this->Response; 
         }
-        $invoiceId=$response['data']??0;
+        $invoiceId=$this->Response->responseMessage;
         if($refundTotal>0 ){
-            $response= $this->walletPdo->actionToWallet($response['data'],$invoiceOrder_orderNo,$vat,$deliveryFee,$invoiceTotal,$orderTotal,$refundTotal,$invoicedBy,'WALLET_REFUND',$user_id); 
+            $this->Response= $this->walletPdo->actionToWallet($response['data'],$invoiceOrder_orderNo,$vat,$deliveryFee,$invoiceTotal,$orderTotal,$refundTotal,$invoicedBy,'WALLET_REFUND',$user_id); 
         }
-        if($response['response']==="F"){
-            return ['response'=>'F','data'=>$response['data']]; 
+        if($this->Response->responseStatus==="F"){
+            return $this->Response; 
         }
-        $response = $this->updateOrderProcessStatus(4,$invoiceOrder_orderNo);
-        if($response['response']==="F"){
-            return ['response'=>'F','data'=>$response['data']]; 
+        $this->Response = $this->updateOrderProcessStatus(4,$invoiceOrder_orderNo);
+        if($this->Response->responseStatus==="F"){
+            return $this->Response; 
         }
         return $this->updateInvoiceIdOnOrder($invoiceId,$invoiceOrder_orderNo);
     }
-    public function updateInvoiceIdOnOrder(?int $invoiceId=null,?int $invoiceOrder_orderNo=null):array{
+    public function updateInvoiceIdOnOrder(?int $invoiceId=null,?int $invoiceOrder_orderNo=null):Response{
         $sql="UPDATE orders set invoice_datetime=NOW(),is_invoiced='Y',invoice_id=? where id=?";
-        $response =$this->mmshightech->postDataSafely($sql,'ss',[$invoiceId,$invoiceOrder_orderNo]);
-        if(!is_numeric($response)){
-            return ['response'=>'F','data'=>$response];
-        }
-        return ['response'=>'S','data'=>'Success'];
+        return $this->mmshightech->postDataSafely($sql,'ss',[$invoiceId,$invoiceOrder_orderNo]);
     }
-    public function updateOrderProcessStatus(?int $status=null,?int $order_id=null):array{
+    public function updateOrderProcessStatus(?int $status=null,?int $order_id=null):Response{
         $sql="UPDATE orders set process_status=? where id=?";
-        $response =$this->mmshightech->postDataSafely($sql,'ss',[$status,$order_id]);
+        return $this->mmshightech->postDataSafely($sql,'ss',[$status,$order_id]);
         if(!is_numeric($response)){
             return ['response'=>'F','data'=>$response];
         }
@@ -387,10 +377,13 @@ class OrderPdo{
         $sql="SELECT * from orders where id=?";
         return $this->mmshightech->getAllDataSafely($sql,'s',[$order_id])[0]??[];
     }
-    public function refundToWallet(?int $order_id=null):array{
+    public function refundToWallet(?int $order_id=null):Response{
         $orderDetails = $this->getOrderInfo($order_id);
         if($orderDetails['payment_status']!=='PAID'){
-            return ['response'=>'S','data'=>'Order cancelled.'];
+            // return ['response'=>'S','data'=>'Order cancelled.'];
+            $this->Response->responseStatus=Constants::RESPONSE_SUCCESS;
+            $this->Response->responseMessage=" Order cancelled.";
+             return $this->Response;
         }
         
         return $walletPdo->refundToWallet($order_id,$orderDetails['total'],$orderDetails['user_id']);

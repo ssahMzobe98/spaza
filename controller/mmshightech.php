@@ -42,16 +42,7 @@ class mmshightech
         return isset($result['usermail']);
 
     }
-    public function postDataSafely($query, $paramType, $paramArray):array|int{
-        $stmt = $this->connection->prepare($query);
-        $this->bindQueryParams($stmt, $paramType, $paramArray);
-        $stmt->execute();
-        if($stmt->errno==0){
-            return $stmt->insert_id;
-        }
-        return ['error'=>$stmt->error,'Error_list'=>$stmt->error_list];
-    }
-    public function newPostDataSafely($query, $paramType, $paramArray):Response{
+    public function postDataSafely($query, $paramType, $paramArray):Response{
         $response = new Response();
         $stmt = $this->connection->prepare($query);
         $this->bindQueryParams($stmt, $paramType, $paramArray);
@@ -71,7 +62,6 @@ class mmshightech
         }
         $stmt->execute();
     }
-
     public function bindQueryParams($stmt, $paramType, $paramArray=array()){
         $paramValueReference[] = & $paramType;
         for ($i = 0; $i < count($paramArray); $i ++) {

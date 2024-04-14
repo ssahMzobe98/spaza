@@ -15,6 +15,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     if($cur_user_row['user_type']==Constants::USER_TYPE_APP){
         $getProducts=$products->getCartProducts($cur_user_row['id']);
 
+
         ?>
             <style>
                 .dataCart{
@@ -37,7 +38,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
 
                 <div style="width: 100%;display: flex;padding: 10px 10px;">
                     <div style="color: #000000;font-size: medium;font-weight: bolder;padding: 5px 5px;">Shopping Cart</div>
-                    <div style="color: red;font-size: large;font-weight: bolder;padding: 5px 5px; cursor: pointer" title="Empty your cart"><i onclick="emptyCart();" class="fa fa-trash"></i></div>
+                    <div style="color: red;font-size: large;font-weight: bolder;padding: 5px 5px; cursor: pointer" title="Empty your cart"><i onclick="emptyCart(<?php echo $cur_user_row['supplier_id'];?>);" class="fa fa-trash"></i></div>
                     <div class="errorDisplay" hidden></div>
                     <div style="width:10px;"></div>
                     <div style="margin-top: 0.8%;font-weight: lighter;font-size: x-small;" > After amending Product quantity please
@@ -75,15 +76,15 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                             $subTotal += $price;
                             $id=$product['id'];
                             $add ='"add"';
-                            $addProductToCart=($product['is_instock']=='N')?"":"onclick='addProductToCart({$id},{$add})'";
+                            $addProductToCart=($product['is_instock']=='N')?"":"onclick='addProductToCart({$id},{$add},{$cur_user_row['supplier_id']})'";
                             $remove ='"remove"';
-                            $removeProductToCart="onclick='removeProductToCart({$id},{$remove})'";
+                            $removeProductToCart="onclick='removeProductToCart({$id},{$remove},{$cur_user_row['supplier_id']})'";
                             echo'
                             <tr >
-                                <td style="color:#000000;">
-                                    <img src="../img/rice.jpg" style="width:20%;">
+                                <td style="color:#000000;width:50px; ">
+                                    <img src="../img/'.$product['img'].'" style="width:100%;">
                                 </td>
-                                <td style="color:#000000;">'.$product['product_description'].'</td>
+                                <td style="color:#000000;width:400px;">'.$product['product_description'].'</td>
                                 <td style="color:#000000;">
                                     <div class="quantity">
                                         <div class="addQuantity"><i '.$addProductToCart.' class="fa fa-plus-circle" style="cursor:pointer;font-size:30px; " aria-hidden="true"></i></div>
@@ -91,12 +92,12 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                                         <div class="removeQuantity"><i '.$removeProductToCart.' class="fa fa-minus-circle" style="cursor:pointer;font-size:30px; " aria-hidden="true"></i></div>
                                     </div>
                                 </td>
-                                <td style="color:#000000;">R'.number_format($product['product_discountable']==='Y'?isset($product['promo_price'])?$product['promo_price']:$product['price_usd']:$product['price_usd'],2).'</td>
+                                <td style="color:#000000;width:100px;">R'.number_format($product['product_discountable']==='Y'?isset($product['promo_price'])?$product['promo_price']:$product['price_usd']:$product['price_usd'],2).'</td>
                                 <td style="color:#000000;">
                                     <div>
                                         R'.number_format($price,2).'
                                     </div>
-                                    <span style="color:red;font-size: x-small;cursor: pointer;" onclick="removeThisProduct('.$product['cartId'].')">Remove Product</span>
+                                    <span style="color:red;font-size: x-small;cursor: pointer;" onclick="removeThisProduct('.$product['cartId'].','.$cur_user_row['supplier_id'].')">Remove Product</span>
                                 </td>
 
                             </tr>

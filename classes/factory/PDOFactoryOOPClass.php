@@ -2,6 +2,7 @@
 namespace Classes\factory;
 
 use Classes\constants\Constants;
+use Controller\mmshightech\SuppliersDao;
 use Classes\payment_integration\WalletPdo;
 use Classes\payment_integration\InvoicePdo;
 use Classes\iclass\IPDOFactoryOOPClass;
@@ -20,7 +21,8 @@ class PDOFactoryOOPClass implements IPDOFactoryOOPClass
         Constants::SPAZA =>spazaPdo::class,
         Constants::USER=>usersPdo::class,
         Constants::MMSHIGHTECH=>mmshightech::class,
-        Constants::PRODUCT=>productsPdo::class
+        Constants::PRODUCT=>productsPdo::class,
+        Constants::SUPPLIER=>SuppliersDao::class
     ];
 
     public static function make(?string $classPdo = null, array $array = [])

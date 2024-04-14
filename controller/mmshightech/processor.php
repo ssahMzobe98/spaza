@@ -6,24 +6,78 @@ use Classes\payment_integration\paymentPdo;
 use Controller\mmshightech\OrderPdo;
 use Classes\factory\PDOFactoryOOPClass;
 use Classes\constants\Constants;
+use Classes\response\Response;
 if(session_status() !== PHP_SESSION_ACTIVE){
   session_start();
 }
 if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
-    $e="UKNOWN REQUEST!!";
+    $e=new Response();
+    // RESPONSE_SUCCESS
+    // RESPONSE_FAILED
+    $e->responseStatus = Constants::RESPONSE_FAILED;
+    $e->responseMessage ="UKNOWN REQUEST!!";
     $processorNewDao = new processorNewPdo(new mmshightech());
     $paymentPdo = new paymentPdo(new mmshightech());
     $orderPdo = new OrderPdo(new mmshightech());
     $userPdo = PDOFactoryOOPClass::make(Constants::USER,[new mmshightech()]);
     $products = PDOFactoryOOPClass::make(Constants::PRODUCT,[new mmshightech()]);
+    $SuppliersDao = PDOFactoryOOPClass::make(Constants::SUPPLIER,[new mmshightech]);
     $cur_user_row = $processorNewDao->userInfo($_SESSION['user_agent']);
     if(isset($_POST['dome'])){
-        $dome = $processorNewDao->processBackgroundDisplay($_POST['dome'],$cur_user_row['id']);
-        if($dome['response']=='S'){
-            $e=1;
+        $e = $processorNewDao->processBackgroundDisplay($_POST['dome'],$cur_user_row['id']);
+    }
+    elseif(isset($_POST['updateSupplierOnSpazaOner'])){
+        $updateSupplierOnSpazaOner=$processorNewDao->mmshightech->OMO($_POST['updateSupplierOnSpazaOner']);
+        $e=$userPdo->updateSupplierOnSpazaOner($updateSupplierOnSpazaOner,$cur_user_row['id']);
+
+    }
+    elseif(isset(
+        $_POST['storeName'],
+        $_POST['storePhone'],
+        $_POST['storeNationality'],
+        $_POST['storeProvince'],
+        $_POST['storeAddress'],
+        $_POST['storeRegNo'],
+        $_POST['storeAdminName'],
+        $_POST['storeAdminSurname'],
+        $_POST['storeAdminIDNo'],
+        $_POST['storeEmployeeCode'],
+        $_POST['storeAdminEmail'],
+        $_POST['storePassword'])){
+        if(empty($_FILES['storeLogo'])){
+            $e->responseMessage ="Missing Supplier's logo.";
         }
         else{
-            $e = $dome['data'];
+            $ext= explode('.',$_FILES['storeLogo']['name']);
+            $ext = $ext[1];
+            if(in_array(strtolower($ext),['png','jpg','jpeg','gif'])){
+                $dir = "../../img/suppliersLogo/";
+                $filename = rand(0,9999).$_FILES['storeLogo']['name'];
+                if(move_uploaded_file($_FILES['storeLogo']['tmp_name'],$dir.basename($dir.$filename))){
+                    $storeName=$processorNewDao->mmshightech->OMO($_POST['storeName']);
+                    $storePhone=$processorNewDao->mmshightech->OMO($_POST['storePhone']);
+                    $storeNationality=$processorNewDao->mmshightech->OMO($_POST['storeNationality']);
+                    $storeProvince=$processorNewDao->mmshightech->OMO($_POST['storeProvince']);
+                    $storeAddress=$processorNewDao->mmshightech->OMO($_POST['storeAddress']);
+                    $storeRegNo=$processorNewDao->mmshightech->OMO($_POST['storeRegNo']);
+                    $storeAdminName=$processorNewDao->mmshightech->OMO($_POST['storeAdminName']);
+                    $storeAdminSurname=$processorNewDao->mmshightech->OMO($_POST['storeAdminSurname']);
+                    $storeAdminIDNo=$processorNewDao->mmshightech->OMO($_POST['storeAdminIDNo']);
+                    $storeEmployeeCode=$processorNewDao->mmshightech->OMO($_POST['storeEmployeeCode']);
+                    $storeAdminEmail=$processorNewDao->mmshightech->OMO($_POST['storeAdminEmail']);
+                    $storePassword=$processorNewDao->mmshightech->OMO($_POST['storePassword']);
+                    $e=$SuppliersDao->createNewSupplier($storeName,$storePhone,$storeNationality,$storeProvince,$storeAddress,$storeRegNo,$storeAdminName,$storeAdminSurname,$storeAdminIDNo,$storeEmployeeCode,$storeAdminEmail,$storePassword,$filename,$cur_user_row['id']);
+                    if($e->responseStatus===Constants::RESPONSE_SUCCESS){
+                        $e=$processorNewDao->createNewUser($storeName,'Supplier',$storePhone,$storeNationality,$storeAdminIDNo,'SUPPLIER STORE',date('Y-m-d'),$storeRegNo,$storeNationality,$storeAddress,$storeAdminEmail,$storePassword,[],$cur_user_row['id'],$e->responseMessage);
+                    }
+                }
+                else{
+                    $e->responseMessage = "Failed to Upload File, Please try again later.";
+                }
+            }
+            else {
+                $e->responseMessage = $ext."Not Supported.";
+            }
         }
     }
     elseif (isset($_FILES) && isset($_POST['filesUpload'])){
@@ -40,7 +94,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             }
         }
         if(sizeof($failProcess)>0){
-            $e="{".implode(",",$failProcess)."} Not supported!. Processing Failed.";
+            $e->responseMessage="{".implode(",",$failProcess)."} Not supported!. Processing Failed.";
         }
         else{
             if(sizeof($toProcess)>0){
@@ -51,17 +105,16 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                     $filename = rand(0,9999).$fileData['name'];
                     print_r($fileData);
                     if(move_uploaded_file($fileData['tmp_name'],$dir.basename($dir.$filename))){
-                        $response=$processorNewDao->processCSVfileSave($filename,$cur_user_row['id']);
-                        if($response['response']=="S"){
+                        $e=$processorNewDao->processCSVfileSave($filename,$cur_user_row['id']);
+                        if($e->responseStatus==="S"){
                             $processCSV = $processorNewDao->csvProcessor->processCSV($dir.$filename);
 
 
                             $header= $processCSV['header']??'';
                             $data= $processCSV['data']??[];
-                            $response=$processorNewDao->uploadCSVData($header,$data,$cur_user_row['id']);
-                            if($response['response']=="F"){
+                            $e=$processorNewDao->uploadCSVData($header,$data,$cur_user_row['id']);
+                            if($e->responseStatus==="F"){
                                 $terminate = true;
-                                $e = $response['data'];
                                 break;
                             }
                         }
@@ -71,55 +124,42 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                         }
                     }
                     else{
-                        $e="Failed to upload {$fileData['name']}, Please resend the request";
+                        $e->responseMessage="Failed to upload {$fileData['name']}, Please resend the request";
                         break;
                     }
                 }
             }
             else{
-                $e = "Failed to process empty request.";
+                $e->responseMessage="Failed to process empty request.";
             }
         }
     }
-    elseif (isset($_POST['productIdToActionOnCart'],$_POST['actionType'])){
+    elseif (isset($_POST['productIdToActionOnCart'],$_POST['actionType'],$_POST['cartProcessor_supplier_store_id'])){
         $actionType = $processorNewDao->mmshightech->OMO($_POST['actionType']);
         $productIdToActionOnCart = $processorNewDao->mmshightech->OMO($_POST['productIdToActionOnCart']);
-        $response = $processorNewDao->cartProcessor($productIdToActionOnCart,$actionType,$cur_user_row['id']);
-        if($response['response']=="S"){
-            $e=$response['data'];
-        }
-        else{
-            $e=$response['data'];
-        }
+        $supplier_store_id = $processorNewDao->mmshightech->OMO($_POST['cartProcessor_supplier_store_id']);
+        $e = $processorNewDao->cartProcessor($productIdToActionOnCart,$actionType,$cur_user_row['id'],$supplier_store_id);
+        
     }
-    elseif (isset($_POST['getCartUpdates'])){
-        $e = $processorNewDao->getCartUpdates($cur_user_row['id']);
+    elseif (isset($_POST['getCartUpdates'],$_POST['get_supplier_store_id'])){
+        $supplier_store_id = $processorNewDao->mmshightech->OMO($_POST['get_supplier_store_id']);
+        $e = $processorNewDao->getCartUpdates($cur_user_row['id'],$supplier_store_id);
     }
-    elseif (isset($_POST['emptyCart'])){
-        $response = $processorNewDao->emptyCart($cur_user_row['id']);
-        if($response['response']=="S"){
-            $e=1;
-        }
-        else{
-            $e=$response['data'];
-        }
+    elseif (isset($_POST['emptyCart'],$_POST['empty_supplier_store_id'])){
+        $supplier_store_id = $processorNewDao->mmshightech->OMO($_POST['empty_supplier_store_id']);
+        $e = $processorNewDao->emptyCart($cur_user_row['id'],$supplier_store_id);
+        
     }
-    elseif (isset($_POST['cartIdToRemove'])){
+    elseif (isset($_POST['cartIdToRemove'],$_POST['remove_supplier_store_id'])){
+        $supplier_store_id = $processorNewDao->mmshightech->OMO($_POST['remove_supplier_store_id']);
         $cartIdToRemove = $processorNewDao->mmshightech->OMO($_POST['cartIdToRemove']);
-        $response = $processorNewDao->removeProductFromCart($cartIdToRemove,$cur_user_row['id']);
-        if($response['response']=="S"){
-            $e=1;
-        }
-        else{
-            $e=$response['data'];
-        }
+        $e = $processorNewDao->removeProductFromCart($cartIdToRemove,$cur_user_row['id'],$supplier_store_id);
     }
     elseif (isset($_POST['spazaShopsDisplay'],$_POST['spazaShopsDisplayClientId'],$_POST['orderTomakeUpdateOn'])){
         $spazaShopsDisplay = $processorNewDao->mmshightech->OMO($_POST['spazaShopsDisplay']);
         $spazaShopsDisplayClientId = $processorNewDao->mmshightech->OMO($_POST['spazaShopsDisplayClientId']);
         $orderTomakeUpdateOn=$processorNewDao->mmshightech->OMO($_POST['orderTomakeUpdateOn']);
         $e = $processorNewDao->spazaUpdater($spazaShopsDisplay,$spazaShopsDisplayClientId,$orderTomakeUpdateOn);
-        
     }
     elseif(isset($_POST['spazaOwnerId'],$_POST['userEmailAddress'],
         $_POST['userPhoneNo'],
@@ -150,35 +190,19 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         $spaza = $cleanData['8'];
         $spazaOwnerId = $cleanData['9'];
         $userEmailAddress=$cleanData['0'];
-        $response = $processorNewDao->addNewSpazaDetails($spazaOwnerId,$userPhoneNo,$userDOB,$gender,$country,$id_passport,$lname,$fname,$spaza,$userEmailAddress,$cur_user_row['id']);
-        $e=$response['data'];
+        $e = $processorNewDao->addNewSpazaDetails($spazaOwnerId,$userPhoneNo,$userDOB,$gender,$country,$id_passport,$lname,$fname,$spaza,$userEmailAddress,$cur_user_row['id']);
     }
     elseif(isset($_POST['spaza_id_toBeRemoved'])){
         $spaza_id_toBeRemoved = $processorNewDao->mmshightech->OMO($_POST['spaza_id_toBeRemoved']);
-        $response = $processorNewDao->spazaIdToBeRemoved($spaza_id_toBeRemoved);
-        if($response['response']=='S'){
-            $e=1;
-        }
-        else{
-            $e=$response['data'];
-        }
-
+        $e = $processorNewDao->spazaIdToBeRemoved($spaza_id_toBeRemoved);
     }
     elseif (isset($_POST['countryOfOriginAddress'],$_POST['map_dir'],$_POST['spaza_id_to_add_address'])){
         $countryOfOriginAddress = $processorNewDao->mmshightech->OMO($_POST['countryOfOriginAddress']);
         $map_dir = $processorNewDao->mmshightech->OMO($_POST['map_dir']);
         $spaza_id_to_add_address = $processorNewDao->mmshightech->OMO($_POST['spaza_id_to_add_address']);
-        $response = $processorNewDao->addAddress($countryOfOriginAddress,$map_dir,$spaza_id_to_add_address);
-        if($response['response']=='S'){
-            $e=1;
-        }
-        else{
-            $e=$response['data'];
-        }
+        $e = $processorNewDao->addAddress($countryOfOriginAddress,$map_dir,$spaza_id_to_add_address);
     }
     elseif(isset($_POST['visa_number'],$_POST['permit_number'],$_FILES,$_POST['spazaVisaDetailsId'])){
-//        $copyOfVisa =$_FILES['copyOfVisa']??'';
-//        $copyOfPermit =$_FILES['copyOfVisa']??'';
         $spazaVisaDetailsId = $processorNewDao->mmshightech->OMO($_POST['spazaVisaDetailsId']);
         $visa_number=$processorNewDao->mmshightech->OMO($_POST['visa_number']);
         $permit_number=$processorNewDao->mmshightech->OMO($_POST['permit_number']);
@@ -191,30 +215,24 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         foreach ($_FILES as $file){
             $ext = explode(".",$file['name']);
             if(!in_array($ext[1],['PDF','pdf','png','PNG','JPG','jpg'])){
-                $errorLog[]=$ext[1]." Not Supported. Please upload .pdf";
+                $e->responseMessage=$ext[1]." Not Supported. Please upload .pdf";
                 $break = true;
                 break;
             }
             $newFileName =$tmp[$i]."_".rand(0,99999).'.'.$ext[1];
             $i++;
             if(!move_uploaded_file($file['tmp_name'],$dir.basename($dir.$newFileName))){
-                $errorLog[]="Failed to upload file {$file['name']}. Please try again.";
+                $e->responseMessage="Failed to upload file {$file['name']}. Please try again.";
                 $break = true;
                 break;
             }
             $newNames[]=$newFileName;
         }
         if($break){
-            $e=$errorLog[0];
+            $e->responseStatus=Constants::RESPONSE_FAILED;
         }
         else{
-            $response = $processorNewDao->saveProcessedDocuments($spazaVisaDetailsId,$newNames,$tmp);
-            if($response['response']=='S'){
-                $e=1;
-            }
-            else{
-                $e=$response['data'];
-            }
+            $e = $processorNewDao->saveProcessedDocuments($spazaVisaDetailsId,$newNames,$tmp);
         }
     }
     elseif (isset($_POST['spazaLegalDocumentId'],$_FILES)){
@@ -230,7 +248,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         foreach ($_FILES as $file){
             $ext = explode(".",$file['name']);
             if(!in_array($ext[1],['PDF','pdf','png','PNG','JPG','jpg'])){
-                $errorLog[]=$ext[1]." Not Supported. Please upload .pdf";
+                $e->responseMessage=$ext[1]." Not Supported. Please upload .pdf";
                 $break = true;
                 break;
             }
@@ -238,34 +256,22 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             $i++;
             $dir = "../../documents/";
             if(!move_uploaded_file($file['tmp_name'],$dir.basename($newFileName))){
-                $errorLog[]="Failed to upload file {$file['name']}. Please try again.";
+                $e->responseMessage="Failed to upload file {$file['name']}. Please try again.";
                 $break = true;
                 break;
             }
             $newNames[]=$newFileName;
         }
         if($break){
-            $e=$errorLog[0];
+            $e->responseStatus=Constants::RESPONSE_FAILED;
         }
         else{
-            $response = $processorNewDao->saveProcessedLegalDocuments($spazaLegalDocumentId,$newNames);
-            if($response['response']=='S'){
-                $e=1;
-            }
-            else{
-                $e=$response['data'];
-            }
+            $e = $processorNewDao->saveProcessedLegalDocuments($spazaLegalDocumentId,$newNames);
         }
     }
     elseif(isset($_POST['clientIdFromRemoveCardDetails'])){
         $clientIdFromRemoveCardDetails=$processorNewDao->mmshightech->OMO($_POST['clientIdFromRemoveCardDetails']);
-        $response = $processorNewDao->updateCardDetailsFromUser($clientIdFromRemoveCardDetails,'','','','','',true);
-        if($response['response']=='S'){
-            $e=1;
-        }
-        else{
-            $e=$response['data'];
-        }
+        $e = $processorNewDao->updateCardDetailsFromUser($clientIdFromRemoveCardDetails,'','','','','',true);
     }
     elseif(isset($_POST['clientIdToAddBankDetailsTo'],$_POST['cname'],$_POST['ccnum'],$_POST['expmonth'],$_POST['expyear'],$_POST['cvv'])){
         $clientIdToAddBankDetailsTo=$processorNewDao->mmshightech->OMO($_POST['clientIdToAddBankDetailsTo']);
@@ -274,13 +280,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         $expmonth=$processorNewDao->mmshightech->OMO($_POST['expmonth']);
         $expyear=$processorNewDao->mmshightech->OMO($_POST['expyear']);
         $cvv=$processorNewDao->mmshightech->OMO($_POST['cvv']);
-        $response = $processorNewDao->updateCardDetailsFromUser($clientIdToAddBankDetailsTo,$cname,$ccnum,$expmonth,$expyear,$cvv,false);
-        if($response['response']=='S'){
-            $e=1;
-        }
-        else{
-            $e=$response['data'];
-        }
+        $e = $processorNewDao->updateCardDetailsFromUser($clientIdToAddBankDetailsTo,$cname,$ccnum,$expmonth,$expyear,$cvv,false);
     }
     elseif(
         isset($_POST['fnameNewUser'],
@@ -314,11 +314,11 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         else{
             $newFilesNames= [];
             $terminate = false;
-            $error['error']= "!!";
+            $error['error']= "";
             foreach($_FILES as $file){
                 $ext = explode(".",$file['name']);
                 if(!in_array($ext[1], ['PDF','pdf','PNG','png','jpg','JPG'])){
-                    $error['error']=$ext[1].' Not supported. only PDF,PNG,JPG supported.';
+                    $e->responseMessage=$ext[1].' Not supported. only PDF,PNG,JPG supported.';
                     $terminate = true;
                     break;
                 }
@@ -326,7 +326,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                     $dir = "../../documents/";
                     $newName = rand(0,9999)."_".$ext[0].'.'.$ext[1];
                     if(!move_uploaded_file($file['tmp_name'], basename($dir.$newName))){
-                        $error['error']='Failed to upload due to internet. Please try again.';
+                        $e->responseMessage='Failed to upload due to internet. Please try again.';
                         $terminate = true;
                         break;
                     }
@@ -335,14 +335,15 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
 
             }
             if($terminate){
-                $e=['response'=>'F','data'=>$error['error']];
+                $e->responseStatus=Constants::RESPONSE_FAILED;
             }
             else{
                 if(count($newFilesNames)===4){
                     $e = $processorNewDao->createNewUser($fnameNewUser,$lnameNewUser,$phoneNumberNewUser,$nationalityNewUser,$Passport_idNewUser,$genderNewUser,$userDOBNewUser,$permitNumberNewUser,$coutryOfOriginAddressNewUser,$saResidingAddressNewUser,$userEmailAddressNewUser,$userPasswordNewUser,$newFilesNames,$cur_user_row['id']);
                 }
                 else{
-                    $e=['response'=>'F','data'=>"Files require un-matching. please check if you added all required files."];
+                    $e->responseStatus=Constants::RESPONSE_FAILED;
+                    $e->responseMessage="Files require un-matching. please check if you added all required files.";
                 }
             }
         }
@@ -353,14 +354,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         $expiryDate=$processorNewDao->mmshightech->OMO($_POST['expiryDate']);
         $cvv=$processorNewDao->mmshightech->OMO($_POST['cvv']);
         $client_id_toSave2=$processorNewDao->mmshightech->OMO($_POST['client_id_toSave2']);
-        $response = $processorNewDao->addaPaymentDetails($NameOnCard,$cardNumber,$expiryDate,$cvv,$client_id_toSave2);
-        // print_r($response);
-        if($response['response']=='S'){
-            $e=1;
-        }
-        else{
-            $e=$response['data'];
-        }
+        $e = $processorNewDao->addaPaymentDetails($NameOnCard,$cardNumber,$expiryDate,$cvv,$client_id_toSave2);
     }
     elseif(isset($_POST['client_id2Pay'],$_POST['amountToPayInTotal'],$_POST['order_number_toPay'])){
         $client_id2Pay=$processorNewDao->mmshightech->OMO($_POST['client_id2Pay']);
@@ -411,11 +405,8 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             $e=['response'=>'F','data'=>'Sorry, Order is INVOICED, Cannot Cancel Order.'];
         }
         else{
-            $response=$orderPdo->updateOrderProcessStatus(14,$CancelOrder_order_id);
-            if($response['response']==='F'){
-                $e=$response;
-            }
-            else{
+            $e=$orderPdo->updateOrderProcessStatus(14,$CancelOrder_order_id);
+            if($e->responseStatus==='S'){
                 $e=$orderPdo->refundToWallet($CancelOrder_order_id);
             }
         }

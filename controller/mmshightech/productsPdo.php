@@ -13,27 +13,27 @@ class productsPdo
         $this->mmshightech=$mmshightech;
         $this->response=new Response();
     }
-    public function getSpecialProducts(?int $min,?int $limit):array{
+    public function getSpecialProducts(?int $store=null,?int $min,?int $limit):array{
         $sql="select p.*, 
             if(c.quantity='',0,c.quantity) as cart_quantity,
             if(now() > p.promo_start_date and now() < p.promo_end_date, p.promo_price,'') as promo_price_to_display
             from products as p
                 left join cart as c on c.product_id = p.id
-            where p.product_discountable = 'Y' and (now() > p.promo_start_date and now() < p.promo_end_date) and p.is_instock='Y' and p.product_status='A' limit ?,?";
-        return $this->mmshightech->getAllDataSafely($sql,'ss',[$min, $limit])??[];
+            where p.product_discountable = 'Y' and (now() > p.promo_start_date and now() < p.promo_end_date) and p.is_instock='Y' and p.product_status='A' and p.store_id=? limit ?,?";
+        return $this->mmshightech->getAllDataSafely($sql,'sss',[$store,$min, $limit])??[];
     }
     public function getProductTotalCount():int{
         $sql = "select id from products where product_status='A'";
         return $this->mmshightech->numRows($sql,'',[])??0;
     }
-    public function getProducts(?int $min,?int $limit):array{
+    public function getProducts(?int $store=null,?int $min,?int $limit):array{
         $sql="select p.*, 
                 if(c.quantity='',0,c.quantity) as cart_quantity,
                 if(now() > p.promo_start_date and now() < p.promo_end_date, p.promo_price,'') as promo_price_to_display
             from products as p
                 left join cart as c on c.product_id = p.id
-            where p.is_instock='Y' and p.product_status='A' limit ?,?";
-        return $this->mmshightech->getAllDataSafely($sql,'ss',[$min, $limit])??[];
+            where p.is_instock='Y' and p.product_status='A' and p.store_id=? limit ?,?";
+        return $this->mmshightech->getAllDataSafely($sql,'sss',[ $store,$min, $limit])??[];
     }
     public function getProductsForDisplay(?int $min,?int $limit):array{
         $sql="select p.*, 
@@ -64,6 +64,7 @@ class productsPdo
                     p.product_description as product_description,
                     p.product_thumbnail as product_thumbnail,
                     p.product_weight as product_weight,
+                    p.product_thumbnail as img,
                     p.is_instock as is_instock,
                     (if(p.product_discountable='Y' and (now() > p.promo_start_date and now() < p.promo_end_date),'Y','N')) as product_discountable,
                     p.price_usd as price_usd,
