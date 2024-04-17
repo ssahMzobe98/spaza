@@ -4,14 +4,17 @@ namespace Classes\payment_integration;
 
 use Controller\mmshightech;
 use Controller\mmshightech\usersPdo;
+use Classes\response\Response;
 class paymentPdo{
     private mmshightech $mmshightech;
     private usersPdo $usersPdo;
+    private $Response;
     public function __construct(mmshightech $mmshightech){
         $this->mmshightech=$mmshightech;
         $this->usersPdo = new usersPdo($mmshightech);
+        $this->Response = new Response();
     }
-    public function paymentGateway(?int $clientId=0,?float $amount=0.00,?int $order_number_toPay):array{
+    public function paymentGateway(?int $clientId=0,?float $amount=0.00,?int $order_number_toPay):Response{
         $user_details = $this->usersPdo->getUserDetailsForUser($clientId);
         $passPhrase = 'msiziMzobe98';
         $amount_net=$amount-4.60;
@@ -46,10 +49,14 @@ class paymentPdo{
 
 
         if($identifier!==null){
-            $data["response"]="S";
-            return $data;
+            $this->Response->responseStatus="S";
+            $this->Response->responseStatus="Payment in Progress.";
+            $this->Response->data=$data;
+            return $this->Response;
         }
-        return ['response'=>"F","data"=>"Failed to generate Payment Identifier - {$identifier}"];
+        $this->Response->responseStatus="F";
+        $this->Response->responseStatus="Failed to generate Payment Identifier - {$identifier}";
+        return $this->Response;
     }
     public function generateSignature($data, $passPhrase = null):string {
         // Create parameter string

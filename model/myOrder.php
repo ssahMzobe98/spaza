@@ -169,6 +169,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                                     <th>Comments</th>
                                     <th>Unit Price</th>
                                     <th>Total Price</th>
+                                    <th>Arrived</th>
                                     <th>Picked</th>
                                     <th>STATUS</th>
                                 </tr>
@@ -195,6 +196,8 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                                   }
                                 }
                                 //echo"<pre>";print_r($orderData);echo"</pre>";
+                                $markAsArrivedCount = 0;
+                                $totalProductCount=0;
                                 foreach($orderData as $summary){
                                     $order_id=$summary['order_id'];
                                     $product=$summary['product_id'];
@@ -205,8 +208,17 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                                     $orderInvoiceTotal+=$total_price;
                                     $is_instock=$summary['is_instock'];
                                     $is_picked=($summary['is_picked']=='Y')?"checked":"";
+                                    $isArrived=($summary['is_arrived']=='Y')?"checked":"";
+                                    $markAsArrivedCount+=($summary['is_arrived']=='Y')?1:0;
+                                    $totalProductCount++;
                                     $comments=$summary['comments'];
                                     $status = $summary['status'];
+                                    $markAsArrived="";
+                                    $disabled = 'disabled';
+                                    if($orderData[0]['process_status']!==Constants::ORDER_RECEIVED){
+                                        $markAsArrived="markAsArrived({$order_id},{$product},'{$summary['is_arrived']}')";
+                                        $disabled='';
+                                    }
                                     $status = ($status==='A'?'<span class="removeThisProductFromOrder" style="color:green;font-size: x-small;cursor: pointer;" ><i class="fa fa-check" style="pading:10px 10px;font-size:large;"></i></span>':'<span class="removeThisProductFromOrder" style="color:red;font-size: x-small;cursor: pointer;" ><i class="fa fa-close" style="pading:10px 10px;font-size:large;"></i></span>');
                                     echo'
                                     <tr >
@@ -219,16 +231,34 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                                                 R'.number_format($total_price,2).'
                                             </div>
                                         </td>
+                                        <td><input '.$disabled.' onclick="'.$markAsArrived.'" type="radio" '.$isArrived.' style="padding:20px 20px;"></td>
                                         <td><input disabled type="radio" '.$is_picked.' style="padding:20px 20px;"></td>
                                         <td>'.$status.'</td>
 
                                     </tr>
                                     ';
                                 }
+                                $completeArrivalDisabled="";
+                                $badge = "class='badge badge-primary text-white text-center'";
+                                $btn="onclick='receiveMyOrder({$orderData[0]['order_id']})'";
+                                if($markAsArrivedCount<$totalProductCount){
+                                    $completeArrivalDisabled="disabled='true'";
+                                    $badge = "class='badge badge-secondary text-white text-center'";
+                                    $btn="";
+                                }
+
+                                $orderCurrStatus = "RECIEVE MY ORDER";
+                                if($orderData[0]['process_status']===Constants::ORDER_RECEIVED){
+                                    $orderCurrStatus=$orderData[0]['process_status'];
+                                    $btn='';
+                                    $badge = "class='badge badge-secondary text-white text-center'";
+                                }
                                 ?>
                                 </tbody>
-                                
                             </table>
+                        </div>
+                        <div style="padding: 10px 10px;">
+                            <span style='padding: 10px 10px;' <?php echo $completeArrivalDisabled.'  '.$badge.'  '.$btn;?>><?php echo $orderCurrStatus;?></span> <span class="errorDisplayLog" hidden></span>
                         </div>
                     </div> 
                 </div>

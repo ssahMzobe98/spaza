@@ -9,7 +9,9 @@ class Response
     public string $responseStatus='';
     public string $responseMessage='';
     public array $responseArray=[];
-    public $response;
+    public int $orderNo;
+    public array $data=[];
+    public $response=[];
     public  function successSetter():Response{
         $this->responseStatus = Constants::SUCCESS_STATUS;
         return $this;
@@ -27,7 +29,7 @@ class Response
         return $this;
     }
     public function setObjectReturn():Response{
-        $this->response = (object) ["responseStatus"=>$this->responseStatus,"responseMessage"=>$this->responseMessage,
+        $this->response[] = (object) ["responseStatus"=>$this->responseStatus,"responseMessage"=>$this->responseMessage,
             "responseArray"=>$this->responseArray];
         return $this;
     }

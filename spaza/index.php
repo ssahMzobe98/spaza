@@ -2073,12 +2073,12 @@ function validateNewOrder(order_total_amount,order_total_Vat,order_subTotal_amou
           // console.log(e);
           response=JSON.parse(e);
           console.log(response);
-          if(response['response']!=='S'){
+          if(response['responseStatus']!=='S'){
               $(".validateOrder").attr("style","padding:5px 5px;color:red;text-align:center;").html(response['responseMessage']);
           }
           else{
               $(".validateOrder").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html("ORDER OK!!");
-              loadAfterQuery('.makhanyile','../model/checkout.php?order_id='+response['responseMessage']);
+              loadAfterQuery('.makhanyile','../model/checkout.php?order_id='+response['orderNo']);
           }
       }
   });
@@ -2483,11 +2483,98 @@ function markDownPicker(markDownPicker_order_id,markDownPicker_product_id){
           // console.log(e);
           if(response['responseStatus']==="S"){
             $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html(markDownPicker_product_id+' Product Picked');
-            $(".invoiceOrder").removeAttr("onclick").html("ORDER ACCEPTED");
+            // $(".invoiceOrder").removeAttr("onclick").html("ORDER ACCEPTED");
             getOrderInfo(markDownPicker_order_id);
           }
           else{
             $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:red;text-align:center;").html(response['responseMessage']);
+          }
+      }
+  });
+}
+function markAsArrived(OrderIdToMarkAsArrived,productIdToMarkAsArrived,current_value){
+  $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html('Marking Item...');
+  current_value=(current_value==='N')?'Y':'N';
+  $.ajax({
+      url:'../controller/mmshightech/processor.php',
+      type:'post',
+      data:{OrderIdToMarkAsArrived:OrderIdToMarkAsArrived,productIdToMarkAsArrived:productIdToMarkAsArrived,current_value:current_value},
+      success:function(e){
+          response=JSON.parse(e);
+          console.log(response);
+          if(response['responseStatus']==="S"){
+            $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html(productIdToMarkAsArrived+' Product Arrived.');
+            // $(".invoiceOrder").removeAttr("onclick").html("ORDER INVOICED");
+            loadAfterQuery(".makhanyile","../model/myOrder.php");
+          }
+          else{
+            $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:red;text-align:center;").html(response['responseMessage']);
+          }
+      }
+  });
+
+}
+function addToSpazaCustomerInvoice(product_id_on_spaza,product_id,action_type_from_spaza,current_spaza_shop_id){
+  // $(".errorDisplayLog").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html('Marking Item...');
+  // current_value=(current_value==='N')?'Y':'N';
+  $.ajax({
+      url:'../controller/mmshightech/processor.php',
+      type:'post',
+      data:{product_id_on_spaza:product_id_on_spaza,product_id:product_id,action_type_from_spaza:action_type_from_spaza,current_spaza_shop_id:current_spaza_shop_id},
+      success:function(e){
+          response=JSON.parse(e);
+          console.log(response);
+          if(response['responseStatus']==="S"){
+            $(".itemQuantity"+product_id_on_spaza).removeAttr('hidden').html(response['responseMessage']);
+            loadAfterQuery(".InvoicingProductDisplay","../model/spazaInvoiceForm.php?spaza="+current_spaza_shop_id);
+            $(".errorDisplayLog").attr('hidden','true');
+          }
+          else{
+            $(".errorDisplayLog").removeAttr('hidden').attr("style","padding:5px 5px;color:red;text-align:center;").html(response['responseMessage']);
+          }
+      }
+  });
+}
+function spazaInvoiceProduct(invoicing_spaza_id,invoicing_spaza_amount){
+  const invoicingSpazaInputAmount = $('.paymentAmount').val();
+  // console.log(invoicingSpazaInputAmount+' : '+invoicing_spaza_amount);
+  if(invoicingSpazaInputAmount.length>0){
+    $(".displayLogInvoicing").removeAttr('hidden').attr("style","padding:5px 5px;color:red;font-size:9px;text-align:center;").html("Amount Entered is less than R"+invoicing_spaza_amount);
+    $.ajax({
+      url:'../controller/mmshightech/processor.php',
+      type:'post',
+      data:{invoicing_spaza_id:invoicing_spaza_id,invoicing_spaza_amount:invoicing_spaza_amount,invoicingSpazaInputAmount:invoicingSpazaInputAmount},
+      success:function(e){
+          response=JSON.parse(e);
+          console.log(response);
+          if(response['responseStatus']==="S"){
+            $(".displayLogInvoicing").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html("INVOICE COMPLETE");
+            loadAfterQuery(".InvoicingProductDisplay","../model/invoiceComplete.php?invoice="+response['responseMessage']);
+          }
+          else{
+            $(".displayLogInvoicing").removeAttr('hidden').attr("style","padding:5px 5px;color:red;text-align:center;").html(response['responseMessage']);
+          }
+      }
+    });
+  }
+}
+function receiveMyOrder(orderNo_received_by_user){
+  $(".errorDisplayLog").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html('Marking Item...');
+  // current_value=(current_value==='N')?'Y':'N';
+  $.ajax({
+      url:'../controller/mmshightech/processor.php',
+      type:'post',
+      data:{orderNo_received_by_user:orderNo_received_by_user},
+      success:function(e){
+          response=JSON.parse(e);
+          console.log(response);
+          if(response['responseStatus']==="S"){
+            $(".errorDisplayLog").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html("ORDER -"+orderNo_received_by_user+' RECEIVED.');
+            // $(".invoiceOrder").removeAttr("onclick").html("ORDER INVOICED");
+            loadAfterQuery(".makhanyile","../model/myOrder.php");
+          }
+          else{
+            $(".errorDisplayLog").removeAttr('hidden').attr("style","padding:5px 5px;color:red;text-align:center;").html(response['responseMessage']);
           }
       }
   });
@@ -2500,6 +2587,7 @@ function invoiceOrder(invoiceOrder_orderNo){
       data:{invoiceOrder_orderNo:invoiceOrder_orderNo},
       success:function(e){
           response=JSON.parse(e);
+          console.log(response);
           if(response['responseStatus']==="S"){
             $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html('Order Invoiced.');
             $(".invoiceOrder").removeAttr("onclick").html("ORDER INVOICED");

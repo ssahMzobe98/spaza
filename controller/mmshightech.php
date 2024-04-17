@@ -17,6 +17,7 @@ class mmshightech
         $pass='';
         $dbnam='spaza';
         $this->connection=mysqli_connect('localhost',$user,$pass,$dbnam)or die("Connection was not established!!");
+        mysqli_autocommit($this->connection, true);
     }
     public function getAllDataSafely($query, $paramType="", $paramArray=[]):array{
         // global $conn;
@@ -292,4 +293,18 @@ class mmshightech
         return mail($reciever, $subject, $mess, $headers);
 
     }
+    public function commit()
+    {
+        mysqli_commit($this->connection);
+    }
+
+    public function rollback()
+    {
+        mysqli_rollback($this->connection);
+    }
+
+    // public function DBClose()
+    // {
+    //     mysqli_close($this->connection);
+    // }
 }

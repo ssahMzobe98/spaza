@@ -15,7 +15,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     // $userDirect=$cur_user_row['user_type'];
     date_default_timezone_set('Africa/Johannesburg');
     if($cur_user_row['user_type']===Constants::USER_TYPE_APP){
-        $productFromSpaza = $productsDao->getProductFromSpaza($cur_user_row['current_spaza']);
+        $productFromSpaza = $productsDao->getProductToBeInvoicedBySpaza($cur_user_row['current_spaza']);
         ?>
         <style>
                 .specialsDisplay{
@@ -74,19 +74,26 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                 }
 
             </style>
-        <div style="width: 10%;justify-content: right;" class="errorDisplayLog"></div>
+
+        <div class="displayLogInvoicing" hidden></div>
         <div class="RandomDisplay">
             <div style="display: flex;width: 100%;">
-                <div style="width:90%;">
-                    <h3>SPAZA PRODUCTS</h3>
+                <div style="width:35%;">
+                    <h3>Product 2 Invoice</h3>
                 </div>
-                
+                <div style="width: 80%;justify-content: right;display: inline-flex;" class="display">
+                    <div style="padding: 0 15px;" class="PriceDisplay">R1 000.52</div>
+                    <div style="padding: 0 5px;" ><input style="border:none;border-radius: 10px;border-bottom: 1px solid #000;" type="text" pattern="^\d*\.?\d*$" placeholder="Enter Amount eg. 57.00" class="paymentAmount"></div>
+                    <div style="padding: 0 5px;" class="invoiceBtn"><span class="badge badge-primary text-center text-white invoiceBtnDisplay">INVOICE</span></div>
+                </div>
             </div>
             <div style="padding: 2px 0;width: 100%;display: flex;flex-wrap: wrap;">
                 <?php
+                    $total=0;
                     foreach ($productFromSpaza as $dataRow){
-                        $price = number_format($dataRow['price'],2);
                         $quantity = $dataRow['quantity']??0;
+                        $total+=($dataRow['price']*$quantity);
+                        $price = number_format($dataRow['price'],2);
                         $instock = $dataRow['in_stock'];
                         $title = $dataRow['title'];
                         $product = $dataRow['description'];
@@ -94,7 +101,6 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                         $in_stock=($dataRow['is_out_stock']==='Y')?'<span style="color:darkred;">'.$instock.'</span>':'<span style="color:green;">'.$instock.'</span>';
                         $id=$dataRow['spaza_product_id'];
                         $add ='"add"';
-                        // echo $dataRow['is_in_stock'];
                         $addTOprocessing=($dataRow['is_out_stock']==='Y')?"":"onclick='addToSpazaCustomerInvoice({$id},{$productId},{$add},{$cur_user_row['current_spaza']})'";
                         $remove ='"remove"';
                         $removeProductToCart="onclick='addToSpazaCustomerInvoice({$id},{$productId},{$remove},{$cur_user_row['current_spaza']})'";
@@ -129,10 +135,17 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                                 </div>
                             </div>
                         ';
+
+                         
                     }
+                    $total=number_format($total,2);
                ?>
             </div>
         </div>
+        <script>
+            $(".PriceDisplay").html('R<?php echo $total;?>');
+            $(".invoiceBtnDisplay").attr("onclick","spazaInvoiceProduct('<?php echo $cur_user_row['current_spaza'];?>','<?php echo $total;?>')");
+        </script>
         <?php     
     }
     else{

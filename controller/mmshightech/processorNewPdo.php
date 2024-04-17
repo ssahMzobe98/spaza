@@ -334,7 +334,11 @@ class processorNewPdo
                                 proof_of_residental_address_sa,
                                 time_added,
                                 added_by)values(?,?,?,?,1,?,'{$app}',1,'',?,?,?,?,?,?,?,?,?,?,?,?,NOW(),?)";
-        return $this->mmshightech->postDataSafely($sql,'ssssssssssssssssss',$params);
+        $this->Response=$this->mmshightech->postDataSafely($sql,'ssssssssssssssssss',$params);
+        if($this->Response->responseStatus===Constants::RESPONSE_FAILED){
+            return $this->Response;
+        }
+        return $this->wallet->createWallet($this->Response->responseMessage);
     }
     public function addaPaymentDetails(?string $NameOnCard,?string $cardNumber,?string $expiryDate,?string $cvv,?string $client_id_toSave2):array{
         $params=[$NameOnCard,$cardNumber,$expiryDate,$cvv,$client_id_toSave2];

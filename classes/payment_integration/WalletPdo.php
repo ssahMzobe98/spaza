@@ -48,7 +48,7 @@ class WalletPdo
         $amount_total=(empty($amount_total['wallet_amount'])?0:$amount_total['wallet_amount'])+$refundTotal;
         // echo $amount_total." + ".$refundTotal;
         $sql="UPDATE wallet set wallet_amount=? where user_id=?";
-        $response = $this->mmshightech->postDataSafely($sql,'ss',[$amount_total,$user_id]);
+        return $this->mmshightech->postDataSafely($sql,'ss',[$amount_total,$user_id]);
     }
     public function refundToWallet(?int $order_id=null,string $totalAmount=null,?int $user_id=null,?string $payment_status=''):Response{
         $this->Response=$this->setWalletHistory(null,$order_id,null,null,null,$totalAmount,$totalAmount,null,'WALLET_REFUND',$user_id);

@@ -14,7 +14,7 @@ class productsPdo
         $this->response=new Response();
     }
     public function getSpecialProducts(?int $store=null,?int $min,?int $limit):array{
-        $sql="select p.*, 
+        $sql="SELECT p.*, 
             if(c.quantity='',0,c.quantity) as cart_quantity,
             if(now() > p.promo_start_date and now() < p.promo_end_date, p.promo_price,'') as promo_price_to_display
             from products as p
@@ -23,11 +23,11 @@ class productsPdo
         return $this->mmshightech->getAllDataSafely($sql,'sss',[$store,$min, $limit])??[];
     }
     public function getProductTotalCount():int{
-        $sql = "select id from products where product_status='A'";
+        $sql = "SELECT id from products where product_status='A'";
         return $this->mmshightech->numRows($sql,'',[])??0;
     }
     public function getProducts(?int $store=null,?int $min,?int $limit):array{
-        $sql="select p.*, 
+        $sql="SELECT p.*, 
                 if(c.quantity='',0,c.quantity) as cart_quantity,
                 if(now() > p.promo_start_date and now() < p.promo_end_date, p.promo_price,'') as promo_price_to_display
             from products as p
@@ -36,7 +36,7 @@ class productsPdo
         return $this->mmshightech->getAllDataSafely($sql,'sss',[ $store,$min, $limit])??[];
     }
     public function getProductsForDisplay(?int $min,?int $limit):array{
-        $sql="select p.*, 
+        $sql="SELECT p.*, 
                 if(c.quantity='',0,c.quantity) as cart_quantity,
                 if(now() > p.promo_start_date and now() < p.promo_end_date, p.promo_price,'') as promo_price_to_display
             from products as p
@@ -45,7 +45,7 @@ class productsPdo
         return $this->mmshightech->getAllDataSafely($sql,'ss',[$min, $limit])??[];
     }
     public function getProductOfCategory(?int $categoryID,int $min=0,int $limit=100):array{
-        $sql="select p.*, 
+        $sql="SELECT p.*, 
                 if(c.quantity='',0,c.quantity) as cart_quantity,
                 if(now() > p.promo_start_date and now() < p.promo_end_date, p.promo_price,'') as promo_price_to_display
             from products as p
@@ -55,7 +55,7 @@ class productsPdo
     }
     public function getCartProducts(?int $user_id):array
     {
-        $sql="select 
+        $sql="SELECT 
                     c.id as cartId,
                     c.user_id as user_id,
                     c.store_id as store_id,
@@ -75,12 +75,12 @@ class productsPdo
         return $this->mmshightech->getAllDataSafely($sql,'s',[$user_id])??[];
     }
     public function isCategoryIdExist(?int $categoryID):bool{
-        $sql = "select id from menu_category_ids where id=?";
+        $sql = "SELECT id from menu_category_ids where id=?";
         $results=$this->mmshightech->getAllDataSafely($sql,'s',[$categoryID])[0]??[];
         return (count($results)==1 && !empty($results['id']) && $results['id']==$categoryID);
     }
     public function getCartProductsTotal(?int $user_id):array{
-        $sql = "select 
+        $sql = "SELECT 
                     sum(c.quantity * p.price_usd) as sub_total 
                 from cart as c 
                     left join products as p on p.id=c.product_id
@@ -88,11 +88,11 @@ class productsPdo
         return $this->mmshightech->getAllDataSafely($sql,'s',[$user_id])[0]??[];
     }
     public function getAllAvailableCategoties(){
-        $sql = "select id,menu,description,bg_color from menu_category_ids";
+        $sql = "SELECT id,menu,description,bg_color from menu_category_ids";
         return $this->mmshightech->getAllDataSafely($sql,'',[])??[];
     }
     public function getSearchData(?string $searchProductTableColumn,?string $queryToSearchOnTable,int $min=0,int $limit=20):array{
-        $sql = "select p.*, 
+        $sql = "SELECT p.*, 
                 if(c.quantity='',0,c.quantity) as cart_quantity,
                 if(now() > p.promo_start_date and now() < p.promo_end_date, p.promo_price,'') as promo_price_to_display
             from products as p
@@ -101,7 +101,7 @@ class productsPdo
         return $this->mmshightech->getAllDataSafely($sql,'sss',["%".$queryToSearchOnTable."%",$min, $limit])??[];
     }
     public function productExists(?int $productUid){
-        $sql="select id from products where id=?";
+        $sql="SELECT id from products where id=?";
         $re= $this->mmshightech->getAllDataSafely($sql,'s',[$productUid])[0]??[];
         return (empty($re)?
                 false:
@@ -121,7 +121,7 @@ class productsPdo
         return $this->mmshightech->getAllDataSafely($sql,'s',[$productUid])[0]??[];
     }
     public function getCategory(int $menu_id=0):array{
-        $sql = "select id,menu from menu_category_ids where id != ?";
+        $sql = "SELECT id,menu from menu_category_ids where id != ?";
         return $this->mmshightech->getAllDataSafely($sql,'s',[$menu_id])??[];
     }
     public function productPicked(?int $order_id=null,?int $product_id=null):bool{
@@ -174,7 +174,7 @@ class productsPdo
                 promo_percentage=?,
                 discount_amount=?
         where id=?";
-        return $this->mmshightech->newPostDataSafely($sql,'ssssssssssssssssssss',[$amend_label,$amend_sub_label,$amend_description,$amend_manufacture,$amend_brand,$amend_category,$amend_seling_unit,$amend_qantity,$amend_content_uom,$amend_ean_code,$amend_alt_ean,$amend_alt_ean2,$amend_code_single,$amend_start_date,$amend_end_date,$amend_price,$amend_label_promo_price,$amend_percentage_discount,$amend_discount_amount,$product_id]);
+        return $this->mmshightech->postDataSafely($sql,'ssssssssssssssssssss',[$amend_label,$amend_sub_label,$amend_description,$amend_manufacture,$amend_brand,$amend_category,$amend_seling_unit,$amend_qantity,$amend_content_uom,$amend_ean_code,$amend_alt_ean,$amend_alt_ean2,$amend_code_single,$amend_start_date,$amend_end_date,$amend_price,$amend_label_promo_price,$amend_percentage_discount,$amend_discount_amount,$product_id]);
     }
     public function updatePromoStockIssue(?int $productCodeToAttendToData=null,?string $fieldToAttendTOData=Constants::IS_INSTOCK_TABLE_COL):Response{
         $setter=Constants::IS_PRODUCT_DISCOUNTABLE_TABLE_COL."=?";
@@ -193,7 +193,7 @@ class productsPdo
             $value=Constants::SUCCESS_YES;
         }
         $sql="UPDATE products set  {$setter} where id = ?";
-        return $this->mmshightech->newPostDataSafely($sql,'ss',[$value,$productCodeToAttendToData]);
+        return $this->mmshightech->postDataSafely($sql,'ss',[$value,$productCodeToAttendToData]);
     }
     public function getValueOf(?string $fieldToAttendTOData=Constants::IS_INSTOCK_TABLE_COL,?int $productCodeToAttendToData=null):string{
         $sql="SELECT {$fieldToAttendTOData} from products where id=?";
@@ -206,28 +206,121 @@ class productsPdo
             $data=$results[Constants::IS_PRODUCT_DISCOUNTABLE_TABLE_COL]??'';
         }
         return $data;
-
     }
     public function getProductFromSpaza(?int $current_spaza=null):array{
         $sql="SELECT 
+                    sp.product_id as product_id,
                     sp.product_quantity as in_stock,
                     sp.spaza_id as spaza,
-                    sp.out_of_stock as is_in_stock,
+                    sp.out_of_stock as is_out_stock,
                     sp.id as spaza_product_id,
                     mci.menu as menu,
-                    p.product_title as title,
-                    p.product_description as description,
+                    sp.label as title,
+                    sp.description as description,
                     p.product_thumbnail as img,
                     p.product_weight as weight,
                     p.product_hs_code as hs_code,
                     p.variant_barcode as barcode,
-                    sp.selling_price as price
+                    sp.selling_price as price,
+                    if(spi.quantity>0,spi.quantity,0) as quantity
                 from 
                 spaza_product as sp 
                 left join products as p on p.id=sp.product_id
                 left join menu_category_ids as mci on mci.id=p.menu_catalogue_id
+                left join spaza_product_invoicing as spi on spi.spaza_id=sp.spaza_id and sp.product_id=spi.product_id and sp.id=spi.spaza_product_id and spi.status='PENDING'
                 where sp.spaza_id=? and sp.status='A'
-             ";
+            ";
         return $this->mmshightech->getAllDataSafely($sql,'s',[$current_spaza])??[];
+    }
+    public function markItemAsArrived(?int $OrderIdToMarkAsArrived=null,?int $productIdToMarkAsArrived=null,string $current_value='N'):Response{
+        $sql = "UPDATE order_details set is_arrived=? where order_id=? and product_id=?";
+        return $this->mmshightech->postDataSafely($sql,'sss',[$current_value,$OrderIdToMarkAsArrived,$productIdToMarkAsArrived]);
+    }
+    public function getThisSpazaProductQuantity(?int $product_id_on_spaza=null,?int $current_spaza_shop_id=null,?int $product_id=null):int{
+        $sql="SELECT quantity from spaza_product_invoicing where spaza_product_id=? and product_id=? and spaza_id=? and status=?";
+        $results=$this->mmshightech->getAllDataSafely($sql,'ssss',[$product_id_on_spaza,$product_id,$current_spaza_shop_id,Constants::PENDING])[0]??[];
+        return $results['quantity']??0;
+
+    }
+    public function getSpazaMaxQuantityToSell(?int $product_id_on_spaza=null):int{
+        $sql="SELECT product_quantity from spaza_product where id=? and status=?";
+        $results=$this->mmshightech->getAllDataSafely($sql,'ss',[$product_id_on_spaza,Constants::STATUS_ACTIVE])[0]??[];
+        return $results['product_quantity']??0;
+    }
+    public function actionProductsTOInvoice(?int $product_id_on_spaza=null,?string $action_type_from_spaza=null,?int $current_spaza_shop_id=null,?int $product_id=null,?int $spaza_owner_id=null):Response{
+        $maxQuantityToSell=$this->getSpazaMaxQuantityToSell($product_id_on_spaza,$current_spaza_shop_id,$product_id);
+        $current_quantity = $this->getThisSpazaProductQuantity($product_id_on_spaza,$current_spaza_shop_id,$product_id);
+        if($action_type_from_spaza!==Constants::ADD){
+            if($current_quantity===0){
+                $this->response->responseStatus=Constants::RESPONSE_SUCCESS;
+                $this->response->responseMessage=0;
+                return $this->response;
+            }
+            $current_quantity--;
+        }
+        if($action_type_from_spaza===Constants::ADD){
+            if($current_quantity===0){
+                return $this->addToSpazaInvoicingList($product_id_on_spaza,$current_spaza_shop_id,$product_id,$spaza_owner_id);
+            }
+            $current_quantity++;
+        }
+        if($current_quantity===0 || $current_quantity<0){
+            return $this->removeFromSpazaList($product_id_on_spaza,$current_spaza_shop_id,$product_id,$spaza_owner_id);
+        }
+        if($maxQuantityToSell<$current_quantity){
+            $this->response->responseStatus=Constants::RESPONSE_SUCCESS;
+            $this->response->responseMessage=$maxQuantityToSell;
+            return $this->response;
+        }
+        return $this->updateSpazaProductInvoicingList($current_quantity,$product_id_on_spaza,$current_spaza_shop_id,$product_id,$spaza_owner_id);
+    }
+    public function addToSpazaInvoicingList(?int $product_id_on_spaza=null,?int $current_spaza_shop_id=null,?int $product_id=null,?int $spaza_owner_id=null):Response{
+        $sql="INSERT into spaza_product_invoicing(spaza_product_id,product_id,quantity,spaza_id,status,time_added,time_invoiced)values(?,?,1,?,?,NOW(),null)";
+        $results=$this->mmshightech->postDataSafely($sql,'ssss',[$product_id_on_spaza,$product_id,$current_spaza_shop_id,Constants::PENDING]);
+        if($results->responseStatus===Constants::SUCCESS_STATUS){
+            $results->responseMessage=1;
+        }
+        return $results;
+    }
+    public function removeFromSpazaList(?int $product_id_on_spaza=null,?int $current_spaza_shop_id=null,?int $product_id=null,?int $spaza_owner_id=null):Response{
+        $sql="DELETE FROM spaza_product_invoicing WHERE spaza_product_id=? AND product_id=? AND spaza_id=?";
+        $results=$this->mmshightech->postDataSafely($sql,'sss',[$product_id_on_spaza,$product_id,$current_spaza_shop_id]);
+        if($results->responseStatus===Constants::SUCCESS_STATUS){
+            $results->responseMessage=0;
+        }
+        return $results;
+    }
+    public function updateSpazaProductInvoicingList(?int $current_quantity=null,?int $product_id_on_spaza=null,?int $current_spaza_shop_id=null,?int $product_id=null,?int $spaza_owner_id=null):Response{
+        $sql="UPDATE spaza_product_invoicing set quantity=? where spaza_product_id=? and product_id=? and spaza_id=? and status=?";
+        $results=$this->mmshightech->postDataSafely($sql,'sssss',[$current_quantity,$product_id_on_spaza,$product_id,$current_spaza_shop_id,Constants::PENDING]);
+        if($results->responseStatus===Constants::SUCCESS_STATUS){
+            $results->responseMessage=$current_quantity;
+        }
+        return $results;
+    }
+    public function getProductToBeInvoicedBySpaza(?int $current_spaza=null):array{
+        $sql="SELECT 
+                    sp.product_id as product_id,
+                    sp.product_quantity as in_stock,
+                    sp.spaza_id as spaza,
+                    sp.out_of_stock as is_out_stock,
+                    sp.id as spaza_product_id,
+                    mci.menu as menu,
+                    sp.label as title,
+                    sp.description as description,
+                    p.product_thumbnail as img,
+                    p.product_weight as weight,
+                    p.product_hs_code as hs_code,
+                    p.variant_barcode as barcode,
+                    sp.selling_price as price,
+                    if(spi.quantity>0,spi.quantity,0) as quantity
+                from 
+                spaza_product as sp 
+                left join products as p on p.id=sp.product_id
+                left join menu_category_ids as mci on mci.id=p.menu_catalogue_id
+                left join spaza_product_invoicing as spi on spi.spaza_id=sp.spaza_id and sp.product_id=spi.product_id and sp.id=spi.spaza_product_id and spi.status='PENDING'
+                where spi.spaza_id=? and spi.status=?
+            ";
+        return $this->mmshightech->getAllDataSafely($sql,'ss',[$current_spaza,Constants::PENDING])??[];
     }
 }

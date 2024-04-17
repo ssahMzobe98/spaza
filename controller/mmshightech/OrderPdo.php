@@ -79,9 +79,10 @@ class OrderPdo{
     	return $this->createNewOrderDetails($getProducts,$this->Response->responseMessage);
     }
     protected function createNewOrder(string|int|array|null $getProducts=null,?string $vat,?string $total,?string $subTotal,?string $deliveryFee,?string $user_id):Response{
-    	$sql="INSERT into orders(user_id,created_datetime,process_status,total,sub_total,vat,delivery_fee,order_json)values(?,NOW(),1,?,?,?,?,?)";
-    	$params = [$user_id,$total,$subTotal,$vat,$deliveryFee,json_encode($getProducts)];
-    	return $this->mmshightech->postDataSafely($sql,'ssssss',$params);
+    	$sql="INSERT into orders(user_id,supplier_store_id,created_datetime,process_status,total,sub_total,vat,delivery_fee,order_json)values(?,?,NOW(),1,?,?,?,?,?)";
+        $supplier_store_id=$getProducts[0]['store_id']??-1;
+    	$params = [$user_id,$supplier_store_id,$total,$subTotal,$vat,$deliveryFee,json_encode($getProducts)];
+    	return $this->mmshightech->postDataSafely($sql,'sssssss',$params);
     	
     }
     protected function createNewOrderDetails(array|int|string|null $getProducts=null,?int $orderNo):Response{
@@ -102,7 +103,9 @@ class OrderPdo{
     	if($this->Response->responseStatus===Constants::RESPONSE_FAILED){
             return $this->Response;
         }
-		return $this->processorNewPdo->emptyCart($product['user_id']);
+		$this->Response=$this->processorNewPdo->emptyCart($product['user_id']);
+        $this->Response->orderNo=$orderNo;
+        return $this->Response;
     }
     public function getOrderTotal(?int $order_id){
     	if(!isset($order_id)){
@@ -284,6 +287,7 @@ class OrderPdo{
                 o.total,
                 od.is_instock,
                 od.is_picked,
+                od.is_arrived,
                 o.payment_status,
                 o.total AS order_total,
                 o.process_status as order_status,
@@ -336,7 +340,7 @@ class OrderPdo{
             $orderInvoiceTotal+=$total_price;
             if($summary['is_picked']==="N"){
                 $this->Response->responseStatus=Constants::RESPONSE_FAILED;
-                $this->Response->responseMessage= $summary['product_id']." is not PICKED. please pick the the item or remove it from list.";
+                $this->Response->responseMessage= "Product {".$summary['product_id']." is not PICKED. please pick the the item or remove it from list.";
                 return $this->Response;
             } 
         }
@@ -350,7 +354,7 @@ class OrderPdo{
         }
         $invoiceId=$this->Response->responseMessage;
         if($refundTotal>0 ){
-            $this->Response= $this->walletPdo->actionToWallet($response['data'],$invoiceOrder_orderNo,$vat,$deliveryFee,$invoiceTotal,$orderTotal,$refundTotal,$invoicedBy,'WALLET_REFUND',$user_id); 
+            $this->Response= $this->walletPdo->actionToWallet($invoiceId,$invoiceOrder_orderNo,$vat,$deliveryFee,$invoiceTotal,$orderTotal,$refundTotal,$invoicedBy,'WALLET_REFUND',$user_id); 
         }
         if($this->Response->responseStatus==="F"){
             return $this->Response; 
@@ -368,10 +372,6 @@ class OrderPdo{
     public function updateOrderProcessStatus(?int $status=null,?int $order_id=null):Response{
         $sql="UPDATE orders set process_status=? where id=?";
         return $this->mmshightech->postDataSafely($sql,'ss',[$status,$order_id]);
-        if(!is_numeric($response)){
-            return ['response'=>'F','data'=>$response];
-        }
-        return ['response'=>'S','data'=>'Success'];
     }
     public function getOrderInfo(?int $order_id=null):array{
         $sql="SELECT * from orders where id=?";
@@ -388,6 +388,70 @@ class OrderPdo{
         
         return $walletPdo->refundToWallet($order_id,$orderDetails['total'],$orderDetails['user_id']);
     }
+    public function orderIsValid(?int $order_id=null,?int $userId=null):bool{
+        $sql="SELECT id from orders where id=? and user_id=?";
+        return $this->mmshightech->numRows($sql,'ss',[$order_id,$userId])===1;
+    }
+    public function receiveOrderByUser(?int $order_id=null,?int$userId=null):Response{
+        if(!$this->orderIsValid($order_id,$userId)){
+            $this->Response->responseStatus=Constants::RESPONSE_SUCCESS;
+            $this->Response->responseMessage=" Order -{$order_id} not valid.";
+             return $this->Response;
+        }
+        $orderPayload['spaza']=$this->getSpazaId($order_id)??null;
+        $orderPayload['orderDetails']=$this->orderPayloadToSpaza($order_id);
+        foreach($orderPayload['orderDetails'] as $order){
+            if(!$this->isProductFoundOnOrderDetails($order['product_id'],$order_id)){
+                $this->Response->responseStatus=Constants::RESPONSE_SUCCESS;
+                $this->Response->responseMessage=" Product -{$order['product_id']} not Found.";
+                return $this->Response;
+            }
+        }
+        $sql="INSERT into spaza_product(product_id,product_quantity,label,description,spaza_id,selling_price,status)values(?,?,?,?,?,?,'A')";
+        foreach($orderPayload['orderDetails'] as $order){
+            $params = [$order['product_id'],$order['quantity'],$order['label'],$order['label'],$orderPayload['spaza'],$order['price']];
+            if($this->isProductFoundInSpazaProduct($order['product_id'],$orderPayload['spaza'])){
+                $currentQuantity = $this->getCurrentProductQuantityFromSpaza($order['product_id'],$orderPayload['spaza'])+$order['quantity'];
+                $sql="UPDATE spaza_product set product_quantity=?,status='A' where product_id=? and spaza_id=?";
+                $params = [$currentQuantity,$order['product_id'],$orderPayload['spaza']];
+                $this->Response=$this->mmshightech->postDataSafely($sql,'sss',$params);
+                if($this->Response->responseStatus===Constants::RESPONSE_FAILED){
+                    return $this->Response;
+                }
+            }
+            else{
+                $this->Response=$this->mmshightech->postDataSafely($sql,'ssssss',$params);
+                if($this->Response->responseStatus===Constants::RESPONSE_FAILED){
+                    return $this->Response;
+                }
+            }
+        }
+        if($this->Response->responseStatus===Constants::RESPONSE_SUCCESS){
+            return $this->updateOrderProcessStatus(16,$order_id);
+        }
+        return $this->Response;
+    }
+    public function getCurrentProductQuantityFromSpaza(?int $product_id=null,?int $spaza_id=null):int{
+        $sql="SELECT product_quantity from spaza_product where product_id=? and spaza_id=?";
+        $rto= $this->mmshightech->getAllDataSafely($sql,'ss',[$product_id,$spaza_id])[0]??[];
+        return (empty($rto['product_quantity'])||$rto['product_quantity']<0)?0:$rto['product_quantity'];
+    }
+    public function isProductFoundInSpazaProduct(?int $product_id=null,?int $spaza=null):bool{
+        $sql="SELECT product_id from spaza_product where product_id=? and spaza_id=?";
+        return $this->mmshightech->numRows($sql,'ss',[$product_id,$spaza])===1;
+    }
+    public function getSpazaId($order_id):int|null{
+        $sql="SELECT spaza_id from orders where id=?";
+        $rto= $this->mmshightech->getAllDataSafely($sql,'s',[$order_id])[0]??[];
+        return empty($rto['spaza_id'])?null:$rto['spaza_id'];
+    }
+    public function isProductFoundOnOrderDetails(?int $product_id=null,?int $order_id=null):bool{
+        $sql="SELECT product_id from order_details where order_id=? and product_id=?";
+        return $this->mmshightech->numRows($sql,'ss',[$order_id,$product_id])===1;
+    }
+    public function orderPayloadToSpaza(?int $order_id=null):array{
+        $sql="SELECT product_id,quantity,order_id,price,label from order_details where order_id = ?";
+        return $this->mmshightech->getAllDataSafely($sql,'s',[$order_id]);
+    }
 }
-
 ?>

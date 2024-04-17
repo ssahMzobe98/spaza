@@ -25,7 +25,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             }
             .flexible-loader{
                 width: 100%;
-                height: 95%;
+                height: 104%;
                 
                 display: flex;
             }
@@ -48,7 +48,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                 width: 100%;
             }
             .flexible-loader .leftTag .leftTagData .InstockProductDisplay,.flexible-loader .rightTag .rightTagData .InvoicingProductDisplay{
-                height: 92.8%;
+                height: 84.5%;
                 width: 100%;
                 overflow-y: auto;
                 hyphens: auto;
@@ -73,15 +73,15 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             }
         </style>
         <div class="dolar-set-block-display">
-            <div class="topicTail">
-                <div class="maKhathiSpazaSearch" >
-                    <input type="search" class="productSearchCart" placeholder="Search Product...">
-                </div>
-                
-            </div>
+            
             <div class="flexible-loader">
                 <div class="leftTag commonTag">
                     <div class="leftTagData box-shadow">
+                        <div class="topicTail" style="width: 100%;">
+                            <div class="maKhathiSpazaSearch" style="width: 100%;" >
+                                <input type="search" class="productSearchCart" placeholder="Search Product...">
+                            </div>
+                        </div>
                         <center><h5>Products on Stock</h5></center>
                         <div class="InstockProductDisplay">
                             
@@ -89,7 +89,9 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                     </div>
                 </div>
                 <div class="rightTag commonTag">
+                    
                     <div class="rightTagData box-shadow">
+
                         <center><h5>Product To Invoice</h5></center>
                         <div class="InvoicingProductDisplay">
                             
@@ -101,6 +103,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         </div>
         <script>
             loadAfterQuery('.InstockProductDisplay','../model/loadMyShopProductInStock.php');
+            loadAfterQuery('.InvoicingProductDisplay','../model/spazaInvoiceForm.php?spaza=<?php echo $cur_user_row['current_spaza'];?>');
         </script>
         <?php
     }

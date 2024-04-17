@@ -16,6 +16,7 @@ class Constants{
 	public const PROCESS_STATUS_FAILED = 'ORDER FAILED';
 	public const PROCESS_STATUS_DELIVERED = 'ORDER DELIVERD';
 	public const SUCCESS_YES ='Y';
+	public const STATUS_ACTIVE ='A';
 	public const SUCCESS_NO = 'N';
 	public const RESPONSE_ERROR = 'E';
 	public const RESPONSE_SUCCESS='S';
@@ -26,5 +27,9 @@ class Constants{
     public const SUCCESS_MESSAGE = "Success";
     public const IS_INSTOCK_TABLE_COL='product_discountable';
 	public const IS_PRODUCT_DISCOUNTABLE_TABLE_COL='is_instock';
+	public const ORDER_RECEIVED = 'ORDER RECEIVED';
+	public const ADD='add';
+	public const PENDING = 'PENDING';
+	public const INVOICED = 'INVOICED';
 }
 ?> 
