@@ -10,8 +10,6 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
   $mmshightech=new mmshightech();
   $OrderPdo=new OrderPdo($mmshightech);
   $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
-  $userDirect=$cur_user_row['user_type'];
-  if($cur_user_row['user_type']==$userDirect){
     date_default_timezone_set('Africa/Johannesburg');
 
     $isOrder=empty($OrderPdo->isUserHasActiveOrder($cur_user_row['id']))?-1:1;
@@ -3029,15 +3027,6 @@ function loadAfterQuery(rclass,dir){
 </body>
 </html>
 <?php 
-  }
-  else{
-    session_destroy();
-    ?>
-      <script>
-        window.location=("../");
-      </script>
-    <?php
-  }
 }
 else{
   session_destroy();

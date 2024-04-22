@@ -276,27 +276,27 @@ class productsPdo
     }
     public function addToSpazaInvoicingList(?int $product_id_on_spaza=null,?int $current_spaza_shop_id=null,?int $product_id=null,?int $spaza_owner_id=null):Response{
         $sql="INSERT into spaza_product_invoicing(spaza_product_id,product_id,quantity,spaza_id,status,time_added,time_invoiced)values(?,?,1,?,?,NOW(),null)";
-        $results=$this->mmshightech->postDataSafely($sql,'ssss',[$product_id_on_spaza,$product_id,$current_spaza_shop_id,Constants::PENDING]);
-        if($results->responseStatus===Constants::SUCCESS_STATUS){
-            $results->responseMessage=1;
+        $this->response=$this->mmshightech->postDataSafely($sql,'ssss',[$product_id_on_spaza,$product_id,$current_spaza_shop_id,Constants::PENDING]);
+        if($this->response->responseStatus===Constants::SUCCESS_STATUS){
+            $this->response->responseMessage=1;
         }
-        return $results;
+        return $this->response;
     }
     public function removeFromSpazaList(?int $product_id_on_spaza=null,?int $current_spaza_shop_id=null,?int $product_id=null,?int $spaza_owner_id=null):Response{
         $sql="DELETE FROM spaza_product_invoicing WHERE spaza_product_id=? AND product_id=? AND spaza_id=?";
-        $results=$this->mmshightech->postDataSafely($sql,'sss',[$product_id_on_spaza,$product_id,$current_spaza_shop_id]);
-        if($results->responseStatus===Constants::SUCCESS_STATUS){
-            $results->responseMessage=0;
+        $this->response=$this->mmshightech->postDataSafely($sql,'sss',[$product_id_on_spaza,$product_id,$current_spaza_shop_id]);
+        if($this->response->responseStatus===Constants::SUCCESS_STATUS){
+            $this->response->responseMessage=0;
         }
-        return $results;
+        return $this->response;
     }
     public function updateSpazaProductInvoicingList(?int $current_quantity=null,?int $product_id_on_spaza=null,?int $current_spaza_shop_id=null,?int $product_id=null,?int $spaza_owner_id=null):Response{
         $sql="UPDATE spaza_product_invoicing set quantity=? where spaza_product_id=? and product_id=? and spaza_id=? and status=?";
-        $results=$this->mmshightech->postDataSafely($sql,'sssss',[$current_quantity,$product_id_on_spaza,$product_id,$current_spaza_shop_id,Constants::PENDING]);
-        if($results->responseStatus===Constants::SUCCESS_STATUS){
-            $results->responseMessage=$current_quantity;
+        $this->response=$this->mmshightech->postDataSafely($sql,'sssss',[$current_quantity,$product_id_on_spaza,$product_id,$current_spaza_shop_id,Constants::PENDING]);
+        if($this->response->responseStatus===Constants::SUCCESS_STATUS){
+            $this->response->responseMessage=$current_quantity;
         }
-        return $results;
+        return $this->response;
     }
     public function getProductToBeInvoicedBySpaza(?int $current_spaza=null):array{
         $sql="SELECT 
