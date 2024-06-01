@@ -79,7 +79,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                     <div class="leftTagData box-shadow">
                         <div class="topicTail" style="width: 100%;">
                             <div class="maKhathiSpazaSearch" style="width: 100%;" >
-                                <input type="search" class="productSearchCart" placeholder="Search Product...">
+                                <input type="search" class="productSearchCartMyShop" id="productSearchCartMyShop" placeholder="Search Product..." oninput="productSearchCartMyShop()">
                             </div>
                         </div>
                         <center><h5>Products on Stock</h5></center>

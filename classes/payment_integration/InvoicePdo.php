@@ -52,8 +52,22 @@ class InvoicePdo
         if($this->Response->responseStatus===Constants::FAILED_STATUS){
             return $this->Response;
         }
-        return $this->updateInvoicedProducts($invoicing_spaza_id,$this->Response->responseMessage);
-
+        $productUIdsAndQuantities = $this->products->getProductUIDsToBeInvoicedBySpaza($invoicing_spaza_id);
+        foreach ($productUIdsAndQuantities as $productUIdData) {
+            if($productUIdData['total_quantity_available']<$productUIdData['quantity']){
+                return $this->response->failureSetter()->messagerSetter("Purchase Quantity ({$productUIdData['quantity']}) is greater than available quantity ({$productUIdData['total_quantity_available']}) for product -> {$productUIdData['spaza_product_id']}");
+            }
+        }
+        $this->Response=$this->updateInvoicedProducts($invoicing_spaza_id,$this->Response->responseMessage);
+        if($this->Response->responseStatus === Constants::FAILED_STATUS){
+            return $this->Response;
+        }
+        $message = $this->Response->responseMessage;
+        $this->Response = $this->products->removeProductFromShelf($productUIdsAndQuantities);
+        if($this->Response->responseStatus===Constants::SUCCESS_STATUS){
+            $this->Response->responseMessage=$message;
+        }
+        return $this->Response;
     }
     public function getInvoiceFinalReport(?int $invoiceId=null):array{
         $sql="SELECT * from spaza_invoices where id=?";

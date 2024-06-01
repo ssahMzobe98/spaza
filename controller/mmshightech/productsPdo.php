@@ -323,4 +323,60 @@ class productsPdo
             ";
         return $this->mmshightech->getAllDataSafely($sql,'ss',[$current_spaza,Constants::PENDING])??[];
     }
+    public function getProductFromSpazaSearch(?int $current_spaza=null,?string $search = null):array{
+        $sql="SELECT 
+                    sp.product_id as product_id,
+                    sp.product_quantity as in_stock,
+                    sp.spaza_id as spaza,
+                    sp.out_of_stock as is_out_stock,
+                    sp.id as spaza_product_id,
+                    mci.menu as menu,
+                    sp.label as title,
+                    sp.description as description,
+                    p.product_thumbnail as img,
+                    p.product_weight as weight,
+                    p.product_hs_code as hs_code,
+                    p.variant_barcode as barcode,
+                    sp.selling_price as price,
+                    if(spi.quantity>0,spi.quantity,0) as quantity
+                from 
+                spaza_product as sp 
+                left join products as p on p.id=sp.product_id
+                left join menu_category_ids as mci on mci.id=p.menu_catalogue_id
+                left join spaza_product_invoicing as spi on spi.spaza_id=sp.spaza_id and sp.product_id=spi.product_id and sp.id=spi.spaza_product_id and spi.status='PENDING'
+                where sp.spaza_id=? and sp.status='A' and sp.label like ?
+            ";
+        return $this->mmshightech->getAllDataSafely($sql,'ss',[$current_spaza,"%".$search."%"])??[];
+    }
+    public function getProductUIDsToBeInvoicedBySpaza(?int $spaza_id = null):array{
+        $sql = "SELECT spi.spaza_product_id as spaza_product_id ,spi.quantity as quantity,sp.product_quantity as total_quantity_available 
+                from spaza_product_invoicing as spi
+                LEFT JOIN spaza_product as sp on sp.id = spi.spaza_product_id
+                where spi.spaza_id = ? and spi.status =?";
+        return $this->mmshightech->getAllDataSafely($sql,'ss',[$spaza_id,Constants::PENDING]);
+    }
+    public function removeProductFromShelf(array $productUIdsAndQuantities=[]):Response{
+        if(empty($productUIdsAndQuantities)){
+            return $this->response->failureSetter()->messagerSetter("Failed to remove product from shelf due to no product provided.");
+        }
+        foreach ($productUIdsAndQuantities as $productUIdData) {
+            if($productUIdData['total_quantity_available']<$productUIdData['quantity']){
+                return $this->response->failureSetter()->messagerSetter("Purchase Quantity ({$productUIdData['quantity']}) is greater than available quantity ({$productUIdData['total_quantity_available']}) for product -> {$productUIdData['spaza_product_id']}");
+            }
+            $sql=", status = 'S' , out_of_stock = 'Y'";
+
+            $total_quantity_available = $productUIdData['total_quantity_available']-$productUIdData['quantity'];
+            if($total_quantity_available>0){
+                $sql="";
+            }
+            $sql = "UPDATE spaza_product set product_quantity =? $sql where id=?";
+            $this->response = $this->mmshightech->postDataSafely($sql,'ss',[$total_quantity_available,$productUIdData['spaza_product_id']]);
+            if($this->response->responseStatus!==Constants::RESPONSE_SUCCESS){
+                return $this->response;
+            }
+
+        }
+        return $this->response;
+    }
+
 }

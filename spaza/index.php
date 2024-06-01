@@ -746,24 +746,7 @@ select{
         </li>
         <?php
         }
-        if($cur_user_row['user_type']===Constants::USER_TYPE_APP){ ?>
-        <li>
-          <a onclick='loadAfterQuery(".makhanyile","../model/myShop.php")'>
-            <i class='bx bx-pie-chart-alt-2' ></i>
-            <span class="links_name">Add My Shop Product</span>
-          </a>
-        </li>
-        <?php
-        }
-        if($cur_user_row['user_type']===Constants::USER_TYPE_APP){ ?>
-        <li>
-          <a onclick='loadAfterQuery(".makhanyile","../model/myShop.php")'>
-            <i class='bx bx-pie-chart-alt-2' ></i>
-            <span class="links_name">My Shop Products</span>
-          </a>
-        </li>
-        <?php
-        }
+        
         if($cur_user_row['user_type']===Constants::USER_TYPE_APP){ ?>
         <li>
           <a onclick='loadAfterQuery(".makhanyile","../model/createOrder.php");getCartUpdate(<?php echo $cur_user_row['supplier_id'];?>);'>
@@ -1901,9 +1884,9 @@ function amendProductDetails(amend_product_id){
             amend_percentage_discount:amend_percentage_discount,
             amend_discount_amount:amend_discount_amount,amend_product_id:amend_product_id},
       success:function(e){
-        console.log(e);
+        // console.log(e);
         response = JSON.parse(e);
-        console.log(response);
+        // console.log(response);
         if(response['responseStatus']){
           $('.displayErrorMessage').removeAttr("hidden").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html('Data Updated Successfully');
         }
@@ -1994,6 +1977,7 @@ function ProductSearchByName(searchProductTableColumn){
   const ProductSearchByName=$(".ProductSearchByName").val();
   searchProduct(searchProductTableColumn,ProductSearchByName);
 }
+
 function ProductSearchByUid(searchProductTableColumn){
   const ProductSearchByUid=$(".ProductSearchByUid").val();
   searchProduct(searchProductTableColumn,ProductSearchByUid);
@@ -2015,6 +1999,7 @@ function FindUserSearch(){
     }
   });
 }
+
 function maKhathiOrdersSearchInput(){
   const searchSpazaBynameOrOwner=$('.searchSpazaBynameOrOwner').val();
     url = "../controller/mmshightech/search/searchSpaza.php";
@@ -2044,6 +2029,24 @@ function searchProduct(searchProductTableColumn,queryToSearchOnTable){
     }
   });
 }
+function productSearchCartMyShop(){
+  const productSearchCartMyShop=$(".productSearchCartMyShop").val();
+  if(productSearchCartMyShop.length==0){
+      loadAfterQuery('.InstockProductDisplay','../model/loadMyShopProductInStock.php');
+  }
+  else{
+    url = "../controller/mmshightech/search/productSearchCartMyShopSearch.php";
+    dataArray={'productSearchCartMyShop':productSearchCartMyShop};
+    $.ajax({
+      url:url,
+      type:'post',
+      data:dataArray,
+      success:function(e){
+        $(".InstockProductDisplay").html(e);
+      }
+    });
+  }
+}
 function findOrderNumberInput(){
   const searchOrderNumber=$(".findOrderNumberInput").val();
   if(searchOrderNumber.length==0){
@@ -2070,7 +2073,7 @@ function validateNewOrder(order_total_amount,order_total_Vat,order_subTotal_amou
       success:function(e){
           // console.log(e);
           response=JSON.parse(e);
-          console.log(response);
+          // console.log(response);
           if(response['responseStatus']!=='S'){
               $(".validateOrder").attr("style","padding:5px 5px;color:red;text-align:center;").html(response['responseMessage']);
           }
@@ -2231,7 +2234,7 @@ function createNewStoreSupplier(){
         success:function(e){
           // 
           data=JSON.parse(e);
-          console.log(data);
+          // console.log(data);
           if(data['responseStatus']==='S'){
             $(".createUserErrorLog").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("New Supplier added.");
           }
@@ -2360,7 +2363,7 @@ function createNewUser(){
         cache:false,
         enctype: 'multipart/form-data',
         success:function(e){
-          console.log(e);
+          // console.log(e);
           data=JSON.parse(e);
           if(data['responseStatus']==='S'){
             $(".createUserErrorLog").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("New user added.");
@@ -2379,7 +2382,7 @@ function deliverOrder(deliverOrder_order_id){
       type:'post',
       data:{deliverOrder_order_id:deliverOrder_order_id},
       success:function(e){
-          console.log(e);
+          // console.log(e);
           response=JSON.parse(e);
           if(response['responseStatus']!=='S'){
               $(".displayResponseOrder").attr("style","padding:5px 5px;color:red;text-align:center;").html(response['responseMessage']);
@@ -2499,7 +2502,7 @@ function markAsArrived(OrderIdToMarkAsArrived,productIdToMarkAsArrived,current_v
       data:{OrderIdToMarkAsArrived:OrderIdToMarkAsArrived,productIdToMarkAsArrived:productIdToMarkAsArrived,current_value:current_value},
       success:function(e){
           response=JSON.parse(e);
-          console.log(response);
+          // console.log(response);
           if(response['responseStatus']==="S"){
             $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html(productIdToMarkAsArrived+' Product Arrived.');
             // $(".invoiceOrder").removeAttr("onclick").html("ORDER INVOICED");
@@ -2521,7 +2524,7 @@ function addToSpazaCustomerInvoice(product_id_on_spaza,product_id,action_type_fr
       data:{product_id_on_spaza:product_id_on_spaza,product_id:product_id,action_type_from_spaza:action_type_from_spaza,current_spaza_shop_id:current_spaza_shop_id},
       success:function(e){
           response=JSON.parse(e);
-          console.log(response);
+          // console.log(response);
           if(response['responseStatus']==="S"){
             $(".itemQuantity"+product_id_on_spaza).removeAttr('hidden').html(response['responseMessage']);
             loadAfterQuery(".InvoicingProductDisplay","../model/spazaInvoiceForm.php?spaza="+current_spaza_shop_id);
@@ -2544,10 +2547,11 @@ function spazaInvoiceProduct(invoicing_spaza_id,invoicing_spaza_amount){
       data:{invoicing_spaza_id:invoicing_spaza_id,invoicing_spaza_amount:invoicing_spaza_amount,invoicingSpazaInputAmount:invoicingSpazaInputAmount},
       success:function(e){
           response=JSON.parse(e);
-          console.log(response);
+          // console.log(response);
           if(response['responseStatus']==="S"){
             $(".displayLogInvoicing").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html("INVOICE COMPLETE");
             loadAfterQuery(".InvoicingProductDisplay","../model/invoiceComplete.php?invoice="+response['responseMessage']);
+            loadAfterQuery('.InstockProductDisplay','../model/loadMyShopProductInStock.php');
           }
           else{
             $(".displayLogInvoicing").removeAttr('hidden').attr("style","padding:5px 5px;color:red;text-align:center;").html(response['responseMessage']);
@@ -2565,7 +2569,7 @@ function receiveMyOrder(orderNo_received_by_user){
       data:{orderNo_received_by_user:orderNo_received_by_user},
       success:function(e){
           response=JSON.parse(e);
-          console.log(response);
+          // console.log(response);
           if(response['responseStatus']==="S"){
             $(".errorDisplayLog").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html("ORDER -"+orderNo_received_by_user+' RECEIVED.');
             // $(".invoiceOrder").removeAttr("onclick").html("ORDER INVOICED");
@@ -2585,7 +2589,7 @@ function invoiceOrder(invoiceOrder_orderNo){
       data:{invoiceOrder_orderNo:invoiceOrder_orderNo},
       success:function(e){
           response=JSON.parse(e);
-          console.log(response);
+          // console.log(response);
           if(response['responseStatus']==="S"){
             $(".displayResponseOrder").removeAttr('hidden').attr("style","padding:5px 5px;color:green;text-align:center;").html('Order Invoiced.');
             $(".invoiceOrder").removeAttr("onclick").html("ORDER INVOICED");
@@ -2739,7 +2743,7 @@ function removeProductToCart(productIdToActionOnCart,actionType,cartProcessor_su
         data:{productIdToActionOnCart:productIdToActionOnCart,actionType:actionType,cartProcessor_supplier_store_id:cartProcessor_supplier_store_id},
         success:function(e){
             response = JSON.parse(e);
-            console.log(response);
+            // console.log(response);
             if(response['responseStatus']==='S'){
                 $(".itemQuantity"+productIdToActionOnCart).html(response['responseMessage']);
                 getCartUpdate(<?php echo $cur_user_row['supplier_id'];?>);
