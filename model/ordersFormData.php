@@ -13,7 +13,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
   $spazaPdo = PDOFactoryOOPClass::make(Constants::SPAZA,[$mmshightech]);
   $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
   $userDirect=$cur_user_row['user_type'];
-  if($cur_user_row['user_type']==Constants::USER_TYPE_ADMIN && isset($_POST['request'])){
+  if(($cur_user_row['user_type']==Constants::USER_TYPE_ADMIN  || $cur_user_row['user_type']===Constants::USER_TYPE_SUPPLIER) && isset($_POST['request']) ){
     $orderData=$OrderPdo->orderSummary($_POST['request']);
     $spazaDetails=$spazaPdo->spazaDetailsForThisOrder($orderData[0]['order_id']);
     date_default_timezone_set('Africa/Johannesburg');

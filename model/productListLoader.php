@@ -12,7 +12,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     $mmshightech=new mmshightech();
     $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
     $productsPdo = new productsPdo($mmshightech);
-    if(Constants::USER_TYPE_ADMIN===$cur_user_row['user_type'] ){
+    if(Constants::USER_TYPE_ADMIN===$cur_user_row['user_type']  || $cur_user_row['user_type']===Constants::USER_TYPE_SUPPLIER){
         if(isset($_GET['min'],$_GET['max'])){
             date_default_timezone_set('Africa/Johannesburg');
             $maxCount = $productsPdo->getProductTotalCount();

@@ -593,6 +593,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
                 $e->responseStatus=Constants::FAILED_STATUS;
             }
             else{
+                // print_r($_FILES);
                 $toProcess = [];
                 $failProcess = [];
                 foreach ($_FILES as $fileData){

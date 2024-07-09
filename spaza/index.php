@@ -719,7 +719,7 @@ select{
         </li>
         <?php
         }
-        if($cur_user_row['user_type']===Constants::USER_TYPE_ADMIN){ ?>
+        if($cur_user_row['user_type']===Constants::USER_TYPE_ADMIN || $cur_user_row['user_type']===Constants::USER_TYPE_SUPPLIER){ ?>
         <li>
           <a onclick='loadAfterQuery(".makhanyile","../model/createNewProduct.php")'>
             <i class='bx bx-list-ul' ></i>
@@ -728,7 +728,7 @@ select{
         </li>
         <?php
         }
-        if($cur_user_row['user_type']===Constants::USER_TYPE_ADMIN){ ?>
+        if($cur_user_row['user_type']===Constants::USER_TYPE_ADMIN || $cur_user_row['user_type']===Constants::USER_TYPE_SUPPLIER){ ?>
         <li>
           <a onclick='loadAfterQuery(".makhanyile","../model/manageSpazaProducts.php")'>
             <i class='bx bx-pie-chart-alt-2' ></i>
@@ -768,7 +768,7 @@ select{
         <?php
         }
         
-        if($cur_user_row['user_type']===Constants::USER_TYPE_ADMIN){ ?>
+        if($cur_user_row['user_type']===Constants::USER_TYPE_ADMIN || $cur_user_row['user_type']===Constants::USER_TYPE_SUPPLIER){ ?>
         <li>
           <a onclick='loadAfterQuery(".makhanyile","../model/ordersForm.php")'>
             <i class='bx bx-pie-chart-alt-2' ></i>
@@ -1716,6 +1716,7 @@ $(document).on("change",".updateSupplier",function(){
 $(document).on("change",".changeIconImg",function(){
   const changeIconImg = document.getElementById('changeIconImg').files;
   const productId = $('.productId').val();
+  // console.log(changeIconImg+" : "+productId);
   var form_data = new FormData();
   for(var i=0;i<changeIconImg.length;i++){
     form_data.append("changeIconImg"+i,changeIconImg[i]);
@@ -1734,9 +1735,10 @@ $(document).on("change",".changeIconImg",function(){
     enctype: 'multipart/form-data',
     success:function(e){
       response = JSON.parse(e);
+      console.log(response);
       if(response['responseStatus']==='S'){
         $(".displayResponse").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("Product list added!!");
-        domeSquareModal('productDataForm',productId);
+        //domeSquareModal('productDataForm',productId);
       }
       else{
         $(".displayResponse").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:red;border:2px solid red;border-radius:10px;").html(response['responseMessage']);

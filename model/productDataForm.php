@@ -13,7 +13,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
     $productsPdo = new productsPdo($mmshightech);
     $cur_user_row = $mmshightech->userInfo($_SESSION['user_agent']);
     $userDirect=$cur_user_row['user_type'];
-    if($cur_user_row['user_type']==Constants::USER_TYPE_ADMIN){
+    if($cur_user_row['user_type']==Constants::USER_TYPE_ADMIN  || $cur_user_row['user_type']===Constants::USER_TYPE_SUPPLIER){
     	if(isset($_POST['request'])){
     		date_default_timezone_set('Africa/Johannesburg');
     		$productId = $mmshightech->OMO($_POST['request']);
