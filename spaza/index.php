@@ -1713,9 +1713,40 @@ $(document).on("change",".updateSupplier",function(){
     });
 
 });
-
+$(document).on("change",".changeIconImg",function(){
+  const changeIconImg = document.getElementById('changeIconImg').files;
+  const productId = $('.productId').val();
+  var form_data = new FormData();
+  for(var i=0;i<changeIconImg.length;i++){
+    form_data.append("changeIconImg"+i,changeIconImg[i]);
+  }
+  form_data.append("changeIconImg",1);
+  form_data.append("productId",productId);
+  const url="../controller/mmshightech/processor.php";
+  $(".displayResponse").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("<img style='width:5%;' src='../img/loader.gif'><h5 style='color:green;'>Processing Request..</h5>");
+  $.ajax({
+    url:url,
+    processData: false,
+    contentType: false,
+    type:"POST",
+    data:form_data,
+    cache:false,
+    enctype: 'multipart/form-data',
+    success:function(e){
+      response = JSON.parse(e);
+      if(response['responseStatus']==='S'){
+        $(".displayResponse").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("Product list added!!");
+        domeSquareModal('productDataForm',productId);
+      }
+      else{
+        $(".displayResponse").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:red;border:2px solid red;border-radius:10px;").html(response['responseMessage']);
+      }
+    }
+  });
+});
 $(document).on("change",".filesUpload",function(){
   const filesUpload = document.getElementById('filesUpload').files;
+
   // console.log("sending "+filesUpload);
   var form_data = new FormData();
   for(var i=0;i<filesUpload.length;i++){
@@ -1743,6 +1774,167 @@ $(document).on("change",".filesUpload",function(){
     }
   });
 });
+function addNewProductDetails(){
+  const add_label=$(".add_label").val();
+  const add_sub_label=$(".add_sub_label").val();
+  const add_description=$(".add_description").val();
+  const add_manufacture=$(".add_manufacture").val();
+  const add_brand=$(".add_brand").val();
+  const add_category=$(".add_category").val();
+  const add_seling_unit=$(".add_seling_unit").val();
+  const add_qantity=$(".add_qantity").val();
+  const add_content_uom=$(".add_content_uom").val();
+  const add_ean_code=$(".add_ean_code").val();
+  const add_alt_ean=$(".add_alt_ean").val();
+  const add_alt_ean2=$(".add_alt_ean2").val();
+  const add_code_single=$(".add_code_single").val();
+  const add_start_date=$(".add_start_date").val();
+  const add_end_date=$(".add_end_date").val();
+  const add_price=$(".add_price").val();
+  const add_label_promo_price=$(".add_label_promo_price").val();
+  const add_percentage_discount=$(".add_percentage_discount").val();
+  const add_discount_amount=$(".add_discount_amount").val();
+  const addPromoToggle=$("#addPromoToggle").prop('checked')===true?'Y':'N';
+  const addInstockToggle=$("#addInstockToggle").prop('checked')===true?'Y':'N';
+  // console.log(addPromoToggle+' : '+addInstockToggle);
+  $(".add_label").removeAttr("style");
+  $(".add_sub_label").removeAttr("style");
+  $(".add_description").removeAttr("style");
+  $(".add_manufacture").removeAttr("style");
+  $(".add_brand").removeAttr("style");
+  $(".add_category").removeAttr("style");
+  $(".add_seling_unit").removeAttr("style");
+  $(".add_qantity").removeAttr("style");
+  $(".add_content_uom").removeAttr("style");
+  $(".add_ean_code").removeAttr("style");
+  $(".add_alt_ean").removeAttr("style");
+  $(".add_alt_ean2").removeAttr("style");
+  $(".add_code_single").removeAttr("style");
+  $(".add_start_date").removeAttr("style");
+  $(".add_end_date").removeAttr("style");
+  $(".add_price").removeAttr("style");
+  $(".add_label_promo_price").removeAttr("style");
+  $(".add_percentage_discount").removeAttr("style");
+  $(".add_discount_amount").removeAttr("style");
+  
+  
+  $(".displayErrorMessage").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("<img style='width:5%;' src='../img/loader.gif'><h5 style='color:green;'>Processing Request..</h5>");
+  if(add_label.length<1){
+    $(".add_label").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  // else if(amend_sub_label.length<1){
+  //   $(".amend_sub_label").attr('style','border:1px solid red;');
+  //   $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  // }
+  else if(add_description.length<1){
+    $(".add_description").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  else if(add_manufacture.length<1){
+    $(".add_manufacture").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  else if(add_brand.length<1){
+    $(".add_brand").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  else if(add_category.length<1){
+    $(".add_category").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  else if(add_seling_unit.length<1){
+    $(".add_seling_unit").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  else if(add_qantity.length<1){
+    $(".add_qantity").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  // else if(amend_content_uom.length<1){
+  //   $(".amend_content_uom").attr('style','border:1px solid red;');
+  //   $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  // }
+  else if(add_ean_code.length<1){
+    $(".add_ean_code").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  // else if(amend_alt_ean.length<1){
+  //   $(".amend_alt_ean").attr('style','border:1px solid red;');
+  //   $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  // }
+  // else if(amend_alt_ean2.length<1){
+  //   $(".amend_alt_ean2").attr('style','border:1px solid red;');
+  //   $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  // }
+  // else if(amend_code_single.length<1){
+  //   $(".amend_code_single").attr('style','border:1px solid red;');
+  //   $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  // }
+  // else if(amend_start_date.length<1){
+  //   $(".amend_start_date").attr('style','border:1px solid red;');
+  //   $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  // }
+  // else if(amend_end_date.length<1){
+  //   $(".amend_end_date").attr('style','border:1px solid red;');
+  //   $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  // }
+  else if(add_price.length<1){
+    $(".add_price").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  else if(add_label_promo_price.length<1){
+    $(".add_label_promo_price").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  else if(add_percentage_discount.length<1){
+    $(".add_percentage_discount").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  else if(add_discount_amount.length<1){
+    $(".add_discount_amount").attr('style','border:1px solid red;');
+    $(".displayErrorMessage").attr("style","color:red;").html("Field required!!");
+  }
+  else{
+    url = "../controller/mmshightech/processor.php";
+    $.ajax({
+      url:url,
+      type:'post',
+      data:{add_label:add_label,
+            add_sub_label:add_sub_label,
+            add_description:add_description,
+            add_manufacture:add_manufacture,
+            add_brand:add_brand,
+            add_category:add_category,
+            add_seling_unit:add_seling_unit,
+            add_qantity:add_qantity,
+            add_content_uom:add_content_uom,
+            add_ean_code:add_ean_code,
+            add_alt_ean:add_alt_ean,
+            add_alt_ean2:add_alt_ean2,
+            add_code_single:add_code_single,
+            add_start_date:add_start_date,
+            add_end_date:add_end_date,
+            add_price:add_price,
+            add_label_promo_price:add_label_promo_price,
+            add_percentage_discount:add_percentage_discount,
+            add_discount_amount:add_discount_amount,
+            addPromoToggle:addPromoToggle,
+            addInstockToggle:addInstockToggle},
+      success:function(e){
+        // console.log(e);
+        response = JSON.parse(e);
+        // console.log(response);
+        if(response['responseStatus']==='S'){
+          $('.displayErrorMessage').removeAttr("hidden").attr("style","padding:5px 5px;color:green;text-align:center;border:1px solid green;").html('Data Updated Successfully');
+        }
+        else{
+          $('.displayErrorMessage').removeAttr("hidden").attr("style","padding:5px 5px;color:red;text-align:center;border:1px solid green;").html(response['responseMessage']);
+        }  
+      }
+    });
+  }
+}
 function amendProductDetails(amend_product_id){
   const amend_label=$(".amend_label").val();
   const amend_sub_label=$(".amend_sub_label").val();

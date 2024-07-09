@@ -99,6 +99,7 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             }
             if(sizeof($failProcess)>0){
                 $e->responseMessage="{".implode(",",$failProcess)."} Not supported!. Processing Failed.";
+                $e->responseStatus=Constants::FAILED_STATUS;
             }
             else{
                 if(sizeof($toProcess)>0){
@@ -528,6 +529,114 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
             }
             else{
                 $e=$invoice->actionProductsTOInvoice($invoicing_spaza_id,$invoicing_spaza_amount,$invoicingSpazaInputAmount,$cur_user_row['id']);
+            }
+        }
+        elseif(isset(
+            $_POST["add_label"],
+            $_POST["add_sub_label"],
+            $_POST["add_description"],
+            $_POST["add_manufacture"],
+            $_POST["add_brand"],
+            $_POST["add_category"],
+            $_POST["add_seling_unit"],
+            $_POST["add_qantity"],
+            $_POST["add_content_uom"],
+            $_POST["add_ean_code"],
+            $_POST["add_alt_ean"],
+            $_POST["add_alt_ean2"],
+            $_POST["add_code_single"],
+            $_POST["add_start_date"],
+            $_POST["add_end_date"],
+            $_POST["add_price"],
+            $_POST["add_label_promo_price"],
+            $_POST["add_percentage_discount"],
+            $_POST["add_discount_amount"],
+            // $_POST["add_product_id"],
+            $_POST["addPromoToggle"],
+            $_POST["addInstockToggle"],
+        )){
+            if(!empty($cur_user_row['supplier_id'])){
+                $add_label=$processorNewDao->mmshightech->OMO($_POST['add_label']);
+                $add_sub_label=$processorNewDao->mmshightech->OMO($_POST['add_sub_label']);
+                $add_description=$processorNewDao->mmshightech->OMO($_POST['add_description']);
+                $add_manufacture=$processorNewDao->mmshightech->OMO($_POST['add_manufacture']);
+                $add_brand=$processorNewDao->mmshightech->OMO($_POST['add_brand']);
+                $add_category=$processorNewDao->mmshightech->OMO($_POST['add_category']);
+                $add_seling_unit=$processorNewDao->mmshightech->OMO($_POST['add_seling_unit']);
+                $add_qantity=$processorNewDao->mmshightech->OMO($_POST['add_qantity']);
+                $add_content_uom=$processorNewDao->mmshightech->OMO($_POST['add_content_uom']);
+                $add_ean_code=$processorNewDao->mmshightech->OMO($_POST['add_ean_code']);
+                $add_alt_ean=$processorNewDao->mmshightech->OMO($_POST['add_alt_ean']);
+                $add_alt_ean2=$processorNewDao->mmshightech->OMO($_POST['add_alt_ean2']);
+                $add_code_single=$processorNewDao->mmshightech->OMO($_POST['add_code_single']);
+                $add_start_date=$processorNewDao->mmshightech->OMO($_POST['add_start_date']);
+                $add_end_date=$processorNewDao->mmshightech->OMO($_POST['add_end_date']);
+                $add_price=$processorNewDao->mmshightech->OMO($_POST['add_price']);
+                $add_label_promo_price=$processorNewDao->mmshightech->OMO($_POST['add_label_promo_price']);
+                $add_percentage_discount=$processorNewDao->mmshightech->OMO($_POST['add_percentage_discount']);
+                $add_discount_amount=$processorNewDao->mmshightech->OMO($_POST['add_discount_amount']);
+                // $add_product_id=$processorNewDao->mmshightech->OMO($_POST['add_product_id']);
+                $addPromoToggle=$processorNewDao->mmshightech->OMO($_POST['addPromoToggle']);
+                $addInstockToggle=$processorNewDao->mmshightech->OMO($_POST['addInstockToggle']);
+                $e=$products->addNewProductBySupplier($add_label,$add_sub_label,$add_description,$add_manufacture,$add_brand,$add_category,$add_seling_unit,$add_qantity,$add_content_uom,$add_ean_code,$add_alt_ean,$add_alt_ean2,$add_code_single,$add_start_date,$add_end_date,$add_price,$add_label_promo_price,$add_percentage_discount,$add_discount_amount,$addPromoToggle,$addInstockToggle,$cur_user_row['supplier_id']);
+
+            }
+            else{
+                $e->responseMessage="Failed to process empty request";
+                $e->responseStatus=Constants::FAILED_STATUS;
+            }
+        }
+        elseif (isset($_POST['changeIconImg'],$_POST['productId'])) {
+            $productId = $processorNewDao->mmshightech->OMO($_POST['productId']);
+            if(empty($_FILES)){
+                $e->responseMessage="Failed to process empty request";
+                $e->responseStatus=Constants::FAILED_STATUS;
+            }
+            else{
+                $toProcess = [];
+                $failProcess = [];
+                foreach ($_FILES as $fileData){
+                    $ext = explode(".",$fileData['name']);
+                    $ext = $ext[1];
+                    if(in_array(strtolower($ext),['jpg','gif','jpeg','png'])){
+                        $toProcess[]=$fileData;
+                    }
+                    else {
+                        $failProcess[] = $ext;
+                    }
+                }
+                if(sizeof($failProcess)>0){
+                    $e->responseMessage="{".implode(",",$failProcess)."} Not supported!. Processing Failed.";
+                    $e->responseStatus=Constants::FAILED_STATUS;
+                }
+                else{
+
+                    $terminate = false;
+                    $successFiles=[];
+                    $dir = "../../img/";
+                    foreach($toProcess as $dataFile){
+                        // print_r($dataFile);
+                        $newFileName = $productId.'_'.$cur_user_row['supplier_id'].'_'.$cur_user_row['id'].'_'.rand(0,90000).'_'.$dataFile['name'];
+                        if(!move_uploaded_file($dataFile['tmp_name'],$dir.basename($newFileName))){
+                            $terminate = true;
+                            break;
+                        }
+                        $successFiles[]=$newFileName;
+                    }
+                    if($terminate){
+                        $e->responseMessage="Failed to move file due to network error. Please try again.";
+                        $e->responseStatus=Constants::FAILED_STATUS;
+                    }
+                    else{
+                        if(empty($cur_user_row['supplier_id'])){
+                            $e->responseMessage="You not a supplier, You cannot have update suppliers data.";
+                            $e->responseStatus=Constants::FAILED_STATUS;
+                        }
+                        else{
+                            $e=$products->updateProductIcon($cur_user_row['id'],$cur_user_row['supplier_id'],$successFiles,$productId);
+                        }
+                    }
+                }
             }
         }
     }

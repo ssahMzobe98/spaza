@@ -103,10 +103,12 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
 		        <div style="padding:10px 10px;display: flex;height: 80vh;">
 		        	<div style="padding:10px 10px;width:50%;">
 		        		<div style="width:50%; margin-left: 25%;margin-top: 10%;">
-		        			<img style="width: 100%;" src="../img/<?php echo $img;?>">
+		        			<img style="width: 100%;" src="../img/<?php echo empty($img)?'noimg.png':$img;?>">
 		        		</div>
 		        		<label>Change this icon image</label>
-		        		<input type="file" accept="image/*" style="width:40%;" name="">
+		        		<input type="file" accept="image/*" class='changeIconImg' id="changeIconImg" style="width:40%;" name="">
+		        		<input type="hidden" class="productId" value="<?php echo $_POST['request'];?>">
+		        		<div class="displayResponse" hidden></div>
 		        	</div>
 		        	<div style="padding:30px 30px;width: 80%;text-align: left;">
 		        		<!-- <h3 style="font-weight: bolder; text-align: left;"><?php //echo "product_title : ".$getProductData['product_title'];?></h3>

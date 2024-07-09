@@ -132,6 +132,38 @@ class productsPdo
         }
         return ($results['is_picked']===Constants::SUCCESS_YES);
     }
+    public function addNewProductBySupplier(int|string|array|float|null $add_label=null,int|string|array|float|null $add_sub_label=null,int|string|array|float|null $add_description=null,int|string|array|float|null $add_manufacture=null,int|string|array|float|null $add_brand=null,int|string|array|float|null $add_category=null,int|string|array|float|null $add_seling_unit=null,int|string|array|float|null $add_qantity=null,int|string|array|float|null $add_content_uom=null,int|string|array|float|null $add_ean_code=null,int|string|array|float|null $add_alt_ean=null,int|string|array|float|null $add_alt_ean2=null,int|string|array|float|null $add_code_single=null,int|string|array|float|null $add_start_date=null,int|string|array|float|null $add_end_date=null,int|string|array|float|null $add_price=null,int|string|array|float|null $add_label_promo_price=null,int|string|array|float|null $add_percentage_discount=null,int|string|array|float|null $add_discount_amount=null,int|string|array|float|null $addPromoToggle=null,int|string|array|float|null $addInstockToggle=null,int|string|array|float|null $supplier_id=null):Response{
+        $params = [$add_label,$add_sub_label,$add_description,$add_manufacture,$add_brand,$add_category,$add_seling_unit,$add_qantity,$add_content_uom,$add_ean_code,$add_alt_ean,$add_alt_ean2,$add_code_single,$add_start_date,$add_end_date,$add_price,$add_label_promo_price,$add_percentage_discount,$add_discount_amount,$addPromoToggle,$addInstockToggle,$supplier_id];
+        $sql ="INSERT into products( 
+                product_title,
+                product_subtitle,
+                product_description,
+                manufacture,
+                brand,
+                menu_catalogue_id,
+                product_weight,
+                available_quantiy,
+                uom,
+                variant_barcode,
+                variant_barcode_alt,
+                variant_barcode_alt2,
+                product_hs_code,
+                promo_start_date,
+                promo_end_date,
+                price_usd,
+                promo_price,
+                promo_percentage,
+                discount_amount,
+                product_discountable,
+                is_instock,
+                store_id,
+                product_status,
+                time_added
+
+                )values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'A',NOW())";
+        return $this->mmshightech->postDataSafely($sql,'ssssssssssssssssssssss',$params);
+
+    }
     public function updateProductInfo(
              int|string|array|float|null $amend_label=null
             ,int|string|array|float|null $amend_sub_label=null
@@ -377,6 +409,21 @@ class productsPdo
 
         }
         return $this->response;
+    }
+    public function updateProductIcon(?int $userId=null,?int $supplierId=null,array $successFiles = [],?int $productId=null):Response{
+        if(empty($successFiles)){
+            return $this->response->failureSetter()->messagerSetter("Cannot process empty data.");
+        }
+        if($supplierId === null){
+            return $this->response->failureSetter()->messagerSetter("Missing a Supplier.");
+        }
+        if($productId === null){
+            return $this->response->failureSetter()->messagerSetter("Missing Product.");
+        }
+        $sql="UPDATE products set product_thumbnail=? where id=? and store_id = ? and product_status=?";
+        $params = [$successFiles[0],$productId,$supplierId,Constants::STATUS_ACTIVE];
+        return $this->mmshightech->postDataSafely($sql,'ssss',$params);
+
     }
 
 }
