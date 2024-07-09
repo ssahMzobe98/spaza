@@ -16,9 +16,8 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         if(isset($_GET['min'],$_GET['max'])){
             date_default_timezone_set('Africa/Johannesburg');
             $maxCount = $productsPdo->getProductTotalCount();
-            $getProductData = $productsPdo->getProductsForDisplay($_GET['min'],$_GET['max']);
-
-            // echo"<pre>";print_r($getProductData);echo"</pre>";
+            $isSupplier = $cur_user_row['user_type']===Constants::USER_TYPE_SUPPLIER?$cur_user_row['supplier_id']:false;
+            $getProductData = $productsPdo->getProductsForDisplay($_GET['min'],$_GET['max'],$isSupplier);
             ?>
             <table class="table table-striped">
                 <thead>

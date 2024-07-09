@@ -647,6 +647,9 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
         $e->responseMessage = $error->getMessage();
         ErrorHandler::writelogResponse('../../storage/logs/', $erroObject->issueType, $erroObject->class, $erroObject->method, $erroObject);
     }
+    // if($e->responseStatus===Constants::RESPONSE_SUCCESS){
+    //     $
+    // }
     echo json_encode($e);
 }
 else{

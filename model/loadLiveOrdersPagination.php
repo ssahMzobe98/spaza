@@ -15,7 +15,8 @@ if(isset($_SESSION['user_agent'],$_SESSION['var_agent'])){
   if($cur_user_row['user_type']==Constants::USER_TYPE_ADMIN  || $cur_user_row['user_type']===Constants::USER_TYPE_SUPPLIER){
     if(isset($_GET['min'],$_GET['limit'])){
       $ordersCount = $orderPdo->getAllactiveCount();
-      $orders = $orderPdo->getAllactiveOrder($_GET['min'],$_GET['limit']);
+      $isSupplier = $cur_user_row['user_type']===Constants::USER_TYPE_SUPPLIER?$cur_user_row['supplier_id']:false;
+      $orders = $orderPdo->getAllactiveOrder($_GET['min'],$_GET['limit'],$isSupplier);
       $trig = count($orders);
       $min=($_GET['min']-10<0)?0:$_GET['min']-10;
       $limit=($_GET['limit']-10<10)?10:$_GET['limit']-10;

@@ -114,7 +114,17 @@ class OrderPdo{
     	$sql="SELECT total from orders where id=?";
     	return $this->mmshightech->getAllDataSafely($sql,'s',[$order_id])[0]??[];
     }
-    public function getAllactiveOrder(int $min=0,int $limit=10):array{
+    public function getAllactiveOrder(int $min=0,int $limit=10,null|int|bool $isSupplier=false):array{
+        $params = [];
+        $StrParams='ss';
+        $p = '';
+        if($isSupplier){
+            $p="o.supplier_store_id=? and ";
+            $params[]=$isSupplier;
+            $StrParams .='s';
+        }
+        $params[]=$min;
+        $params[]=$limit;
     	$sql="SELECT 
     		s.status as order_status,
     		o.id as order_id,
@@ -138,8 +148,8 @@ class OrderPdo{
     		left join statuses as s on s.id=o.process_status
     		left join users as u on u.id=o.user_id
     		left join spaza_details as sd on sd.id=o.spaza_id
-    	where o.process_status in (2,3,4,5,6,8,9,10,11,12) limit ?,?";
-    	return $this->mmshightech->getAllDataSafely($sql,'ss',[$min,$limit])??[];
+    	where {$p} o.process_status in (2,3,4,5,6,8,9,10,11,12) limit ?,?";
+    	return $this->mmshightech->getAllDataSafely($sql,$StrParams,$params)??[];
     }
     public function searchOrderWithId(?int $searchOrderNumber=0):array{
     	$sql="SELECT 

@@ -1738,7 +1738,7 @@ $(document).on("change",".changeIconImg",function(){
       console.log(response);
       if(response['responseStatus']==='S'){
         $(".displayResponse").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:green;").html("Product list added!!");
-        //domeSquareModal('productDataForm',productId);
+        domeSquareModal('productDataForm',productId);
       }
       else{
         $(".displayResponse").removeAttr("hidden").attr("style","padding:10px 10px;width:100%;color:red;border:2px solid red;border-radius:10px;").html(response['responseMessage']);

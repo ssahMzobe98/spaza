@@ -35,14 +35,25 @@ class productsPdo
             where p.is_instock='Y' and p.product_status='A' and p.store_id=? limit ?,?";
         return $this->mmshightech->getAllDataSafely($sql,'sss',[ $store,$min, $limit])??[];
     }
-    public function getProductsForDisplay(?int $min,?int $limit):array{
+    public function getProductsForDisplay(?int $min,?int $limit,null|int|bool $isSupplier=false):array{
+        $params = [];
+        $StrParams='ss';
+        $p = '';
+        if($isSupplier){
+            $p="p.store_id=? and ";
+            $params[]=$isSupplier;
+            $StrParams .='s';
+        }
+        $params[]=$min;
+        $params[]=$limit;
+
         $sql="SELECT p.*, 
                 if(c.quantity='',0,c.quantity) as cart_quantity,
                 if(now() > p.promo_start_date and now() < p.promo_end_date, p.promo_price,'') as promo_price_to_display
             from products as p
                 left join cart as c on c.product_id = p.id
-            where p.product_status='A' order by product_title ASC limit ?,?";
-        return $this->mmshightech->getAllDataSafely($sql,'ss',[$min, $limit])??[];
+            where {$p} p.product_status='A' order by product_title ASC limit ?,?";
+        return $this->mmshightech->getAllDataSafely($sql,$StrParams,$params)??[];
     }
     public function getProductOfCategory(?int $categoryID,int $min=0,int $limit=100):array{
         $sql="SELECT p.*, 
